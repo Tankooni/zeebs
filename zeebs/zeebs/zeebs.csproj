@@ -36,8 +36,25 @@
     <Reference Include="Indigo">
       <HintPath>lib\Indigo.dll</HintPath>
     </Reference>
+    <Reference Include="Magick.NET-x86, Version=7.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Magick.NET-x86.dll</HintPath>
+    </Reference>
+    <Reference Include="Magick.NET.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Magick.NET.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Magick.NET.Wrapper-x86, Version=7.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Magick.NET.Wrapper-x86.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,20 +63,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="entities\AnimatedEntity.cs" />
+    <Compile Include="metaData\AnimatedEntityData.cs" />
+    <Compile Include="metaData\AnimationData.cs" />
+    <Compile Include="utils\json\JsonLoader.cs" />
+    <Compile Include="utils\json\JsonWriter.cs" />
+    <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="utils\Class1.cs" />
+    <Compile Include="utils\commands\Command.cs" />
+    <Compile Include="utils\commands\Emote.cs" />
+    <Compile Include="utils\commands\HypeButton.cs" />
     <Compile Include="utils\pathing\PathNode.cs" />
     <Compile Include="utils\pathing\SolverUtility.cs" />
     <Compile Include="utils\SoundManager.cs" />
     <Compile Include="utils\Utility.cs" />
+    <Compile Include="utils\zoopBoot\IRC.cs" />
+    <Compile Include="utils\zoopBoot\TwitchInterface.cs" />
     <Compile Include="worlds\StartScreenWorld.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="content\entities\TheFuck\TheFuckIdle\" />
+    <Folder Include="content\entities\Zeeb\ZeebIdle\" />
     <Folder Include="content\music\" />
     <Folder Include="content\sounds\" />
+    <Folder Include="content\twitchcache\" />
     <Folder Include="lib\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

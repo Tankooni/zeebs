@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Indigo;
 using Indigo.Inputs;
 using Indigo.Graphics;
+using Tankooni;
 
 namespace zeebs
 {
@@ -20,6 +21,11 @@ namespace zeebs
 		public Game() :
 			base(1280, 780, 60)
 		{
+			Utility.Twitchy = new Tankooni.IRC.TwitchInterface("zoopboot", DontLook.logi);
+			Utility.Twitchy.Connect("#tankooni");
+			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
+			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
+
 			FP.Console.Enable();
 			FP.Console.MirrorToSystemOut = true;
 			FP.Console.ToggleKey = Keyboard.Tilde;
