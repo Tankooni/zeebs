@@ -1,5 +1,5 @@
 syntax: glob
 zeebs/.vs/zeebs/v14/.suo
-bin
-obj
+zeebs/zeebs/bin
+zeebs/zeebs/obj
 **.exe
