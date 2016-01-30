@@ -1,0 +1,13 @@
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\zeebs.exe.config
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\zeebs.exe
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\zeebs.pdb
+D:\Working\C#\zeebs\zeebs\zeebs\obj\Debug\zeebs.csprojResolveAssemblyReference.cache
+D:\Working\C#\zeebs\zeebs\zeebs\obj\Debug\zeebs.exe
+D:\Working\C#\zeebs\zeebs\zeebs\obj\Debug\zeebs.pdb
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\Indigo.dll
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\sfmlnet-graphics-2.dll
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\sfmlnet-window-2.dll
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\OpenTK.dll
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\sfmlnet-audio-2.dll
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\Indigo.pdb
+D:\Working\C#\zeebs\zeebs\zeebs\bin\Debug\Indigo.xml
