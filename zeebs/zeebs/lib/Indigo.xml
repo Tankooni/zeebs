@@ -594,6 +594,12 @@
             Content management and caching.
             </summary>
         </member>
+        <member name="M:Indigo.Library.LoadProvider(Indigo.Content.LibraryProvider)">
+            <summary>
+            Load assets from a library provider.
+            </summary>
+            <param name="provider">The provider to load assets from.</param>
+        </member>
         <member name="M:Indigo.Library.GetXml(System.String)">
             <summary>
             Load an XML document.
@@ -646,7 +652,26 @@
             Gets an enumerable of files, taking search paths into consideration. An Indigo-friendly alias for Directory.GetFiles()
             </summary>
         </member>
+        <member name="M:Indigo.Library.GetFilename(System.String)">
+            <summary>
+            Get a qualified filename, taking search paths into consideration.
+            </summary>
+            <param name="filename">The filename to qualify.</param>
+        </member>
+        <member name="M:Indigo.Library.GetFolderName(System.String)">
+            <summary>
+            Get a qualified folder name, taking search paths into consideration.
+            </summary>
+            <param name="folderName">The filename to qualify.</param>
+        </member>
         <member name="M:Indigo.Library.FileExists(System.String)">
+            <summary>
+            Check if a file exists in any search path.
+            </summary>
+            <param name="path">Filename.</param>
+            <returns>If the file exists.</returns>
+        </member>
+        <member name="M:Indigo.Library.FolderExists(System.String)">
             <summary>
             Check if a file exists in any search path.
             </summary>
@@ -1661,7 +1686,7 @@
             Emits a particle.
             </summary>
             <param name="particleTypeName">The name of the particle type to emit</param>
-            <param name="x">Point to emit from.</param>
+            <param name="position">Point to emit from.</param>
         </member>
         <member name="M:Indigo.Graphics.Emitter.Simulate(System.Single)">
             <summary>
