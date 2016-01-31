@@ -9,6 +9,7 @@ using Indigo.Components;
 using Indigo.Graphics;
 using zeebs.utils.commands;
 using Indigo;
+using Indigo.Core;
 
 namespace zeebs.entities
 {
@@ -68,13 +69,35 @@ namespace zeebs.entities
 		public void DoReceiveAttack(object[] args)
 		{
 			string userName = (string)args[0];
+			if (userName == TwitchUserComEntityData.TwitchUserName)
+				return;
 			ComEntity attacker = (ComEntity)args[1];
+			var Disctance = FP.Distance(X, Y, attacker.X, attacker.Y);
 
-			if(FP.Distance(X, Y, attacker.X, attacker.Y) < 10)
+
+
+
+			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 40)
 			{
+				Console.WriteLine("Hit");
+				if (TwitchUserComEntityData.CommandQueue.Count != 0)
+				{
+					var command = TwitchUserComEntityData.CommandQueue.Peek();
+					if (command != null)
+						command.Interrupt();
+				}
+				TwitchUserComEntityData.CommandQueue.Clear();
+				if(coHostCommands.Running)
+					coHostCommands.StopAll();
 
-				//TwitchUserComEntityData.CommandQueue.Peek()
-				//TwitchUserComEntityData.CommandQueue.Clear();
+				var hitVector = new Point(X - attacker.X, Y - attacker.Y).Normalized();
+
+				hitVector = hitVector * 80;
+
+				//hitVector
+
+				var moveTo = new Point(X, Y) + hitVector;
+				QueueCommand(new ComEntityMoveTo(this, moveTo));
 			}
 		}
 	}
