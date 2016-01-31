@@ -22,9 +22,18 @@ namespace zeebs
 		public Game() :
 			base(1280, 720, 60)
 		{
+			if (!Directory.Exists("./save/twitchUserData"))
+				Directory.CreateDirectory("./save/twitchUserData");
+			if (!File.Exists(MainConfig.MainConfigPath))
+				Utility.MainConfig = MainConfig.WriteDefaultConfig();
+			else
+				Utility.MainConfig = MainConfig.LoadMainConfig();
+
 			Utility.Twitchy = new Tankooni.IRC.TwitchInterface("zoopboot", DontLook.logi);
-			Utility.Twitchy.Connect("#tankooni");
+			Utility.Twitchy.Connect("#voyboy");
 			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
+			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
+			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
 			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
 
 			if (!Directory.Exists("./save/twitchUserData"))

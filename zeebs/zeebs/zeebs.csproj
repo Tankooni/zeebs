@@ -70,9 +70,10 @@
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\Change.cs" />
     <Compile Include="utils\commands\JoinGame.cs" />
-    <Compile Include="utils\commands\MoveZeeb.cs" />
-    <Compile Include="utils\commands\PartGame.cs" />
+    <Compile Include="utils\commands\Move.cs" />
+    <Compile Include="utils\commands\Leave.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
     <Compile Include="utils\json\JsonWriter.cs" />
     <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="utils\commands\Command.cs" />
     <Compile Include="utils\commands\Emote.cs" />
     <Compile Include="utils\commands\HypeButton.cs" />
+    <Compile Include="utils\Part.cs" />
     <Compile Include="utils\pathing\PathNode.cs" />
     <Compile Include="utils\pathing\SolverUtility.cs" />
     <Compile Include="utils\SoundManager.cs" />
@@ -101,6 +103,9 @@
     <Folder Include="content\sounds\" />
     <Folder Include="content\twitchcache\" />
     <Folder Include="lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="content\shaders\ChromaKey.frag" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

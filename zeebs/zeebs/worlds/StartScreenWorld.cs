@@ -27,9 +27,10 @@ namespace zeebs
 			AddGraphic(new Image(Library.GetTexture("content/Background.png")));
 
 			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
-			AddResponse(JoinGame.JoinGameMessage.JoinGame, DoJoinGame);
-			AddResponse(PartGame.PartGameMessage.PartGame, DoPartGame);
-			AddResponse(MoveZeeb.MoveZeebMessage.MoveZeeb, DoMoveZeeb);
+			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
+			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
+			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
+			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -95,6 +96,7 @@ namespace zeebs
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
+					TwitchUserColor = (string)args[2],
 					ComEmoteHead = emoteName,
 					ComEntityName = "ZeebSmall",
 					ComEntityPosition = new Point(FP.Random.Float(FP.Width), FP.Random.Float(FP.Height)),
@@ -106,6 +108,7 @@ namespace zeebs
 			else
 			{
 				userData = JsonLoader.Load<TwitchUserComEntityData>(pathName, false);
+				userData.ComEmoteHead = emoteName;
 			}
 
 			var newPlayer = new ComEntity(userData);
@@ -113,9 +116,21 @@ namespace zeebs
 			Add(newPlayer);
 		}
 
+		public void DoChangeEmote(object[] args)
+		{
+			Utility.ConnectedPlayers[(string)args[0]].ChangeHead((string)args[1]);
+		}
+
 		public void DoPartGame(object[] args)
 		{
-
+			string userName = (string)args[0];
+			string path = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
+			var discoPlayer = Utility.ConnectedPlayers[userName];
+			discoPlayer.TwitchUserComEntityData.ComEntityPosition.X = discoPlayer.X;
+			discoPlayer.TwitchUserComEntityData.ComEntityPosition.Y = discoPlayer.Y;
+			JsonWriter.Save(discoPlayer.TwitchUserComEntityData, path, false);
+			Remove(discoPlayer);
+			Utility.ConnectedPlayers.Remove(userName);
 		}
 
 		public void DoMoveZeeb(object[] args)

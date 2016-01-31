@@ -1,4 +1,5 @@
 ﻿using Indigo.Core;
+using Indigo.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace zeebs.metaData
 	public class TwitchUserComEntityData
 	{
 		public string TwitchUserName;
+		public string TwitchUserColor;
 		public string ComEmoteHead;
 		public string ComEntityName;
 		public Point ComEntityPosition;
