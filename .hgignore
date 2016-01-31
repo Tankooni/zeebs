@@ -4,3 +4,4 @@ zeebs/zeebs/bin
 zeebs/zeebs/obj
 **.exe
 zeebs/packages/**
+*.orig

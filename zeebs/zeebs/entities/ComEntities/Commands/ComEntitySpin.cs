@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace zeebs.entities.ComEntities.Commands
             return isDone;
         }
 
-        public override void Update()
+        public override IEnumerator Update()
         {
             float deltaSpin = comEntity.Rotation;
             Indigo.Utils.Approach.TowardsWithDecay(ref deltaSpin, 360);
@@ -28,6 +29,8 @@ namespace zeebs.entities.ComEntities.Commands
                 comEntity.Rotation = 0;
                 isDone = true;
             }
+
+			yield return null;
         }
     }
 }

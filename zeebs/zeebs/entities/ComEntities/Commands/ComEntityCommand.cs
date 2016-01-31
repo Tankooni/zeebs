@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,9 +29,9 @@ namespace zeebs.entities
 
 		}
 
-		public virtual void Update()
+		public virtual IEnumerator Update()
 		{
-
+			yield return null;
 		}
 
 		public virtual void Interrupt()

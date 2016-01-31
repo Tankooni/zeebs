@@ -101,6 +101,12 @@ namespace zeebs.entities
             }
         }
 
+		public void SetColorTint(Color tintColor)
+		{
+			foreach(var image in images)
+				image.Shader.SetParameter("color", tintColor);
+		}
+
 		public void PlayAnmation(string animation)
 		{
 			if (animation == Sprite.CurrentAnim)

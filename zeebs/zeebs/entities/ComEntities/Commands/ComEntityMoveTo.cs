@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Glide;
 using Indigo;
 using Indigo.Core;
+using System.Collections;
 
 namespace zeebs.entities
 {
@@ -33,10 +34,11 @@ namespace zeebs.entities
 			return FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y) < 1;
 		}
 
-		public override void Update()
+		public override IEnumerator Update()
 		{
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.X, moveTo.X);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.Y, moveTo.Y);
+			yield return null;
 		}
 	}
 }
