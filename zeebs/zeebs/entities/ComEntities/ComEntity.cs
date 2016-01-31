@@ -18,7 +18,7 @@ namespace zeebs.entities
 	{
 		public readonly TwitchUserComEntityData TwitchUserComEntityData;
 		CoroutineHost coHostCommands = new CoroutineHost();
-
+		//public Emitter emitter;
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
 			: base
 			(
@@ -33,6 +33,30 @@ namespace zeebs.entities
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
 			AddComponent(coHostCommands);
 			AddResponse(Attack.AttackeMessage.Attack, DoReceiveAttack);
+			//try
+			//{
+			//	emitter = new Emitter(Library.GetTexture("twitch//" + twitchUserComEntityData.ComEmoteHead));
+			//}
+			//catch
+			//{
+
+			//}
+			//if (emitter != null)
+			//{
+			//	emitter.Relative = false;
+			//	var myType = emitter.Define("trail");
+			//	myType.Alpha.From = .3f;
+			//	myType.Alpha.To = 0;
+			//	//myType.Scale.From = 1;
+			//	//myType.Scale.To = 0;
+			//	myType.Lifetime.Duration = 0.5f;
+			//	myType.Motion.Angle = 0;
+			//	myType.Motion.AngleVariance.Add = 360;
+			//	myType.Motion.Distance = 30;
+			//	myType.Motion.DistanceVariance.Add = 4;
+			//	AddComponent(emitter);
+			//}
+			
 		}
 
 		public void QueueCommand(ComEntityCommand command)
@@ -78,7 +102,6 @@ namespace zeebs.entities
 
 			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 40)
 			{
-				Console.WriteLine("Hit");
 				if (TwitchUserComEntityData.CommandQueue.Count != 0)
 				{
 					var command = TwitchUserComEntityData.CommandQueue.Peek();

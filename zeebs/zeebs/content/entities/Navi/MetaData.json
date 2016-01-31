@@ -1,0 +1,5 @@
+{
+	"Name": "Navi",
+	"Animations": ["Idle"],
+	"DefaultAnimation": "Idle"
+}
