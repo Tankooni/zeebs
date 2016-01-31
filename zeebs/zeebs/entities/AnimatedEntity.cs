@@ -42,6 +42,17 @@ namespace zeebs.entities
             }
         }
 
+        private bool isFlipped;
+        public bool IsFlipped
+        {
+            get { return isFlipped; }
+            set
+            {
+                SetFlip(value);
+                isFlipped = value;
+            }
+        }
+
 		public AnimatedEntity(string entityName, string twitchHeadName)
 			: this(entityName, twitchHeadName, Color.White) { }
 
@@ -98,6 +109,19 @@ namespace zeebs.entities
             {
                 image.Angle = rotation;
                 Head.Angle = rotation;
+            }
+        }
+
+        public void SetFlip(bool value)
+        {
+            foreach (var image in images)
+            {
+                image.FlippedX = value;
+                Head.FlippedX = value;
+                if (value != isFlipped)
+                {
+                    Head.X = -Head.X;
+                }
             }
         }
 
