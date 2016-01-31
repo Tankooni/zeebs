@@ -20,12 +20,12 @@ namespace zeebs.utils.commands
 		}
 		public override bool CanExecute(string[] args, out string failMessage)
 		{
-			if (!Utility.ConnectedPlayers.ContainsKey(args[9]))
+			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
 				failMessage = "Not part of game";
 				return false;
 			}
-            var prematch = Regex.Match(args[12], @"\!loop\s*(.*)").Groups[1].ToString();
+            var prematch = Regex.Match(args[(int)StdExpMessageValues.Message], @"\!loop\s*(.*)").Groups[1].ToString();
             var matchs = Regex.Matches(prematch, @"\!(\w+)\s*([^\!]*)");
 			if (matchs.Count == 0)
 			{
@@ -38,7 +38,7 @@ namespace zeebs.utils.commands
                 string commandStr = match.Groups[1].ToString();
 
                 //only run certain commands or things will break
-                if (!(commandStr == "movezeeb"))
+                if (!(commandStr == "move"))
                 {
                     failMessage = String.Format("Command cannot be looped: {0}", commandStr);
                     return false;
@@ -48,8 +48,9 @@ namespace zeebs.utils.commands
                 Command command;
                 if (TwitchInterface.commandBank.TryGetValue(commandStr.ToLower(), out command))
                 {
+                    command = command.CreateNewSelf();
                     string[] localArgs = (string[])args.Clone();
-                    localArgs[12] = match.Groups[0].ToString();
+                    localArgs[(int)StdExpMessageValues.Message] = match.Groups[0].ToString();
                     string localFailMessage;
                     if (command.CanExecute(localArgs, out localFailMessage))
                     {
@@ -76,10 +77,16 @@ namespace zeebs.utils.commands
             FP.World.BroadcastMessage(LoopMessage.Loop, args, commands);
 		}
 
-		public override Command CreateNewSelf()
-		{
-			return new Loop();
-		}
+        public override Command CreateNewSelf()
+        {
+            var loop = new Loop();
+            loop.commands = new List<Command>();
+            foreach (Command c in commands)
+            {
+                loop.commands.Add(c.CreateNewSelf());
+            }
+            return loop;
+        }
 
 		public enum LoopMessage
 		{

@@ -146,7 +146,7 @@ namespace zeebs
             string[] realArgs = (string[])args[0];
             List<Command> commands = (List<Command>)args[1];
 
-            var player = Utility.ConnectedPlayers[(string)(realArgs[9])];
+            var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
             player.QueueCommand(new ComEntityLoop(player, commands, realArgs));
 
         }
