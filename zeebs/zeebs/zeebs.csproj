@@ -70,6 +70,7 @@
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\Attack.cs" />
     <Compile Include="utils\commands\Change.cs" />
     <Compile Include="utils\commands\Join.cs" />
     <Compile Include="utils\commands\Move.cs" />
