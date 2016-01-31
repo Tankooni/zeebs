@@ -3599,7 +3599,7 @@
             GLSL shader that can be applied to Graphics.
             </summary>
         </member>
-        <member name="M:Indigo.Rendering.Shader.SetParameter(System.String,SFML.Graphics.Color)">
+        <member name="M:Indigo.Rendering.Shader.SetParameter(System.String,Indigo.Graphics.Color)">
             <summary>
             Set a parameter on the shader.
             </summary>
@@ -3640,7 +3640,7 @@
             <param name="z">The third value of a vec4.</param>
             <param name="w">The fourth value of a vec4.</param>
         </member>
-        <member name="M:Indigo.Rendering.Shader.SetParameter(System.String,SFML.Graphics.Texture)">
+        <member name="M:Indigo.Rendering.Shader.SetParameter(System.String,Indigo.Content.Texture)">
             <summary>
             Set a parameter on the shader.
             </summary>

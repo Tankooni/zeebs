@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using zeebs.metaData;
 using Indigo.Components;
+using Indigo.Graphics;
 
 namespace zeebs.entities
 {
@@ -16,7 +17,13 @@ namespace zeebs.entities
 		CoroutineHost coHostCommands = new CoroutineHost();
 
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
-			: base(twitchUserComEntityData.ComEntityName, twitchUserComEntityData.ComEmoteHead)
+			: base
+			(
+				  twitchUserComEntityData.ComEntityName, 
+				  twitchUserComEntityData.ComEmoteHead, 
+				  String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
+					Color.White : 
+					new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber)))
 		{
 			TwitchUserComEntityData = twitchUserComEntityData;
 			X = twitchUserComEntityData.ComEntityPosition.X;

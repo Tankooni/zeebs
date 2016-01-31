@@ -1,7 +1,6 @@
 ﻿using Indigo;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,30 +10,26 @@ using Tankooni.IRC;
 
 namespace zeebs.utils.commands
 {
-	public class Join : Command
+	class Change : Command
 	{
 		string emoteName;
 
-		public Join()
+		public Change()
 		{
-			CommandName = "join";
+			CommandName = "change";
 		}
 		public override bool CanExecute(string[] args, out string failMessage)
 		{
-			if (Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Already part of the game";
+				failMessage = "Not part of the game";
 				return false;
 			}
-			if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
-			{
-				failMessage = "Too many players connected";
-				return false;
-			}
+			
 			var match = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
 			if (!match.Success)
 			{
-				failMessage = "No emote specified. Please use !join <emote>";
+				failMessage = "No emote specified";
 				return false;
 			}
 			var startPos = int.Parse(match.Groups[2].Value);
@@ -47,12 +42,12 @@ namespace zeebs.utils.commands
 
 		public override void Execute(string[] args)
 		{
-			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, args[(int)StdExpMessageValues.UseName], emoteName, args[(int)StdExpMessageValues.UserColor]);
+			FP.World.BroadcastMessage(ChangeMessage.Change, args[(int)StdExpMessageValues.UseName], emoteName);
 		}
 
-		public enum JoinGameMessage
+		public enum ChangeMessage
 		{
-			JoinGame
+			Change
 		}
 	}
 }

@@ -9,6 +9,7 @@ using zeebs.metaData;
 using Tankooni;
 using Indigo.Graphics;
 using Glide;
+using Indigo.Rendering;
 
 namespace zeebs.entities
 {
@@ -18,10 +19,14 @@ namespace zeebs.entities
 		public Dictionary<string, AnimationData> Animations = new Dictionary<string, AnimationData>();
 		public Flipbook Sprite { get; set; }
 		public Image Head;
+		string currentHeadName;
 		List<Image> images;
 		Tween currentHeadTween;
 
 		public AnimatedEntity(string entityName, string twitchHeadName)
+			: this(entityName, twitchHeadName, Color.White) { }
+
+		public AnimatedEntity(string entityName, string twitchHeadName, Color tintColor)
 		{
 			images = new List<Image>();
 			string EntityFilePath = Utility.CONTENT_DIR + "/entities/" + entityName;
@@ -37,7 +42,13 @@ namespace zeebs.entities
 					//foreach (var animation in MetaData.Animations)
 					//	sprite.Add(animation.Name, FP.MakeFrames(currentTotalFrames, (currentTotalFrames += animation.Frames) - 1), animation.FPS, true);
 					//AddComponent(sprite);
-					images.Add(new Image(Library.GetTexture(animFilePath)) { OriginX = ad.Origin.X, OriginY = ad.Origin.Y });
+					Image newImage;
+					images.Add(newImage = new Image(Library.GetTexture(animFilePath)) { OriginX = ad.Origin.X, OriginY = ad.Origin.Y });
+					Shader chromaKey = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/ChromaKey.frag"));
+					newImage.Shader = chromaKey;
+					chromaKey.SetAsCurrentTexture("sampler2D");
+					chromaKey.SetParameter("color", tintColor);
+
 					//Console.WriteLine(animFile);
 				}
 			}
@@ -77,15 +88,16 @@ namespace zeebs.entities
 
 		public bool ChangeHead(string headName)
 		{
-			if (Head == null)
+			if (currentHeadName != headName)
 			{
+				var oldHead = Head;
 				if (!CreateHead(headName))
 				{
 					return false;
 				}
+				RemoveComponent(oldHead);
 			}
 			return true;
-
 		}
 
 		public bool CreateHead(string headName)
@@ -107,7 +119,7 @@ namespace zeebs.entities
 				currentHeadTween.Ease(Ease.ToAndFro);
 				currentHeadTween.Repeat();
 
-
+				currentHeadName = headName;
 				return true;
 			}
 			catch (Exception ex)
