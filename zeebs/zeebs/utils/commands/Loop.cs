@@ -76,6 +76,11 @@ namespace zeebs.utils.commands
             FP.World.BroadcastMessage(LoopMessage.Loop, args, commands);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Loop();
+		}
+
 		public enum LoopMessage
 		{
 			Loop

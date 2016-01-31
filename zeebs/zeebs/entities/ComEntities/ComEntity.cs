@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using zeebs.metaData;
 using Indigo.Components;
 using Indigo.Graphics;
+using zeebs.utils.commands;
+using Indigo;
 
 namespace zeebs.entities
 {
@@ -29,6 +31,7 @@ namespace zeebs.entities
 			X = twitchUserComEntityData.ComEntityPosition.X;
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
 			AddComponent(coHostCommands);
+			AddResponse(Attack.AttackeMessage.Attack, DoReceiveAttack);
 		}
 
 		public void QueueCommand(ComEntityCommand command)
@@ -59,6 +62,19 @@ namespace zeebs.entities
 					yield return null;
 				}
 				commands.Dequeue();
+			}
+		}
+
+		public void DoReceiveAttack(object[] args)
+		{
+			string userName = (string)args[0];
+			ComEntity attacker = (ComEntity)args[1];
+
+			if(FP.Distance(X, Y, attacker.X, attacker.Y) < 10)
+			{
+
+				//TwitchUserComEntityData.CommandQueue.Peek()
+				//TwitchUserComEntityData.CommandQueue.Clear();
 			}
 		}
 	}
