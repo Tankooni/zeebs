@@ -1,0 +1,5 @@
+{
+	"Name": "ZeebSmall",
+	"Animations": ["Idle"],
+	"DefaultAnimation": "Idle"
+}

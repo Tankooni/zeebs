@@ -8,6 +8,7 @@ using Utils.Json;
 using zeebs.metaData;
 using Tankooni;
 using Indigo.Graphics;
+using Glide;
 
 namespace zeebs.entities
 {
@@ -18,6 +19,7 @@ namespace zeebs.entities
 		public Flipbook Sprite { get; set; }
 		public Image Head;
 		List<Image> images;
+		Tween currentHeadTween;
 
 		public AnimatedEntity(string entityName, string twitchHeadName)
 		{
@@ -51,6 +53,15 @@ namespace zeebs.entities
 			CreateHead(twitchHeadName);
 		}
 
+		public void SetAlpha(float value)
+		{
+			foreach(var image in images)
+			{
+				image.Alpha = value;
+				Head.Alpha = value;
+			}
+		}
+
 		public void PlayAnmation(string animation)
 		{
 			if (animation == Sprite.CurrentAnim)
@@ -81,8 +92,22 @@ namespace zeebs.entities
 		{
 			try
 			{
-				AddComponent(Head = new Image(Library.GetTexture("twitch//" + headName)) { X = Animations[Sprite.CurrentAnim].HeadPosition.X, Y = Animations[Sprite.CurrentAnim].HeadPosition.Y });
+				AddComponent(Head = new Image(Library.GetTexture("twitch//" + headName)));
 				Head.CenterOrigin();
+				Console.WriteLine(Head.Width);
+				Head.Scale = Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
+				
+				Head.X = Animations[Sprite.CurrentAnim].HeadPosition.X;
+				Head.Y = Animations[Sprite.CurrentAnim].HeadPosition.Y;
+
+				//if (FP.Random.Bool())
+				//	OnDownComplete();
+				//else
+				currentHeadTween = Tweener.Tween(Head, new { Y = Animations[Sprite.CurrentAnim].HeadPosition.Y - 4 }, FP.Random.Float(.4f, .7f));
+				currentHeadTween.Ease(Ease.ToAndFro);
+				currentHeadTween.Repeat();
+
+
 				return true;
 			}
 			catch (Exception ex)
@@ -92,6 +117,13 @@ namespace zeebs.entities
 				//throw (ex);
 				return false;
 			}
+		}
+
+		public override void Update()
+		{
+			base.Update();
+
+			
 		}
 	}
 }

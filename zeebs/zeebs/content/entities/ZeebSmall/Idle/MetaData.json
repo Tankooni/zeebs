@@ -1,0 +1,8 @@
+{
+	"Name": "Idle",
+	"Frames": 12,
+	"FPS": 24,
+	"HeadPosition": {"X": 3, "Y": -10},
+	"HeadWidth": 22,
+	"Origin": {"X": 36, "Y": 24}
+}

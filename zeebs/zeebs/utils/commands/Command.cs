@@ -10,8 +10,9 @@ namespace zeebs.utils.commands
 	{
 		public string CommandName;
 
-		public virtual bool CanExecute(string[] args)
+		public virtual bool CanExecute(string[] args, out string failMessage)
 		{
+			failMessage = "";
 			return false;
 		}
 		public virtual void Execute(string[] args)

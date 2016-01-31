@@ -7,6 +7,7 @@ using Indigo;
 using Indigo.Inputs;
 using Indigo.Graphics;
 using Tankooni;
+using System.IO;
 
 namespace zeebs
 {
@@ -19,12 +20,19 @@ namespace zeebs
 		}
 
 		public Game() :
-			base(1280, 780, 60)
+			base(1280, 720, 60)
 		{
 			Utility.Twitchy = new Tankooni.IRC.TwitchInterface("zoopboot", DontLook.logi);
 			Utility.Twitchy.Connect("#tankooni");
 			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
 			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
+
+			if (!Directory.Exists("./save/twitchUserData"))
+				Directory.CreateDirectory("./save/twitchUserData");
+			if (!File.Exists(MainConfig.MainConfigPath))
+				Utility.MainConfig = MainConfig.WriteDefaultConfig();
+			else
+				Utility.MainConfig = MainConfig.LoadMainConfig();
 
 			FP.Console.Enable();
 			FP.Console.MirrorToSystemOut = true;
