@@ -86,6 +86,7 @@
     <Compile Include="utils\commands\Join.cs" />
     <Compile Include="utils\commands\Move.cs" />
     <Compile Include="utils\commands\Leave.cs" />
+    <Compile Include="utils\commands\MoveRandom.cs" />
     <Compile Include="utils\commands\Queue.cs" />
     <Compile Include="utils\commands\Spin.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
