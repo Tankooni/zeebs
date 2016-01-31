@@ -74,6 +74,7 @@
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\Attack.cs" />
     <Compile Include="utils\commands\Loop.cs" />
     <Compile Include="utils\commands\Change.cs" />
     <Compile Include="utils\commands\Join.cs" />
@@ -114,8 +115,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>echo D|C:\Windows\System32\xcopy $(ProjectDir)content $(TargetDir)content /s /e /q /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
