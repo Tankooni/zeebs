@@ -20,7 +20,7 @@ namespace zeebs.entities
 
 		public override bool IsDone()
 		{
-			return FP.Distance(comEntity.X, comEntity.Y, comEntity.X, comEntity.Y) < 1;
+			return FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y) < 1;
 		}
 
 		public override void Update()

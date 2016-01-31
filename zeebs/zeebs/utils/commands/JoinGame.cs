@@ -20,14 +20,14 @@ namespace zeebs.utils.commands
 		}
 		public override bool CanExecute(string[] args, out string failMessage)
 		{
-			if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
-			{
-				failMessage = "Too many players connected";
-				return false;
-			}
 			if (Utility.ConnectedPlayers.ContainsKey(args[9]))
 			{
 				failMessage = "Already part of the game";
+				return false;
+			}
+			if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
+			{
+				failMessage = "Too many players connected";
 				return false;
 			}
 			var match = Regex.Match(args[2], @"(\d+):(\d+)-(\d+)");

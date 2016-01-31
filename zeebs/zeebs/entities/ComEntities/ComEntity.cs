@@ -18,8 +18,10 @@ namespace zeebs.entities
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
 			: base(twitchUserComEntityData.ComEntityName, twitchUserComEntityData.ComEmoteHead)
 		{
+			TwitchUserComEntityData = twitchUserComEntityData;
 			X = twitchUserComEntityData.ComEntityPosition.X;
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
+			AddComponent(coHostCommands);
 		}
 
 		public void QueueCommand(ComEntityCommand command)
@@ -38,12 +40,13 @@ namespace zeebs.entities
 		{
 			while (commands.Count != 0)
 			{
-				var command = commands.Dequeue();
+				var command = commands.Peek();
 				while (!command.IsDone())
 				{
 					command.Update();
 					yield return null;
 				}
+				commands.Dequeue();
 			}
 		}
 	}

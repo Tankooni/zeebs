@@ -28,8 +28,8 @@ namespace zeebs
 
 			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
 			AddResponse(JoinGame.JoinGameMessage.JoinGame, DoJoinGame);
-			AddResponse(PartGame.PartGameMessage.PartGame, DoEmote);
-			AddResponse(MoveZeeb.MoveZeebMessage.MoveZeeb, DoEmote);
+			AddResponse(PartGame.PartGameMessage.PartGame, DoPartGame);
+			AddResponse(MoveZeeb.MoveZeebMessage.MoveZeeb, DoMoveZeeb);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -56,7 +56,7 @@ namespace zeebs
 			{
 				case 0:
 					mine = Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-					mine.SetAlpha(0.3f);
+					mine.SetAlpha(0.5f);
 					break;
 				case 1:
 					mine = Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
@@ -88,9 +88,9 @@ namespace zeebs
 		{
 			string userName = (string)args[0];
 			string emoteName = (string)args[1];
-			string pathName = "/" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
+			string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
-			if (!File.Exists("." + pathName))
+			if (!File.Exists(pathName))
 			{
 				userData = new TwitchUserComEntityData
 				{
@@ -111,12 +111,17 @@ namespace zeebs
 			var newPlayer = new ComEntity(userData);
 			Utility.ConnectedPlayers.Add(userName, newPlayer);
 			Add(newPlayer);
-			//Utility.ConnectedPlayers.Add(userName, )
+		}
 
-			//new ComEntity()
+		public void DoPartGame(object[] args)
+		{
 
-			//new ComEntity()
-			//Utility.ConnectedPlayers.Add();
+		}
+
+		public void DoMoveZeeb(object[] args)
+		{
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityMoveTo(player, new Point((int)args[1], (int)args[2])));
 		}
 
 		public override void Update()
