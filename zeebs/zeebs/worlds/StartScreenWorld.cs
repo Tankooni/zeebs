@@ -31,6 +31,7 @@ namespace zeebs
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
+            AddResponse(MoveD.MoveDMessage.MoveD, DoMoveDZeeb);
             AddResponse(Loop.LoopMessage.Loop, DoLoop);
 			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
             AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
@@ -140,8 +141,14 @@ namespace zeebs
 		public void DoMoveZeeb(object[] args)
 		{
 			var player = Utility.ConnectedPlayers[(string)args[0]];
-			player.QueueCommand(new ComEntityMoveTo(player, new Point((int)args[1], (int)args[2])));
+            player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2]))));
 		}
+
+        public void DoMoveDZeeb(object[] args)
+        {
+            var player = Utility.ConnectedPlayers[(string)args[0]];
+            player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2]))));
+        }
 
         public void DoLoop(object[] args)
         {

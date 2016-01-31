@@ -24,7 +24,7 @@ namespace zeebs.entities.ComEntities.Commands
         {
             comEntity.IsFlipped = !comEntity.IsFlipped;
             isDone = true;
-			yield return CoroutineHost.WaitForSeconds(.5f);
+			yield return CoroutineHost.WaitForSeconds(.2f);
 		}
     }
 }
