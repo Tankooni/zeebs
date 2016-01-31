@@ -3,3 +3,4 @@ zeebs/.vs/zeebs/v14/.suo
 zeebs/zeebs/bin
 zeebs/zeebs/obj
 **.exe
+zeebs/packages/**

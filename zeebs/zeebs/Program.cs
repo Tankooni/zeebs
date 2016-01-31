@@ -37,7 +37,7 @@ namespace zeebs
 			FP.Console.Enable();
 			FP.Console.MirrorToSystemOut = true;
 			FP.Console.ToggleKey = Keyboard.Tilde;
-			FP.Screen.ClearColor = new Color(0x000000);
+            //FP.Screen.ClearColor = new Color(0x000000);
 			Mouse.CursorVisible = false;
 
 			SoundManager.Init(0.7f);

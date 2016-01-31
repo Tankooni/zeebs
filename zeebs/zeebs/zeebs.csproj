@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>zeebs.Game</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Indigo">
       <HintPath>lib\Indigo.dll</HintPath>
@@ -66,10 +69,12 @@
     <Compile Include="entities\AnimatedEntity.cs" />
     <Compile Include="entities\ComEntities\ComEntity.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityCommand.cs" />
+    <Compile Include="entities\ComEntities\Commands\ComEntityLoop.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityMoveTo.cs" />
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\Loop.cs" />
     <Compile Include="utils\commands\JoinGame.cs" />
     <Compile Include="utils\commands\MoveZeeb.cs" />
     <Compile Include="utils\commands\PartGame.cs" />
@@ -104,7 +109,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo D|C:\Windows\System32\xcopy $(ProjectDir)content $(TargetDir)content /s /e /q /y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
