@@ -12,8 +12,9 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "hypebutton";
 		}
-		public override bool CanExecute(string[] args)
+		public override bool CanExecute(string[] args, out string failMessage)
 		{
+			failMessage = "";
 			return true;
 		}
 

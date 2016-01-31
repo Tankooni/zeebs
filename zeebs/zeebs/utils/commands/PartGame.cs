@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Indigo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Indigo;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace zeebs.utils.commands
 {
-	public class Emote : Command
+	public class PartGame : Command
 	{
-		public Emote()
+		public PartGame()
 		{
-			CommandName = "emote";
+			CommandName = "partgame";
 		}
 		public override bool CanExecute(string[] args, out string failMessage)
 		{
@@ -22,7 +22,6 @@ namespace zeebs.utils.commands
 
 		public override void Execute(string[] args)
 		{
-
 			if (String.IsNullOrWhiteSpace(args[2]))
 				return;
 			var match = Regex.Match(args[2], @"(\d+):(\d+)-(\d+)");
@@ -32,12 +31,12 @@ namespace zeebs.utils.commands
 			var endPos = int.Parse(match.Groups[3].Value);
 
 			var emoteName = args[12].Substring(startPos, endPos - startPos + 1);
-			FP.World.BroadcastMessage(EmoteMessage.Emote, emoteName);
+			FP.World.BroadcastMessage(PartGameMessage.PartGame, emoteName);
 		}
 
-		public enum EmoteMessage
+		public enum PartGameMessage
 		{
-			Emote
+			PartGame
 		}
 	}
 }

@@ -64,8 +64,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="entities\AnimatedEntity.cs" />
+    <Compile Include="entities\ComEntities\ComEntity.cs" />
+    <Compile Include="entities\ComEntities\Commands\ComEntityCommand.cs" />
+    <Compile Include="entities\ComEntities\Commands\ComEntityMoveTo.cs" />
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
+    <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\JoinGame.cs" />
+    <Compile Include="utils\commands\MoveZeeb.cs" />
+    <Compile Include="utils\commands\PartGame.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
     <Compile Include="utils\json\JsonWriter.cs" />
     <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />

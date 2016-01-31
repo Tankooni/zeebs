@@ -72,10 +72,17 @@ namespace Tankooni.IRC
 					var maybeCommand = Regex.Match(match.Groups[12].Value, @"\!(\w+)\s*").Groups[1].Value;
 					Command command;
 					if (commandBank.TryGetValue(maybeCommand.ToLower(), out command))
-						command.Execute(match.Groups.Cast<Group>().Select(x => x.Value).ToArray());
+					{
+						var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+						string failMessage;
+						if (command.CanExecute(args, out failMessage))
+							command.Execute(args);
+						if(!String.IsNullOrWhiteSpace(failMessage))
+						{
+							SendMessageToServer("@" + args[1] + ": " + failMessage);
+						}
+					}
 				}
-				//foreach (Group group in match.Groups)
-				//	Console.WriteLine(group);
 			}
 		}
 
