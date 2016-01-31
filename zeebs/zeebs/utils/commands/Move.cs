@@ -32,10 +32,16 @@ namespace zeebs.utils.commands
 				failMessage = "Invalid format. Plese use !move <x_integer> <y_integer>";
 				return false;
 			}
-			
-			if (!int.TryParse(match.Groups[1].Value, out dX) || dX < 0 || dX > FP.Width || !int.TryParse(match.Groups[2].Value, out dY) || dY < 0 || dY > FP.Height)
+
+			//if (!int.TryParse(match.Groups[1].Value, out dX) || dX < 0 || dX > FP.Width || !int.TryParse(match.Groups[2].Value, out dY) || dY < 0 || dY > FP.Height)
+			//{
+			//	failMessage = "Values are out of bounds, please enter a value bewtten 0 & " + FP.Width + " for X and bewtween 0 & " + FP.Height + " for Y";
+			//	return false;
+			//}
+
+			if (!int.TryParse(match.Groups[1].Value, out dX) || !int.TryParse(match.Groups[2].Value, out dY))
 			{
-				failMessage = "Values are out of bounds, please enter a value bewtten 0 & " + FP.Width + " for X and bewtween 0 & " + FP.Height + " for Y";
+				failMessage = "One of the values is higher than int.max. Stahhhhhhpp";
 				return false;
 			}
 

@@ -32,5 +32,10 @@ namespace zeebs.entities
 		{
 
 		}
+
+		public virtual void Interrupt()
+		{
+
+		}
 	}
 }
