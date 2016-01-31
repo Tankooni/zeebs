@@ -38,7 +38,7 @@ namespace zeebs.utils.commands
                 string commandStr = match.Groups[1].ToString();
 
                 //only run certain commands or things will break
-                if (!(commandStr == "move"))
+                if (!(commandStr == "move") || !(commandStr == "attack") || !(commandStr == "spin"))
                 {
                     failMessage = String.Format("Command cannot be looped: {0}", commandStr);
                     return false;

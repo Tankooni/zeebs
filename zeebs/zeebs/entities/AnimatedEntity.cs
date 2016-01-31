@@ -23,6 +23,25 @@ namespace zeebs.entities
 		List<Image> images;
 		Tween currentHeadTween;
 
+        private float rotation;
+        public float Rotation
+        {
+            get {return rotation;}
+            set {
+                while (rotation >= 360)
+                {
+                    rotation -= 360;
+                }
+                while (rotation < 0)
+                {
+                    rotation += 360;
+                }
+
+                rotation = value;
+                this.SetRotation(rotation);
+            }
+        }
+
 		public AnimatedEntity(string entityName, string twitchHeadName)
 			: this(entityName, twitchHeadName, Color.White) { }
 
@@ -72,6 +91,15 @@ namespace zeebs.entities
 				Head.Alpha = value;
 			}
 		}
+
+        public void SetRotation(float value)
+        {
+            foreach (var image in images)
+            {
+                image.Angle = rotation;
+                Head.Angle = rotation;
+            }
+        }
 
 		public void PlayAnmation(string animation)
 		{
