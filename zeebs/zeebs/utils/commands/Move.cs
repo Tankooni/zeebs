@@ -48,6 +48,11 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(MoveMessage.Move, args[(int)StdExpMessageValues.UseName], dX, dY);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Move();
+		}
+
 		public enum MoveMessage
 		{
 			Move

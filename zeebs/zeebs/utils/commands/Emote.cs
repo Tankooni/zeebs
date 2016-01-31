@@ -36,6 +36,11 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(EmoteMessage.Emote, emoteName);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Emote();
+		}
+
 		public enum EmoteMessage
 		{
 			Emote

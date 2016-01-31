@@ -46,7 +46,7 @@ namespace zeebs.entities
 					images.Add(newImage = new Image(Library.GetTexture(animFilePath)) { OriginX = ad.Origin.X, OriginY = ad.Origin.Y });
 					Shader chromaKey = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/ChromaKey.frag"));
 					newImage.Shader = chromaKey;
-					chromaKey.SetAsCurrentTexture("sampler2D");
+					//chromaKey.SetAsCurrentTexture("sampler2D");
 					chromaKey.SetParameter("color", tintColor);
 
 					//Console.WriteLine(animFile);
@@ -106,7 +106,6 @@ namespace zeebs.entities
 			{
 				AddComponent(Head = new Image(Library.GetTexture("twitch//" + headName)));
 				Head.CenterOrigin();
-				Console.WriteLine(Head.Width);
 				Head.Scale = Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
 				
 				Head.X = Animations[Sprite.CurrentAnim].HeadPosition.X;
@@ -124,8 +123,10 @@ namespace zeebs.entities
 			}
 			catch (Exception ex)
 			{
+#if DEBUG
 				Console.WriteLine("Cannot Find: " + headName);
 				Console.WriteLine(ex);
+#endif
 				//throw (ex);
 				return false;
 			}

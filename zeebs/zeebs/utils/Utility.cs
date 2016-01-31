@@ -54,6 +54,11 @@ namespace Tankooni
 	{
 		public string CurrentMusic { get; set; }
 		public int MaxPlayers { get; set; }
+		public string BotUser { get; set; }
+		public string Oauth { get; set; }
+		public string Channel { get; set; }
+
+		public bool PreventBotTalking { get; set; }
 
 		public static string MainConfigPath
 		{
@@ -68,7 +73,10 @@ namespace Tankooni
 			MainConfig mainConfig = new MainConfig
 			{
 				CurrentMusic = "",
-				MaxPlayers = 200
+				MaxPlayers = 500,
+				Oauth = "",
+				Channel ="#",
+				PreventBotTalking = false
 
 			};
 			JsonWriter.Save(mainConfig, MainConfigPath, false);

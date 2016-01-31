@@ -29,8 +29,9 @@ namespace zeebs
 			else
 				Utility.MainConfig = MainConfig.LoadMainConfig();
 
-			Utility.Twitchy = new Tankooni.IRC.TwitchInterface("zoopboot", DontLook.logi);
-			Utility.Twitchy.Connect("#voyboy");
+			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.BotUser, Utility.MainConfig.Oauth);
+			Utility.Twitchy.Connect(Utility.MainConfig.Channel);
+			//Utility.Twitchy.Connect("#tankooni");
 			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
 			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
 			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");

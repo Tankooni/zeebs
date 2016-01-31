@@ -19,5 +19,7 @@ namespace zeebs.utils.commands
 		{
 
 		}
+
+		public abstract Command CreateNewSelf();
 	}
 }

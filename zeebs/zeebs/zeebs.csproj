@@ -71,7 +71,7 @@
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
     <Compile Include="utils\commands\Change.cs" />
-    <Compile Include="utils\commands\JoinGame.cs" />
+    <Compile Include="utils\commands\Join.cs" />
     <Compile Include="utils\commands\Move.cs" />
     <Compile Include="utils\commands\Leave.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />

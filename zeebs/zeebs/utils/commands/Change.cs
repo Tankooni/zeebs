@@ -45,6 +45,11 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(ChangeMessage.Change, args[(int)StdExpMessageValues.UseName], emoteName);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Change();
+		}
+
 		public enum ChangeMessage
 		{
 			Change

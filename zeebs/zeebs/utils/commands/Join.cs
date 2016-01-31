@@ -50,6 +50,11 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, args[(int)StdExpMessageValues.UseName], emoteName, args[(int)StdExpMessageValues.UserColor]);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Join();
+		}
+
 		public enum JoinGameMessage
 		{
 			JoinGame
