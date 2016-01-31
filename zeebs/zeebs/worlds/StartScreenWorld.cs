@@ -33,6 +33,7 @@ namespace zeebs
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
             AddResponse(Loop.LoopMessage.Loop, DoLoop);
 			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
+            AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -149,6 +150,12 @@ namespace zeebs
             var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
             player.QueueCommand(new ComEntityLoop(player, commands, realArgs));
 
+        }
+
+        public void DoSpinZeeb(object[] args)
+        {
+            var player = Utility.ConnectedPlayers[(string)args[0]];
+            player.QueueCommand(new ComEntitySpin(player));
         }
 
 		public override void Update()
