@@ -33,6 +33,11 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(LeaveMessage.Leave, args[(int)StdExpMessageValues.UseName]);
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new Leave();
+		}
+
 		public enum LeaveMessage
 		{
 			Leave

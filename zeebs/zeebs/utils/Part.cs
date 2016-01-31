@@ -30,5 +30,10 @@ namespace zeebs.utils
 		{
 			FP.World.BroadcastMessage(Leave.LeaveMessage.Leave, args[1]);
 		}
+
+		public override Command CreateNewSelf()
+		{
+			return new Part();
+		}
 	}
 }

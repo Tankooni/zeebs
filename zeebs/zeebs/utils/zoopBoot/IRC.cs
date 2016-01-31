@@ -46,7 +46,7 @@ namespace Tankooni.IRC
 		/// <summary>
 		/// The username to use when connecting.
 		/// </summary>
-		public string Name = "Zoop Boot";
+		public string Name = "";
 
 		/// <summary>
 		/// The port to use when connecting to the server.
@@ -85,7 +85,7 @@ namespace Tankooni.IRC
 		/// <param name="port">The port to use when connecting.</param>
 		/// <param name="nick">The nickname to use when connecting.</param>
 		/// <param name="pass">The password to use when connecting.</param>
-		public IRC(string server, int port = 6667, string nick = "Zoop_Boot", string pass = null)
+		public IRC(string server, int port = 6667, string nick = "", string pass = null)
 		{
 			Server = server;
 			Nick = nick;
@@ -106,7 +106,6 @@ namespace Tankooni.IRC
 				string data;
 				if (Running)
 				{
-
 					data = streamReader.ReadLine();
 					if (Debug) Console.WriteLine("IRC> " + data);
 					if (data != null)

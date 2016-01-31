@@ -18,6 +18,11 @@ namespace zeebs.utils.commands
 			return true;
 		}
 
+		public override Command CreateNewSelf()
+		{
+			return new HypeButton();
+		}
+
 		public override void Execute(string[] args)
 		{
 			
