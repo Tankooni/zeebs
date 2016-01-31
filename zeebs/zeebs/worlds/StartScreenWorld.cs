@@ -14,6 +14,7 @@ using Utils.Json;
 using zeebs.entities;
 using zeebs.utils.commands;
 using System.IO;
+using zeebs.entities.ComEntities.Commands;
 
 namespace zeebs
 {
@@ -30,6 +31,7 @@ namespace zeebs
 			AddResponse(JoinGame.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(PartGame.PartGameMessage.PartGame, DoPartGame);
 			AddResponse(MoveZeeb.MoveZeebMessage.MoveZeeb, DoMoveZeeb);
+            AddResponse(Loop.LoopMessage.Loop, DoLoop);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -123,6 +125,16 @@ namespace zeebs
 			var player = Utility.ConnectedPlayers[(string)args[0]];
 			player.QueueCommand(new ComEntityMoveTo(player, new Point((int)args[1], (int)args[2])));
 		}
+
+        public void DoLoop(object[] args)
+        {
+            string[] realArgs = (string[])args[0];
+            List<Command> commands = (List<Command>)args[1];
+
+            var player = Utility.ConnectedPlayers[(string)(realArgs[9])];
+            player.QueueCommand(new ComEntityLoop(player, commands, realArgs));
+
+        }
 
 		public override void Update()
 		{

@@ -17,6 +17,7 @@ namespace Tankooni.IRC
 	}
 	public class TwitchInterface
 	{
+        public static TwitchInterface MasterTwitchInterface;
 		IRC Irc;
 		Thread IrcThread;
 		string channel;
@@ -32,10 +33,11 @@ namespace Tankooni.IRC
 			}
 		};
 
-		Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
+		public static Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
 
 		public TwitchInterface(string nickName, string oauth)
 		{
+            MasterTwitchInterface = this;
 			this.nickName = nickName;
 			this.oauth = oauth;
 			IrcThread = new Thread(() => { while (true) { Irc.Update(); Thread.Sleep(100); } });
