@@ -5,6 +5,8 @@ using System.IO;
 using Tankooni.IRC;
 using zeebs.entities;
 using Utils.Json;
+using Indigo.Masks;
+using Tankooni.Pathing;
 
 namespace Tankooni
 {
@@ -47,6 +49,34 @@ namespace Tankooni
 			}
 
 			return typeList;
+		}
+
+		public static void LoadAndProcessClickMap(string path, PathNode[,] pathNodes, Grid pathGrid, int tileSize)
+		{
+			var map = new SFML.Graphics.Image(path);
+			var clickMap = new bool[map.Size.X, map.Size.Y];
+
+			float totalPixelsInTile = tileSize * tileSize;
+			int totalTrue = 0;
+			int xMax = 0;
+			int yMax = 0;
+			for (int x = 0; x < pathNodes.GetLength(0); x++)
+			{
+				for (int y = 0; y < pathNodes.GetLength(1); y++)
+				{
+					totalTrue = 0;
+					xMax = tileSize * x + tileSize;
+
+					for (int xMap = tileSize * x; xMap < xMax; xMap++)
+					{
+						yMax = tileSize * y + tileSize;
+						for (int yMap = tileSize * y; yMap < yMax; yMap++)
+							if (xMap < map.Size.X && yMap < map.Size.Y && map.GetPixel((uint)xMap, (uint)yMap).B > 40)
+								totalTrue++;
+					}
+					pathGrid.SetTile(x, y, pathNodes[x, y].Enabled = (totalTrue / totalPixelsInTile) >= .5f);
+				}
+			}
 		}
 	}
 

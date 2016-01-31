@@ -38,6 +38,8 @@ namespace zeebs.entities
 		{
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.X, moveTo.X);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.Y, moveTo.Y);
+			//if (comEntity.emitter != null)
+			//	comEntity.emitter.Emit("trail", comEntity.X, comEntity.Y);
 			yield return null;
 		}
 	}

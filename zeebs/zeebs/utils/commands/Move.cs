@@ -45,7 +45,13 @@ namespace zeebs.utils.commands
 				return false;
 			}
 
-			failMessage = "";
+			if (FP.World.CollidePoint("ClickMap", dX, dY) == null)
+			{
+				failMessage = "Blocked by movemap";
+				return false;
+			}
+
+				failMessage = "";
 			return true;
 		}
 
