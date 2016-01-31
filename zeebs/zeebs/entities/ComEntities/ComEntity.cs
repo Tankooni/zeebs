@@ -68,8 +68,8 @@ namespace zeebs.entities
 			if(FP.Distance(X, Y, attacker.X, attacker.Y) < 10)
 			{
 
-				TwitchUserComEntityData.CommandQueue.Peek()
-				TwitchUserComEntityData.CommandQueue.Clear();
+				//TwitchUserComEntityData.CommandQueue.Peek()
+				//TwitchUserComEntityData.CommandQueue.Clear();
 			}
 		}
 	}
