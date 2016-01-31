@@ -38,6 +38,11 @@ namespace zeebs.entities
 				coHostCommands.Start(DoCommandQueue(TwitchUserComEntityData.CommandQueue));
 		}
 
+        public int CountInQueue()
+        {
+            return TwitchUserComEntityData.CommandQueue.Count;
+        }
+
 		public override void Update()
 		{
 			base.Update();
