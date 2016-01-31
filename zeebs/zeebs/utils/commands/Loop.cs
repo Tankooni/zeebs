@@ -12,7 +12,7 @@ namespace zeebs.utils.commands
 {
     class Loop : Command
     {
-		List<Command> commands = new List<Command>();
+		public List<Command> commands = new List<Command>();
 
         public Loop()
 		{
@@ -38,7 +38,7 @@ namespace zeebs.utils.commands
                 string commandStr = match.Groups[1].ToString();
 
                 //only run certain commands or things will break
-                if (!(commandStr == "move") && !(commandStr == "attack") && !(commandStr == "spin") && !(commandStr == "color"))
+                if(!(new HashSet<string>{"move", "attack", "moverandom", "spin", "flip", "color"}).Contains(commandStr))
                 {
                     failMessage = String.Format("Command cannot be looped: {0}", commandStr);
                     return false;
@@ -74,7 +74,7 @@ namespace zeebs.utils.commands
 
 		public override void Execute(string[] args)
 		{
-            FP.World.BroadcastMessage(LoopMessage.Loop, args, commands);
+            FP.World.BroadcastMessage(LoopMessage.Loop, args, commands, true);
 		}
 
         public override Command CreateNewSelf()

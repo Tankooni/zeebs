@@ -35,6 +35,7 @@ namespace zeebs
 			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
             AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
+            AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
 			start.Y = (FP.Height / 3) + 25;
@@ -146,15 +147,22 @@ namespace zeebs
         {
             string[] realArgs = (string[])args[0];
             List<Command> commands = (List<Command>)args[1];
+            bool shouldLoop = (bool)args[2];
 
             var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
-            player.QueueCommand(new ComEntityLoop(player, commands, realArgs));
+            player.QueueCommand(new ComEntityLoop(player, commands, realArgs, shouldLoop));
         }
 
         public void DoSpinZeeb(object[] args)
         {
             var player = Utility.ConnectedPlayers[(string)args[0]];
             player.QueueCommand(new ComEntitySpin(player));
+        }
+
+        public void DoFlipZeeb(object[] args)
+        {
+            var player = Utility.ConnectedPlayers[(string)args[0]];
+            player.QueueCommand(new ComEntityFlip(player));
         }
 
 		public void DoChangeColor(object[] args)
