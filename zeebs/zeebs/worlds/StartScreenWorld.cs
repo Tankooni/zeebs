@@ -146,10 +146,10 @@ namespace zeebs
         {
             string[] realArgs = (string[])args[0];
             List<Command> commands = (List<Command>)args[1];
+            bool shouldLoop = (bool)args[2];
 
             var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
-            player.QueueCommand(new ComEntityLoop(player, commands, realArgs));
-
+            player.QueueCommand(new ComEntityLoop(player, commands, realArgs, shouldLoop));
         }
 
         public void DoSpinZeeb(object[] args)

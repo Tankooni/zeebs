@@ -14,13 +14,15 @@ namespace zeebs.entities.ComEntities.Commands
 	{
         List<Command> commands;
         string[] args;
+        bool shouldLoop = true;
         bool isDone = false;
 
-        public ComEntityLoop(ComEntity comEntity, List<Command> commands, string[] args)
+        public ComEntityLoop(ComEntity comEntity, List<Command> commands, string[] args, bool shouldLoop)
 			: base(comEntity)
 		{
 			this.commands = commands;
             this.args = args;
+            this.shouldLoop = shouldLoop;
 		}
 
 		public override bool IsDone()
@@ -30,6 +32,7 @@ namespace zeebs.entities.ComEntities.Commands
 
 		public override void Update()
 		{
+            isDone = true;
             if (comEntity.CountInQueue() > 1)
             {
                 //we're done here
@@ -39,8 +42,10 @@ namespace zeebs.entities.ComEntities.Commands
 			foreach ( Command command in commands ) {
                 command.Execute(args);
             }
-            comEntity.QueueCommand(new ComEntityLoop(comEntity, commands, args));
-            isDone = true;
+            if (shouldLoop)
+            {
+                comEntity.QueueCommand(new ComEntityLoop(comEntity, commands, args, shouldLoop));
+            }
 		}
 	}
 }
