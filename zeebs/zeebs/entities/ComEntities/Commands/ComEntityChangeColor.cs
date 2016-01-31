@@ -28,7 +28,7 @@ namespace zeebs.entities.ComEntities.Commands
 		{
 			comEntity.SetColorTint(new Color(int.Parse(comEntity.TwitchUserComEntityData.TwitchUserColor = color, System.Globalization.NumberStyles.HexNumber)));
 			isDone = true;
-			yield return CoroutineHost.WaitForSeconds(.5f);
+			yield return CoroutineHost.WaitForSeconds(.2f);
 		}
 	}
 }

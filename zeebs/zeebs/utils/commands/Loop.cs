@@ -14,6 +14,9 @@ namespace zeebs.utils.commands
     {
 		public List<Command> commands = new List<Command>();
 
+        Regex prematch_regex = new Regex(@"\!loop\s*(.*)");
+        Regex command_regex = new Regex(@"\!(\w+)\s*([^\!]*)");
+
         public Loop()
 		{
 			CommandName = "loop";
@@ -25,8 +28,8 @@ namespace zeebs.utils.commands
 				failMessage = "Not part of game";
 				return false;
 			}
-            var prematch = Regex.Match(args[(int)StdExpMessageValues.Message], @"\!loop\s*(.*)").Groups[1].ToString();
-            var matchs = Regex.Matches(prematch, @"\!(\w+)\s*([^\!]*)");
+            var prematch = prematch_regex.Match(args[(int)StdExpMessageValues.Message]).Groups[1].ToString();
+            var matchs = command_regex.Matches(prematch);
 			if (matchs.Count == 0)
 			{
 				failMessage = "Invalid format. Syntax is: !loop <command> <command> ...";
@@ -38,7 +41,7 @@ namespace zeebs.utils.commands
                 string commandStr = match.Groups[1].ToString();
 
                 //only run certain commands or things will break
-                if(!(new HashSet<string>{"move", "attack", "moverandom", "spin", "flip", "color"}).Contains(commandStr))
+                if(!(new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color"}).Contains(commandStr))
                 {
                     failMessage = String.Format("Command cannot be looped: {0}", commandStr);
                     return false;
