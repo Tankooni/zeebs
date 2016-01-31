@@ -7,6 +7,7 @@ using Glide;
 using Indigo;
 using Indigo.Core;
 using zeebs.utils.commands;
+using System.Collections;
 
 namespace zeebs.entities.ComEntities.Commands
 {
@@ -28,19 +29,19 @@ namespace zeebs.entities.ComEntities.Commands
             return isDone;
 		}
 
-		public override void Update()
+		public override IEnumerator Update()
 		{
-            if (comEntity.CountInQueue() > 1)
+			isDone = true;
+			if (comEntity.CountInQueue() > 1)
             {
                 //we're done here
-                return;
+                yield break;
             }
 
 			foreach ( Command command in commands ) {
                 command.Execute(args);
             }
             comEntity.QueueCommand(new ComEntityLoop(comEntity, commands, args));
-            isDone = true;
 		}
 	}
 }

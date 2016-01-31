@@ -59,8 +59,7 @@ namespace zeebs.entities
 				var command = commands.Peek();
 				while (!command.IsDone())
 				{
-					command.Update();
-					yield return null;
+					yield return command.Update();
 				}
 				commands.Dequeue();
 			}
