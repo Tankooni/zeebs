@@ -108,7 +108,8 @@ namespace zeebs.entities
             foreach (var image in images)
             {
                 image.Angle = rotation;
-                Head.Angle = rotation;
+				if(Head != null)
+				 Head.Angle = rotation;
             }
         }
 
@@ -117,11 +118,14 @@ namespace zeebs.entities
             foreach (var image in images)
             {
                 image.FlippedX = value;
-                Head.FlippedX = value;
-                if (value != isFlipped)
-                {
-                    Head.X = -Head.X;
-                }
+				if (Head != null)
+				{
+					Head.FlippedX = value;
+					if (value != isFlipped)
+					{
+						Head.X = -Head.X;
+					}
+				}
             }
         }
 
@@ -172,7 +176,7 @@ namespace zeebs.entities
 				//if (FP.Random.Bool())
 				//	OnDownComplete();
 				//else
-				currentHeadTween = Tweener.Tween(Head, new { Y = Animations[Sprite.CurrentAnim].HeadPosition.Y - 4 }, FP.Random.Float(.4f, .7f));
+				currentHeadTween = Tweener.Tween(Head, new { Y = Animations[Sprite.CurrentAnim].HeadPosition.Y - 4 }, .7f);
 				currentHeadTween.Ease(Ease.ToAndFro);
 				currentHeadTween.Repeat();
 

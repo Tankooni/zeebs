@@ -15,6 +15,8 @@ using zeebs.entities;
 using zeebs.utils.commands;
 using System.IO;
 using zeebs.entities.ComEntities.Commands;
+using Indigo.Masks;
+using Tankooni.Pathing;
 
 namespace zeebs
 {
@@ -22,6 +24,10 @@ namespace zeebs
 	{
 		private Text start;
 		private Text instructions;
+		private readonly int TileSize = 16;
+		private readonly PathNode[,] pathNodes;
+		private readonly Grid nodeGrid;
+		private readonly Entity nodeGridEntity;
 
 		public StartScreenWorld()
 		{
@@ -43,14 +49,30 @@ namespace zeebs
 			instructions = new Text("Instructions [Space]");
 			instructions.X = (FP.Width / 2) - (instructions.Width / 2);
 			instructions.Y = (FP.Height / 3) + 50;
-			//AddGraphic(start);
-				//JsonWriter.Save(
-				//new AnimatedEntityData
-				//{
-				//	Animations = new List<string> { "ZeebIdle" },
-				//	DefaultAnimation = "ZeebIdle"
 
-				//}, "MetaData");
+
+			nodeGridEntity = new Entity();
+			nodeGridEntity.AddComponent<Grid>(nodeGrid = new Grid(FP.Width, FP.Height, TileSize, TileSize));
+			nodeGridEntity.Type = "ClickMap";
+
+			pathNodes = new PathNode[FP.Width / TileSize, FP.Height / TileSize];
+			for (int x = 0; x < pathNodes.GetLength(0); x++)
+				for (int y = 0; y < pathNodes.GetLength(1); y++)
+					pathNodes[x, y] = new PathNode(null, x * TileSize + TileSize / 2, y * TileSize + TileSize / 2, false);
+			for (int x = 0; x < pathNodes.GetLength(0); x++)
+				for (int y = 0; y < pathNodes.GetLength(1); y++)
+					PathNode.ConnectedNodes[pathNodes[x, y]] = SolverUtility.SelectTilesAroundTile(x, y, pathNodes);
+
+			Utility.LoadAndProcessClickMap("content/MoveMap.png", pathNodes, nodeGrid, TileSize);
+			Add(nodeGridEntity);
+			//AddGraphic(start);
+			//JsonWriter.Save(
+			//new AnimatedEntityData
+			//{
+			//	Animations = new List<string> { "ZeebIdle" },
+			//	DefaultAnimation = "ZeebIdle"
+
+			//}, "MetaData");
 		}
 
 		public AnimatedEntity mine;
@@ -97,13 +119,22 @@ namespace zeebs
 			TwitchUserComEntityData userData;
 			if (!File.Exists(pathName))
 			{
+				int dX;
+				int dY;
+				do
+				{
+					dX = FP.Random.Int(0, FP.Width);
+					dY = FP.Random.Int(0, FP.Height);
+				} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+
+
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
 					TwitchUserColor = (string)args[2],
 					ComEmoteHead = emoteName,
 					ComEntityName = "ZeebSmall",
-					ComEntityPosition = new Point(FP.Random.Float(FP.Width), FP.Random.Float(FP.Height)),
+					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
 				JsonWriter.Save(userData, pathName, false);

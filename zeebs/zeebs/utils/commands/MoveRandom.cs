@@ -12,7 +12,10 @@ namespace zeebs.utils.commands
 {
     public class MoveRandom : Command
     {
-        public MoveRandom()
+		int dX;
+		int dY;
+
+		public MoveRandom()
         {
             CommandName = "moverandom";
         }
@@ -24,14 +27,23 @@ namespace zeebs.utils.commands
                 return false;
             }
 
-            failMessage = "";
+			;
+
+
+			do
+			{
+				dX = FP.Random.Int(0, FP.Width);
+				dY = FP.Random.Int(0, FP.Height);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+
+
+			failMessage = "";
             return true;
         }
 
         public override void Execute(string[] args)
         {
-            int dX = FP.Random.Int(0, FP.Width);
-            int dY = FP.Random.Int(0, FP.Height);
+			
             FP.World.BroadcastMessage(Move.MoveMessage.Move, args[(int)StdExpMessageValues.UseName], dX, dY);
         }
 
