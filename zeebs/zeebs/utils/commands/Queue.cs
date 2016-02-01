@@ -20,7 +20,9 @@ namespace zeebs.utils.commands
 		}
 		public override bool CanExecute(string[] args, out string failMessage)
 		{
-            return loopCommand.CanExecute(args, out failMessage);
+			failMessage = "";
+			return false;
+            //return loopCommand.CanExecute(args, out failMessage);
 		}
 
 		public override void Execute(string[] args)

@@ -157,7 +157,8 @@ namespace zeebs.entities
 				{
 					return false;
 				}
-				RemoveComponent(oldHead);
+				if(oldHead != null)
+					RemoveComponent(oldHead);
 			}
 			return true;
 		}
