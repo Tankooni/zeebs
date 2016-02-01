@@ -87,7 +87,7 @@ namespace Tankooni
 		public string BotUser { get; set; }
 		public string Oauth { get; set; }
 		public string Channel { get; set; }
-
+		public string DefaultBody { get; internal set; }
 		public bool PreventBotTalking { get; set; }
 
 		public static string MainConfigPath
@@ -98,6 +98,8 @@ namespace Tankooni
 			}
 		}
 
+		
+
 		public static MainConfig WriteDefaultConfig()
 		{
 			MainConfig mainConfig = new MainConfig
@@ -106,7 +108,8 @@ namespace Tankooni
 				MaxPlayers = 500,
 				Oauth = "",
 				Channel ="#",
-				PreventBotTalking = false
+				PreventBotTalking = false,
+				DefaultBody = "Navi"
 
 			};
 			JsonWriter.Save(mainConfig, MainConfigPath, false);

@@ -44,9 +44,9 @@ namespace zeebs
 			else
 				Utility.MainConfig = MainConfig.LoadMainConfig();
 
-			FP.Console.Enable();
-			FP.Console.MirrorToSystemOut = true;
-			FP.Console.ToggleKey = Keyboard.Tilde;
+			//FP.Console.Enable();
+			//FP.Console.MirrorToSystemOut = true;
+			//FP.Console.ToggleKey = Keyboard.Tilde;
             //FP.Screen.ClearColor = new Color(0x000000);
 			Mouse.CursorVisible = false;
 

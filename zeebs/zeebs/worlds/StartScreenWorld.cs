@@ -80,24 +80,24 @@ namespace zeebs
 
 		public void DoEmote(object[] args)
 		{
-			switch (FP.Random.Int(1))
-			{
-				case 0:
-					mine = Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-					mine.SetAlpha(0.5f);
-					break;
-				case 1:
-					mine = Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-					break;
-				case 2:
-					mine = Add(new AnimatedEntity("TheFuck", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-					break;
-				case 3:
-					mine = Add(new AnimatedEntity("Ko", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-					break;
-				default:
-					break;
-			}
+			//switch (FP.Random.Int(1))
+			//{
+			//	case 0:
+			//		mine = Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
+			//		mine.SetAlpha(0.5f);
+			//		break;
+			//	case 1:
+			//		mine = Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
+			//		break;
+			//	case 2:
+			//		mine = Add(new AnimatedEntity("TheFuck", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
+			//		break;
+			//	case 3:
+			//		mine = Add(new AnimatedEntity("Ko", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
+			//		break;
+			//	default:
+			//		break;
+			//}
 			 //if()
 			 //	Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
 			 //else
@@ -134,7 +134,7 @@ namespace zeebs
 					TwitchUserName = userName,
 					TwitchUserColor = (string)args[2],
 					ComEmoteHead = emoteName,
-					ComEntityName = "ZeebSmall",
+					ComEntityName = Utility.MainConfig.DefaultBody ?? "Navi",
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
@@ -199,8 +199,15 @@ namespace zeebs
 
         public void DoFlipZeeb(object[] args)
         {
-            var player = Utility.ConnectedPlayers[(string)args[0]];
-            player.QueueCommand(new ComEntityFlip(player));
+			try
+			{
+				var player = Utility.ConnectedPlayers[(string)args[0]];
+				player.QueueCommand(new ComEntityFlip(player));
+			}
+			catch
+			{
+
+			}
         }
 
 		public void DoChangeColor(object[] args)
