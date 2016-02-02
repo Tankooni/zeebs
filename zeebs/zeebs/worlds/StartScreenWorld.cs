@@ -31,7 +31,8 @@ namespace zeebs
 
 		public StartScreenWorld()
 		{
-			AddGraphic(new Image(Library.GetTexture("content/Background.png")));
+			if(Utility.MainConfig.UseBackgroundImage)
+				AddGraphic(new Image(Library.GetTexture("content/Background.png")));
 
 			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
@@ -134,7 +135,7 @@ namespace zeebs
 					TwitchUserName = userName,
 					TwitchUserColor = (string)args[2],
 					ComEmoteHead = emoteName,
-					ComEntityName = Utility.MainConfig.DefaultBody ?? "Navi",
+					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
