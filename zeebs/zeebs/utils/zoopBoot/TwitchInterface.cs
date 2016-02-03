@@ -114,170 +114,170 @@ namespace Tankooni.IRC
 			Match match = regExers[RegexTypes.StdExpMessage].Match(message);
 			if (match.Success)
 			{
-				//if (match.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
-				//{
-				//	var maybeCommand = Regex.Match(match.Groups[(int)StdExpMessageValues.Message].Value, @"\!(\w+)\s*").Groups[1].Value;
-				//	Command command;
-				//	if ((command = RetrieveNewCommandFromBank(maybeCommand)) != null)
-				//	{
-				//		var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//		string failMessage;
-				//		if (command.CanExecute(args, out failMessage))
-				//			command.Execute(args);
-				//		if (!String.IsNullOrWhiteSpace(failMessage))
-				//		{
-				//			if (!IsOfflineMode)
-				//				SendMessageToServer("@" + args[(int)StdExpMessageValues.UseName] + ": " + failMessage);
-				//			else
-				//				Console.WriteLine(failMessage);
-				//		}
-				//	}
-				//}
+				if (match.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
+				{
+					var maybeCommand = Regex.Match(match.Groups[(int)StdExpMessageValues.Message].Value, @"\!(\w+)\s*").Groups[1].Value;
+					Command command;
+					if ((command = RetrieveNewCommandFromBank(maybeCommand)) != null)
+					{
+						var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+						string failMessage;
+						if (command.CanExecute(args, out failMessage))
+							command.Execute(args);
+						if (!String.IsNullOrWhiteSpace(failMessage))
+						{
+							if (!IsOfflineMode)
+								SendMessageToServer("@" + args[(int)StdExpMessageValues.UseName] + ": " + failMessage);
+							else
+								Console.WriteLine(failMessage);
+						}
+					}
+				}
 
 				//For stress testing
-				if (Utility.ConnectedPlayers.ContainsKey(match.Groups[(int)StdExpMessageValues.UseName].Value))
-				{
-					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-					string failMessage;
-					string command = "moverandom";
-					switch (FP.Random.Int(5))
-					{
-						case 0:
-							args[(int)StdExpMessageValues.Message] = "!moverandom";
-							command = "moverandom";
-							break;
-						case 1:
-							args[(int)StdExpMessageValues.Message] = "!spin";
-							command = "spin";
-							break;
-						case 2:
-							args[(int)StdExpMessageValues.Message] = "!flip";
-							command = "flip";
-							break;
-						case 3:
-							args[(int)StdExpMessageValues.Message] = "!color random";
-							command = "color";
-							break;
-						case 4:
-							command = "change";
-							var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-							if (match2.Success)
-							{
-								var startPos = int.Parse(match2.Groups[2].Value);
-								var endPos = int.Parse(match2.Groups[3].Value);
-								args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
-								args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-							}
-							else
-							{
-								args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
-								args[(int)StdExpMessageValues.Message] = "!change Kappa";
-							}
-							break;
-						default:
-							break;
-					}
+				//if (Utility.ConnectedPlayers.ContainsKey(match.Groups[(int)StdExpMessageValues.UseName].Value))
+				//{
+				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+				//	string failMessage;
+				//	string command = "moverandom";
+				//	switch (FP.Random.Int(5))
+				//	{
+				//		case 0:
+				//			args[(int)StdExpMessageValues.Message] = "!moverandom";
+				//			command = "moverandom";
+				//			break;
+				//		case 1:
+				//			args[(int)StdExpMessageValues.Message] = "!spin";
+				//			command = "spin";
+				//			break;
+				//		case 2:
+				//			args[(int)StdExpMessageValues.Message] = "!flip";
+				//			command = "flip";
+				//			break;
+				//		case 3:
+				//			args[(int)StdExpMessageValues.Message] = "!color random";
+				//			command = "color";
+				//			break;
+				//		case 4:
+				//			command = "change";
+				//			var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
+				//			if (match2.Success)
+				//			{
+				//				var startPos = int.Parse(match2.Groups[2].Value);
+				//				var endPos = int.Parse(match2.Groups[3].Value);
+				//				args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
+				//				args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
+				//			}
+				//			else
+				//			{
+				//				args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
+				//				args[(int)StdExpMessageValues.Message] = "!change Kappa";
+				//			}
+				//			break;
+				//		default:
+				//			break;
+				//	}
 
 
 
-					var newCommand = commandBank[command].CreateNewSelf();
+				//	var newCommand = commandBank[command].CreateNewSelf();
 
 
-					if (newCommand.CanExecute(args, out failMessage))
-						newCommand.Execute(args);
-					else
-						Console.WriteLine(failMessage);
-				}
-				else if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
-				{
-					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+				//	if (newCommand.CanExecute(args, out failMessage))
+				//		newCommand.Execute(args);
+				//	else
+				//		Console.WriteLine(failMessage);
+				//}
+				//else if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
+				//{
+				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
 
-					string failMessage;
-					string command = "moverandom";
-					switch (FP.Random.Int(5))
-					{
-						case 0:
-							args[(int)StdExpMessageValues.Message] = "!moverandom";
-							command = "moverandom";
-							break;
-						case 1:
-							args[(int)StdExpMessageValues.Message] = "!spin";
-							command = "spin";
-							break;
-						case 2:
-							args[(int)StdExpMessageValues.Message] = "!flip";
-							command = "flip";
-							break;
-						case 3:
-							args[(int)StdExpMessageValues.Message] = "!color random";
-							command = "color";
-							break;
-						case 4:
-							command = "change";
-							var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-							if (match2.Success)
-							{
-								var startPos = int.Parse(match2.Groups[2].Value);
-								var endPos = int.Parse(match2.Groups[3].Value);
-								args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
-								args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-							}
-							else
-							{
-								args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
-								args[(int)StdExpMessageValues.Message] = "!change Kappa";
-							}
+				//	string failMessage;
+				//	string command = "moverandom";
+				//	switch (FP.Random.Int(5))
+				//	{
+				//		case 0:
+				//			args[(int)StdExpMessageValues.Message] = "!moverandom";
+				//			command = "moverandom";
+				//			break;
+				//		case 1:
+				//			args[(int)StdExpMessageValues.Message] = "!spin";
+				//			command = "spin";
+				//			break;
+				//		case 2:
+				//			args[(int)StdExpMessageValues.Message] = "!flip";
+				//			command = "flip";
+				//			break;
+				//		case 3:
+				//			args[(int)StdExpMessageValues.Message] = "!color random";
+				//			command = "color";
+				//			break;
+				//		case 4:
+				//			command = "change";
+				//			var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
+				//			if (match2.Success)
+				//			{
+				//				var startPos = int.Parse(match2.Groups[2].Value);
+				//				var endPos = int.Parse(match2.Groups[3].Value);
+				//				args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
+				//				args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
+				//			}
+				//			else
+				//			{
+				//				args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
+				//				args[(int)StdExpMessageValues.Message] = "!change Kappa";
+				//			}
 
-							break;
-						default:
-							break;
-					}
+				//			break;
+				//		default:
+				//			break;
+				//	}
 
-					args[(int)StdExpMessageValues.UseName] = Utility.ConnectedPlayers.Keys.ElementAt(FP.Random.Int(Utility.ConnectedPlayers.Keys.Count));
-					var newCommand = commandBank[command].CreateNewSelf();
-					if (newCommand.CanExecute(args, out failMessage))
-						newCommand.Execute(args);
-					else
-						Console.WriteLine(failMessage);
-				}
-				else
-				{
-					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-					string failMessage;
-					var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-					if (!match2.Success)
-					{
-						args[(int)StdExpMessageValues.Emotes] = "44073:6-11";
-						args[(int)StdExpMessageValues.Message] = "!join cutFin";
-					}
-					else
-					{
-						var startPos = int.Parse(match2.Groups[2].Value);
-						var endPos = int.Parse(match2.Groups[3].Value);
-						args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":6-" + (6 + endPos - startPos);
-						args[(int)StdExpMessageValues.Message] = "!join " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
+				//args[(int)StdExpMessageValues.UseName] = Utility.ConnectedPlayers.Keys.ElementAt(FP.Random.Int(Utility.ConnectedPlayers.Keys.Count));
+				//var newCommand = commandBank[command].CreateNewSelf();
+				//if (newCommand.CanExecute(args, out failMessage))
+				//	newCommand.Execute(args);
+				//else
+				//	Console.WriteLine(failMessage);
+				//}
+				//else
+				//{
+				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+				//	string failMessage;
+				//	var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
+				//	if (!match2.Success)
+				//	{
+				//		args[(int)StdExpMessageValues.Emotes] = "44073:6-11";
+				//		args[(int)StdExpMessageValues.Message] = "!join cutFin";
+				//	}
+				//	else
+				//	{
+				//		var startPos = int.Parse(match2.Groups[2].Value);
+				//		var endPos = int.Parse(match2.Groups[3].Value);
+				//		args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":6-" + (6 + endPos - startPos);
+				//		args[(int)StdExpMessageValues.Message] = "!join " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
 
-					}
-					if (commandBank["join"].CanExecute(args, out failMessage))
-						commandBank["join"].Execute(args);
-				}
+				//	}
+				//	if (commandBank["join"].CanExecute(args, out failMessage))
+				//		commandBank["join"].Execute(args);
+				//}
 
 			}
-			//else if ((match = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
-			//{
-			//	Console.WriteLine("Parting");
-			//	if (match.Groups[2].Value == "PART")
-			//	{
-			//		var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-			//		string failMessage;
-			//		Command command;
-			//		if ((command = RetrieveNewCommandFromBank("part")) != null)
-			//		{
-			//			if ((command = commandBank["part"]).CanExecute(args, out failMessage))
-			//				command.Execute(args);
-			//		}
-			//	}
-			//}
+			else if ((match = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
+			{
+				Console.WriteLine("Parting");
+				if (match.Groups[2].Value == "PART")
+				{
+					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+					string failMessage;
+					Command command;
+					if ((command = RetrieveNewCommandFromBank("part")) != null)
+					{
+						if ((command = commandBank["part"]).CanExecute(args, out failMessage))
+							command.Execute(args);
+					}
+				}
+			}
 		}
 
 		public void SendMessageToServer(string message)
