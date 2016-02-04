@@ -17,6 +17,8 @@ namespace zeebs.metaData
 		public string ComEmoteHead;
 		public string ComEntityName;
 		public Point ComEntityPosition;
+		public long KillCount;
+
 		[JsonIgnore]
 		public Queue<zeebs.entities.ComEntityCommand> CommandQueue;
 

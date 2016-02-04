@@ -265,7 +265,8 @@ namespace Tankooni.IRC
 			}
 			else if ((match = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
 			{
-				Console.WriteLine("Parting");
+				if(Utility.MainConfig.IsDebug)
+					Console.WriteLine("Parting");
 				if (match.Groups[2].Value == "PART")
 				{
 					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
@@ -275,6 +276,8 @@ namespace Tankooni.IRC
 					{
 						if ((command = commandBank["part"]).CanExecute(args, out failMessage))
 							command.Execute(args);
+						if (Utility.MainConfig.IsDebug && !String.IsNullOrWhiteSpace(failMessage))
+							Console.WriteLine(failMessage);
 					}
 				}
 			}
@@ -286,11 +289,11 @@ namespace Tankooni.IRC
 				Irc.SendData("PRIVMSG", channel + " :" + message);
 		}
 
-		public void SendPriveMessageToServer(string user, string message)
-		{
-			if (Irc.Connected)
-				Irc.SendData("PRIVMSG", user + " : " + message);
-		}
+		//public void SendPriveMessageToServer(string user, string message)
+		//{
+		//	if (Irc.Connected)
+		//		Irc.SendData("PRIVMSG", user + " : " + message);
+		//}
 
 		public void SendCommand(string one, string two, string three)
 		{

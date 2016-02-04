@@ -17,8 +17,10 @@ namespace zeebs.entities.ComEntities.Commands
         string[] args;
         bool shouldLoop = true;
         bool isDone = false;
+		string failMessage;
 
-        public ComEntityLoop(ComEntity comEntity, List<Command> commands, string[] args, bool shouldLoop)
+
+		public ComEntityLoop(ComEntity comEntity, List<Command> commands, string[] args, bool shouldLoop)
 			: base(comEntity)
 		{
 			this.commands = commands;
@@ -41,7 +43,11 @@ namespace zeebs.entities.ComEntities.Commands
             }
 
 			foreach ( Command command in commands ) {
-                command.Execute(args);
+				
+				if (command.CanExecute(args, out failMessage))
+				{
+					command.Execute(args);
+				}
             }
             if (shouldLoop)
             {

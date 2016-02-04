@@ -49,7 +49,7 @@ namespace zeebs
 			SoundManager.Init(0.7f);
 			//SoundManager.Init(0);
 			//FP.World = new DynamicSceneWorld();
-			FP.World = new StartScreenWorld();
+			FP.World = new StartScreenWorld(Utility.Twitchy);
 
 			Utility.Twitchy.Connect(Utility.MainConfig.Channel);
 			//Utility.Twitchy.Connect("#tankooni");

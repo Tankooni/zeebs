@@ -25,10 +25,10 @@ namespace zeebs.utils.commands
                 failMessage = "Not part of game";
                 return false;
             }
-            var match = Regex.Match(args[(int)StdExpMessageValues.Message], @"\!moved\s+([udlr]+)");
+            var match = Regex.Match(args[(int)StdExpMessageValues.Message], @"\!moved\s+([udlrwasd123456789]+)");
             if (!match.Success)
             {
-                failMessage = "Invalid format. Plese use !move <x_integer> <y_integer>";
+                failMessage = "Invalid format. Plese use !moved <uldr wasd 48627913";
                 return false;
             }
 
@@ -50,11 +50,22 @@ namespace zeebs.utils.commands
 
             foreach( char c in movestr ) {
                 switch (c) {
-                    case 'u': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
-                    case 'd': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
-                    case 'l': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
-                    case 'r': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 30, 0); break;
-                    default: break;
+					case 'u': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case 'd': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case 'l': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case 'r': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 30, 0); break;
+					case 'w': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case 's': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case 'a': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case '8': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case '2': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case '4': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case '6': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 30, 0); break;
+					case '7': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -21, -21); break;
+					case '9': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 21, -21); break;
+					case '1': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -21, 21); break;
+					case '3': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 21, 21); break;
+					default: break;
                 }
             }
         }
