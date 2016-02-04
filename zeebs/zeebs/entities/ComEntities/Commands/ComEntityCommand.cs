@@ -16,6 +16,11 @@ namespace zeebs.entities
 			this.comEntity = comEntity;
 		}
 
+		public virtual void Init()
+		{
+
+		}
+
 		public virtual bool IsDone()
 		{
 			return true;

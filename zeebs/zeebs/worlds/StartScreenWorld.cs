@@ -29,9 +29,12 @@ namespace zeebs
 		private readonly Grid nodeGrid;
 		private readonly Entity nodeGridEntity;
 
-		public StartScreenWorld()
+		public TwitchInterface twitchy;
+
+		public StartScreenWorld(TwitchInterface twitchInterface)
 		{
-			if(Utility.MainConfig.UseBackgroundImage)
+			twitchy = twitchInterface;
+			if (Utility.MainConfig.UseBackgroundImage)
 				AddGraphic(new Image(Library.GetTexture("content/Background.png")));
 
 			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
@@ -44,6 +47,9 @@ namespace zeebs
             AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
             AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
+
+			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
+
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
 			start.Y = (FP.Height / 3) + 25;
@@ -76,8 +82,6 @@ namespace zeebs
 
 			//}, "MetaData");
 		}
-
-		public AnimatedEntity mine;
 
 		public void DoEmote(object[] args)
 		{
@@ -119,17 +123,16 @@ namespace zeebs
 			string emoteName = (string)args[1];
 			string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
+			int dX;
+			int dY;
+			do
+			{
+				dX = FP.Random.Int(0, FP.Width);
+				dY = FP.Random.Int(0, FP.Height);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+
 			if (!File.Exists(pathName))
 			{
-				int dX;
-				int dY;
-				do
-				{
-					dX = FP.Random.Int(0, FP.Width);
-					dY = FP.Random.Int(0, FP.Height);
-				} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
-
-
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
@@ -146,6 +149,7 @@ namespace zeebs
 			{
 				userData = JsonLoader.Load<TwitchUserComEntityData>(pathName, false);
 				userData.ComEmoteHead = emoteName;
+				userData.ComEntityPosition = new Point(dX, dY);
 			}
 
 			var newPlayer = new ComEntity(userData);
@@ -217,6 +221,13 @@ namespace zeebs
 			player.QueueCommand(new ComEntityChangeColor(player, (string)args[1]));
 		}
 
+		public void DoPlayerKillPlayer(object[] args)
+		{
+			var kills = (++Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount);
+			twitchy.SendMessageToServer(String.Format("{1} has destroyed {0}, {1} has {2} kills", args[1], args[0], kills));
+			DoPartGame(args);
+		}
+
 		public override void Update()
 		{
 			base.Update();
@@ -238,6 +249,11 @@ namespace zeebs
 
 				//            if (Keyboard.Space.Pressed)
 				//                FP.World = new InstructionsScreenWorld();
+		}
+
+		public enum WorldMessages
+		{
+			PlayerKilledPlayer
 		}
 	}
 }

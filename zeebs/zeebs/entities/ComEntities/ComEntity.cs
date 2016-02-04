@@ -81,6 +81,7 @@ namespace zeebs.entities
 			while (commands.Count != 0)
 			{
 				var command = commands.Peek();
+				command.Init();
 				while (!command.IsDone())
 				{
 					yield return command.Update();
@@ -95,31 +96,16 @@ namespace zeebs.entities
 			if (userName == TwitchUserComEntityData.TwitchUserName)
 				return;
 			ComEntity attacker = (ComEntity)args[1];
-			var Disctance = FP.Distance(X, Y, attacker.X, attacker.Y);
-
-
-
-
+			
 			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 40)
 			{
 				if (TwitchUserComEntityData.CommandQueue.Count != 0)
-				{
-					var command = TwitchUserComEntityData.CommandQueue.Peek();
-					if (command != null)
-						command.Interrupt();
-				}
+					TwitchUserComEntityData.CommandQueue.Peek().Interrupt();
 				TwitchUserComEntityData.CommandQueue.Clear();
 				if(coHostCommands.Running)
 					coHostCommands.StopAll();
-
-				var hitVector = new Point(X - attacker.X, Y - attacker.Y).Normalized();
-
-				hitVector = hitVector * 80;
-
 				//hitVector
-
-				var moveTo = new Point(X, Y) + hitVector;
-				QueueCommand(new ComEntityMoveTo(this, moveTo));
+				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * 80), userName));
 			}
 		}
 	}

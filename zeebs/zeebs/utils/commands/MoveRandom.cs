@@ -27,9 +27,6 @@ namespace zeebs.utils.commands
                 return false;
             }
 
-			;
-
-
 			do
 			{
 				dX = FP.Random.Int(0, FP.Width);
@@ -43,7 +40,6 @@ namespace zeebs.utils.commands
 
         public override void Execute(string[] args)
         {
-			
             FP.World.BroadcastMessage(Move.MoveMessage.Move, args[(int)StdExpMessageValues.UseName], dX, dY);
         }
 
