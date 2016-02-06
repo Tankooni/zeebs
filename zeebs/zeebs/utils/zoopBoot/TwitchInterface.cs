@@ -15,7 +15,8 @@ namespace Tankooni.IRC
 	public enum RegexTypes
 	{
 		StdExpMessage,
-		StdPartMessage
+		StdPartMessage,
+		AllCommands
 	}
 
 	public enum StdExpMessageValues : int
@@ -39,7 +40,7 @@ namespace Tankooni.IRC
 
 	public class TwitchInterface
 	{
-        public static TwitchInterface MasterTwitchInterface;
+		public static TwitchInterface MasterTwitchInterface;
 		IRC Irc;
 		Thread IrcThread;
 		string channel;
@@ -50,7 +51,7 @@ namespace Tankooni.IRC
 		public bool IsDebug;
 		public bool IsOfflineMode;
 
-		Dictionary<RegexTypes, Regex> regExers = new Dictionary<RegexTypes, Regex>
+		public static Dictionary<RegexTypes, Regex> regExers = new Dictionary<RegexTypes, Regex>
 		{
 			{
 				RegexTypes.StdExpMessage,
@@ -59,10 +60,14 @@ namespace Tankooni.IRC
 			{
 				RegexTypes.StdPartMessage,
 				new Regex(@":([\w\W]+)\!(?:[\w\s\S]+)(?:[\w\W\s])\.tmi\.twitch\.tv\s(PART)\s#([\w\s]+)")
+			},
+			{
+				RegexTypes.AllCommands,
+				new Regex(@"\!(\w+)\s*([^\!]*)")
 			}
 		};
 
-		public static Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
+		public Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
 		public Command RetrieveNewCommandFromBank(string commandName)
 		{
 			Command command;
@@ -73,7 +78,7 @@ namespace Tankooni.IRC
 
 		public TwitchInterface(string nickName, string oauth, bool isDebug = false, bool isOfflineMode = false)
 		{
-            MasterTwitchInterface = this;
+			MasterTwitchInterface = this;
 			IsDebug = isDebug;
 			IsOfflineMode = isOfflineMode;
 			this.nickName = nickName;
@@ -88,7 +93,7 @@ namespace Tankooni.IRC
 			else
 				if (isDebug) Console.WriteLine("Offline Mode enabled");
 
-			foreach(var commandType in Tankooni.Utility.GetTypeFromAllAssemblies<Command>())
+			foreach (var commandType in Tankooni.Utility.GetTypeFromAllAssemblies<Command>())
 			{
 				if (commandType.IsAbstract)
 					continue;
@@ -108,6 +113,11 @@ namespace Tankooni.IRC
 		}
 
 		//public void SpoofMessage(string )
+
+		public void RunCommand(Command command)
+		{
+
+		}
 
 		public void OmgImSoPopular(string message)
 		{

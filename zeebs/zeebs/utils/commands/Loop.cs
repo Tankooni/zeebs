@@ -47,11 +47,10 @@ namespace zeebs.utils.commands
                     return false;
                 }
 
-                //get the commands
-                Command command;
-                if (TwitchInterface.commandBank.TryGetValue(commandStr.ToLower(), out command))
+				//get the commands
+				Command command;
+                if ((command = TwitchInterface.MasterTwitchInterface.RetrieveNewCommandFromBank(commandStr)) != null)
                 {
-                    command = command.CreateNewSelf();
                     string[] localArgs = (string[])args.Clone();
                     localArgs[(int)StdExpMessageValues.Message] = match.Groups[0].ToString();
                     string localFailMessage;
@@ -64,9 +63,6 @@ namespace zeebs.utils.commands
                         {
                             TwitchInterface.MasterTwitchInterface.SendMessageToServer("@" + args[1] + ": " + localFailMessage);
                         }
-
-                        failMessage = "";
-                        return false;
                     }
                 }
             }
