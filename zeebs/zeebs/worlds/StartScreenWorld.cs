@@ -223,8 +223,10 @@ namespace zeebs
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			var kills = (++Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount);
-			twitchy.SendMessageToServer(String.Format("{1} has destroyed {0}, {1} has {2} kills", args[1], args[0], kills));
+			var kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount);
+			if (args[1] != args[0])
+				kills++;
+			twitchy.SendMessageToServer(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
 		}
 

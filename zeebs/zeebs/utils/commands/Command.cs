@@ -8,6 +8,12 @@ namespace zeebs.utils.commands
 {
 	public abstract class Command
 	{
+		List<Command> commands;
+		public Command(List<Command> commands)
+		{
+			this.commands = commands;
+		}
+		
 		public string CommandName;
 
 		public virtual bool CanExecute(string[] args, out string failMessage)
