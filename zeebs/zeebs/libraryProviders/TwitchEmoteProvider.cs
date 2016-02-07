@@ -25,6 +25,7 @@ namespace Indigo.Content
 
 		public override void Precache(Library.ILibraryInternal library)
 		{
+			LoadRobots(library);
 			LoadGlobalSet(library);
 			LoadSubscriberSet(library);
 		}
@@ -52,6 +53,33 @@ namespace Indigo.Content
 		{
 			return filename.StartsWith("twitch//") && FromFilename(filename) != null;
 		}
+		
+		private void LoadRobots(Library.ILibraryInternal library)
+		{
+			string json = null;
+			if (Library.FolderExists("content/twitchcache"))
+			{
+				var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "robots");
+				if (Library.FileExists(qualifiedFilename))
+					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+			}
+			
+			if (json == null)
+				throw new Exception("Can't find robots!");
+			
+			var robots = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+			if (robots == null)
+				throw new Exception("Failed to create robot dictionary");
+			
+			foreach (var pair in robots)
+			{
+				try {
+					AddEmote(pair.Key, pair.Value, library);
+				} catch (Exception) {
+					FP.Log("Failed to load robot", pair.Key);
+				}
+			}
+		}
 
 		private void LoadGlobalSet(Library.ILibraryInternal library)
 		{
@@ -66,6 +94,8 @@ namespace Indigo.Content
 			if (json == null)
 			{
 				json = client.DownloadString(string.Format("http://twitchemotes.com/api_cache/v2/{0}.json", "global"));
+				Directory.CreateDirectory("content/twitchcache");
+				File.WriteAllText(string.Format("content/twitchcache/{0}.json", "global"), json);
 			}
 
 			var api = Newtonsoft.Json.JsonConvert.DeserializeObject<GlobalEmoteAPI>(json);
@@ -96,6 +126,8 @@ namespace Indigo.Content
 			if (json == null)
 			{
 				json = client.DownloadString(string.Format("http://twitchemotes.com/api_cache/v2/{0}.json", "subscriber"));
+				Directory.CreateDirectory("content/twitchcache");
+				File.WriteAllText(string.Format("content/twitchcache/{0}.json", "subscriber"), json);
 			}
 
 			subscriberEmotes = Newtonsoft.Json.JsonConvert.DeserializeObject<SubscriberEmoteAPI>(json);
@@ -129,6 +161,39 @@ namespace Indigo.Content
 				
 				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
 			}
+
+			library.AddTexture(string.Format("twitch//{0}", emoteName), new MemoryStream(data, false));
+			loadedEmotes.Add(emoteName);
+		}
+		
+		private void AddEmote(string emoteName, string path, Library.ILibraryInternal library)
+		{
+			if (loadedEmotes.Contains(emoteName))
+				return;
+
+			byte[] data = null;
+
+			if (Library.FolderExists("content/twitchcache"))
+			{
+				var qualifiedFilename = string.Format("content/twitchcache/{0}", path);
+				if (Library.FileExists(qualifiedFilename))
+					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
+			}
+			
+//			if(data == null)
+//			{
+//				data = client.DownloadData(string.Format("http://static-cdn.jtvnw.net/emoticons//v1/{0}/1.0", image_id));
+//				var folder = Library.GetFolderName("content/twitchcache");
+//				MemoryStream stream = new MemoryStream();
+//				using (MagickImage mImage = new MagickImage(data))
+//				{
+//					mImage.Format = MagickFormat.Png32;
+//					mImage.Write(stream);
+//					stream.Position = 0;
+//				}
+//				
+//				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
+//			}
 
 			library.AddTexture(string.Format("twitch//{0}", emoteName), new MemoryStream(data, false));
 			loadedEmotes.Add(emoteName);
