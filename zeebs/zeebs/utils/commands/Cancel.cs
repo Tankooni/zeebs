@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
@@ -11,11 +10,11 @@ using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
-    class Spin : Command
-    {
-        public Spin()
+	class Cancel : Command
+	{
+		public Cancel()
 		{
-			CommandName = "spin";
+			CommandName = "cancel";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -25,23 +24,22 @@ namespace zeebs.utils.commands
 				FailReasonMessage = "Not part of game";
 				return false;
 			}
-			
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(SpinMessage.Spin, Args[(int)StdExpMessageValues.UseName]);
+			FP.World.BroadcastMessage(CancelMessage.Cancel, Args[(int)StdExpMessageValues.UseName]);
 		}
 
-        public override Command CreateNewSelf()
-        {
-            return new Spin();
-        }
+		public override Command CreateNewSelf()
+		{
+			return new Flip();
+		}
 
-        public enum SpinMessage
-        {
-            Spin
-        }
-    }
+		public enum CancelMessage
+		{
+			Cancel
+		}
+	}
 }

@@ -9,13 +9,17 @@ using System.Text.RegularExpressions;
 using zeebs.utils.commands;
 using Tankooni;
 using Indigo;
+using System.Collections.Concurrent;
+using zeebs.utils.zoopBoot;
 
 namespace Tankooni.IRC
 {
 	public enum RegexTypes
 	{
 		StdExpMessage,
-		StdPartMessage
+		StdPartMessage,
+		AllCommands,
+		EmoteData
 	}
 
 	public enum StdExpMessageValues : int
@@ -39,15 +43,21 @@ namespace Tankooni.IRC
 
 	public class TwitchInterface
 	{
-        public static TwitchInterface MasterTwitchInterface;
+		public static TwitchInterface MasterTwitchInterface;
 		IRC Irc;
 		Thread IrcThread;
+		Thread PubChatOut;
 		string channel;
 		string nickName;
 		string oauth;
 		float messageOutRate = (30.0f / 100.0f);
 
-		Dictionary<RegexTypes, Regex> regExers = new Dictionary<RegexTypes, Regex>
+		public bool IsDebug;
+		public bool IsOfflineMode;
+
+		public ConcurrentQueue<string> PublicChatQueue = new ConcurrentQueue<string>();
+
+		public static Dictionary<RegexTypes, Regex> regExers = new Dictionary<RegexTypes, Regex>
 		{
 			{
 				RegexTypes.StdExpMessage,
@@ -56,10 +66,18 @@ namespace Tankooni.IRC
 			{
 				RegexTypes.StdPartMessage,
 				new Regex(@":([\w\W]+)\!(?:[\w\s\S]+)(?:[\w\W\s])\.tmi\.twitch\.tv\s(PART)\s#([\w\s]+)")
+			},
+			{
+				RegexTypes.AllCommands,
+				new Regex(@"\!(\w+)\s*([^\!]*)")
+			},
+			{
+				RegexTypes.EmoteData,
+				new Regex(@"(\d+):(\d+)-(\d+)")
 			}
 		};
 
-		public static Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
+		public Dictionary<string, Command> commandBank = new Dictionary<string, Command>();
 		public Command RetrieveNewCommandFromBank(string commandName)
 		{
 			Command command;
@@ -68,17 +86,27 @@ namespace Tankooni.IRC
 			return command.CreateNewSelf();
 		}
 
-		public TwitchInterface(string nickName, string oauth)
+		public TwitchInterface(string nickName, string oauth, bool isDebug = false, bool isOfflineMode = false)
 		{
-            MasterTwitchInterface = this;
+			MasterTwitchInterface = this;
+			IsDebug = isDebug;
+			IsOfflineMode = isOfflineMode;
 			this.nickName = nickName;
 			this.oauth = oauth;
-			IrcThread = new Thread(() => { while (true) { Irc.Update(); Thread.Sleep(10); } });
-			IrcThread.IsBackground = true;
-			Irc = new IRC("irc.twitch.tv", 6667, nickName, oauth);
-			Irc.CommandReceiveCallBack = OmgImSoPopular;
+			if (!isOfflineMode)
+			{
+				IrcThread = new Thread(() => { while (true) { Irc.Update(); Thread.Sleep(10); } });
+				IrcThread.IsBackground = true;
+				Irc = new IRC("irc.twitch.tv", 6667, nickName, oauth, isDebug);
+				Irc.CommandReceiveCallBack = OmgImSoPopular;
 
-			foreach(var commandType in Tankooni.Utility.GetTypeFromAllAssemblies<Command>())
+				PubChatOut = new Thread(() => { while (true) { PublicChatMessageQueueDoer(); Thread.Sleep(100); } });
+				PubChatOut.IsBackground = true;
+			}
+			else
+				if (isDebug) Console.WriteLine("Offline Mode enabled");
+
+			foreach (var commandType in Tankooni.Utility.GetTypeFromAllAssemblies<Command>())
 			{
 				if (commandType.IsAbstract)
 					continue;
@@ -95,116 +123,163 @@ namespace Tankooni.IRC
 			Irc.Connect();
 			Irc.Join(channel);
 			IrcThread.Start();
+			PubChatOut.Start();
+		}
+
+		//public void SpoofMessage(string )
+
+		public void RunCommand(Command command)
+		{
+
 		}
 
 		public void OmgImSoPopular(string message)
 		{
-			Match match = regExers[RegexTypes.StdExpMessage].Match(message);
-			if (match.Success)
+			Match messageMatch = regExers[RegexTypes.StdExpMessage].Match(message);
+			if (messageMatch.Success)
 			{
-				if (match.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
+				if (messageMatch.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
 				{
-					var maybeCommand = Regex.Match(match.Groups[(int)StdExpMessageValues.Message].Value, @"\!(\w+)\s*").Groups[1].Value;
-					Command command;
-					if ((command = RetrieveNewCommandFromBank(maybeCommand)) != null)
+					var allPotentialCommandMatches = regExers[RegexTypes.AllCommands].Matches(messageMatch.Groups[(int)StdExpMessageValues.Message].Value);
+					var allEmotes = regExers[RegexTypes.EmoteData].Matches(messageMatch.Groups[(int)StdExpMessageValues.Emotes].Value);
+					var emoteQueue = new Queue<Emote>();
+					foreach (Match emote in allEmotes)
+						emoteQueue.Enqueue(new Emote(emote.Groups[1].Value, int.Parse(emote.Groups[2].Value), int.Parse(emote.Groups[3].Value)));
+					var args = messageMatch.Groups.Cast<Group>().Select(x => x.Value).ToArray();
+					bool greedIsPresent = false;
+					List<Command> commandsToQueue = new List<Command>();
+					Command firstFailedCommand = null;
+					HashSet<string> failedCommandNames = new HashSet<string>();
+					List<Command> hoardedCommands = new List<Command>();
+
+					int currentCommandStartPosition = 0;
+
+					foreach (Match potentialCommand in allPotentialCommandMatches)
 					{
-						var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-						string failMessage;
-						if (command.CanExecute(args, out failMessage))
-							command.Execute(args);
-						if (!String.IsNullOrWhiteSpace(failMessage))
+						Command newCommand = RetrieveNewCommandFromBank(potentialCommand.Groups[1].Value);
+						if (newCommand == null)
 						{
-							SendMessageToServer("@" + args[(int)StdExpMessageValues.UseName] + ": " + failMessage);
+							currentCommandStartPosition += potentialCommand.Value.Length;
+							while (emoteQueue.Count > 0 && emoteQueue.Peek().StartPos < currentCommandStartPosition)
+								emoteQueue.Dequeue();
+							
+							continue;
 						}
+
+						var commandParamStartPos = currentCommandStartPosition + potentialCommand.Groups[1].Value.Length + 2;
+						currentCommandStartPosition += potentialCommand.Value.Length;
+						var emoteList = new List<Emote>();
+						while (emoteQueue.Count > 0 && emoteQueue.Peek().StartPos < currentCommandStartPosition)
+						{
+							var emote = emoteQueue.Dequeue();
+							emote.StartPos -= commandParamStartPos;
+							emote.EndPos -= commandParamStartPos;
+							emoteList.Add(emote);
+						}
+
+						if (newCommand.CanExecute(args, potentialCommand.Groups[2].Value, emoteList))
+						{
+							if (!greedIsPresent)
+								commandsToQueue.Add(newCommand);
+							else
+								hoardedCommands.Add(newCommand);
+
+							if (!greedIsPresent && newCommand.IsGreedy())
+								greedIsPresent = true;
+						}
+
+						if (!String.IsNullOrWhiteSpace(newCommand.FailReasonMessage))
+						{
+							if (firstFailedCommand == null)
+								firstFailedCommand = newCommand;
+							if (!failedCommandNames.Contains("!" + newCommand.CommandName))
+								failedCommandNames.Add("!" + newCommand.CommandName);
+						}
+							//QueuePublicChatMessage("@" + args[(int)StdExpMessageValues.UseName] + ": " + newCommand.FailReasonMessage);
 					}
+
+					if (firstFailedCommand != null)
+					{
+						string failMessage = "@" + args[(int)StdExpMessageValues.UseName] + ": ";
+						if(failedCommandNames.Count() > 1)
+						{
+							failMessage += "First Fail Message: " + firstFailedCommand.FailReasonMessage;
+							failMessage += ", as well as the following commands; " + String.Join(", ", failedCommandNames);
+						}
+						else
+						{
+							failMessage += firstFailedCommand.FailReasonMessage;
+						}
+						QueuePublicChatMessage(failMessage);
+						return;
+					}
+
+					foreach (var commandToExecute in commandsToQueue)
+					{
+						if (commandToExecute.IsGreedy())
+							commandToExecute.SetCommandList(hoardedCommands);
+						commandToExecute.Execute();
+					}
+
 				}
-
-				//For stress testing
-				//if (Utility.ConnectedPlayers.ContainsKey(match.Groups[(int)StdExpMessageValues.UseName].Value))
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//	string failMessage;
-				//	args[(int)StdExpMessageValues.Message] = "!move " + FP.Random.Int(FP.Width) + " " + FP.Random.Int(FP.Height);
-				//	var newCommand = commandBank["move"].CreateNewSelf();
-				//	if (newCommand.CanExecute(args, out failMessage))
-				//		newCommand.Execute(args);
-				//	else
-				//		Console.WriteLine(failMessage);
-				//}
-				//else if(Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//	string failMessage;
-				//	args[(int)StdExpMessageValues.Message] = "!move " + FP.Random.Int(FP.Width) + " " + FP.Random.Int(FP.Height);
-				//	args[(int)StdExpMessageValues.UseName] = Utility.ConnectedPlayers.Keys.ElementAt(FP.Random.Int(Utility.ConnectedPlayers.Keys.Count));
-				//	var newCommand = commandBank["move"].CreateNewSelf();
-				//	if (newCommand.CanExecute(args, out failMessage))
-				//		newCommand.Execute(args);
-				//	else
-				//		Console.WriteLine(failMessage);
-				//}
-				//else
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//	string failMessage;
-				//	var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-				//	if (!match2.Success)
-				//	{
-				//		args[(int)StdExpMessageValues.Emotes] = "44073:6-11";
-				//		args[(int)StdExpMessageValues.Message] = "!join cutFin";
-				//	}
-				//	else
-				//	{
-				//		var startPos = int.Parse(match2.Groups[2].Value);
-				//		var endPos = int.Parse(match2.Groups[3].Value);
-				//		args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":6-" + (6 + endPos - startPos);
-				//		args[(int)StdExpMessageValues.Message] = "!join " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-
-				//	}
-				//	if (commandBank["join"].CanExecute(args, out failMessage))
-				//		commandBank["join"].Execute(args);
-				//}
-
 			}
-			else if ((match = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
+			else if ((messageMatch = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
 			{
-				Console.WriteLine("Parting");
-				if (match.Groups[2].Value == "PART")
+				if(Utility.MainConfig.IsDebug)
+					Console.WriteLine("Parting");
+				if (messageMatch.Groups[2].Value == "PART")
 				{
-					var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-					string failMessage;
+					var args = messageMatch.Groups.Cast<Group>().Select(x => x.Value).ToArray();
 					Command command;
 					if ((command = RetrieveNewCommandFromBank("part")) != null)
 					{
-						if ((command = commandBank["part"]).CanExecute(args, out failMessage))
-							command.Execute(args);
+						if ((command = commandBank["part"]).CanExecute(args, "", null))
+							command.Execute();
+						if (Utility.MainConfig.IsDebug && !String.IsNullOrWhiteSpace(command.FailReasonMessage))
+							Console.WriteLine(command.FailReasonMessage);
 					}
 				}
 			}
 		}
 
-		public void SendMessageToServer(string message)
+		public void QueuePublicChatMessage(string message)
+		{
+			PublicChatQueue.Enqueue(message);
+		}
+
+		public void PublicChatMessageQueueDoer()
+		{
+			string message;
+			if (PublicChatQueue.TryDequeue(out message))
+			{
+				if (!Utility.MainConfig.IsOfflineMode)
+					SendMessageToServer(message);
+				else
+					Console.WriteLine(message);
+			}
+		}
+
+		protected void SendMessageToServer(string message)
 		{
 			if (Irc.Connected && !Utility.MainConfig.PreventBotTalking)
 				Irc.SendData("PRIVMSG", channel + " :" + message);
 		}
 
-		public void SendPriveMessageToServer(string user, string message)
-		{
-			if (Irc.Connected)
-				Irc.SendData("PRIVMSG", user + " : " + message);
-		}
+		//public void SendPriveMessageToServer(string user, string message)
+		//{
+		//	if (Irc.Connected)
+		//		Irc.SendData("PRIVMSG", user + " : " + message);
+		//}
 
 		public void SendCommand(string one, string two, string three)
 		{
 			Irc.SendData(one, two + " :" + three);
 		}
 
-		//public void 
-
 		public void CloseConnection()
 		{
 			IrcThread.Abort();
+			PubChatOut.Abort();
 			Irc.Close();
 		}
 	}

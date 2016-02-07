@@ -12,34 +12,31 @@ namespace zeebs.entities
 {
 	public class ComEntityMoveTo : ComEntityCommand
 	{
-		Point moveTo;
-		public ComEntityMoveTo(ComEntity comEntity, Point moveTo)
+		bool isKill = false;
+		protected Point moveTo;
+		string moverUserName;
+		public ComEntityMoveTo(ComEntity comEntity, Point moveTo, string moverUserName = null)
 			: base(comEntity)
-		{
-			if (moveTo.X > FP.Width)
-				moveTo.X = FP.Width;
-			else if (moveTo.X < 0)
-				moveTo.X = 0;
-			if (moveTo.Y > FP.Height)
-				moveTo.Y = FP.Height;
-			else if (moveTo.Y < 0)
-				moveTo.Y = 0;
-			
-			
+		{			
 			this.moveTo = moveTo;
+			this.moverUserName = moverUserName;
 		}
 
 		public override bool IsDone()
 		{
-			return FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y) < 1;
+			return isKill || FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y) < 1;
 		}
 
 		public override IEnumerator Update()
 		{
+
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.X, moveTo.X);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.Y, moveTo.Y);
-			//if (comEntity.emitter != null)
-			//	comEntity.emitter.Emit("trail", comEntity.X, comEntity.Y);
+			if(FP.World.CollidePoint("ClickMap", comEntity.X, comEntity.Y) == null)
+			{
+				isKill = true;
+				FP.World.BroadcastMessage(StartScreenWorld.WorldMessages.PlayerKilledPlayer, comEntity.TwitchUserComEntityData.TwitchUserName, moverUserName ?? comEntity.TwitchUserComEntityData.TwitchUserName);
+			}
 			yield return null;
 		}
 	}

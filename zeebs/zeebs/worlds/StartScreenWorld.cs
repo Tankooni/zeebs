@@ -29,11 +29,14 @@ namespace zeebs
 		private readonly Grid nodeGrid;
 		private readonly Entity nodeGridEntity;
 
-		public StartScreenWorld()
-		{
-			AddGraphic(new Image(Library.GetTexture("content/Background.png")));
+		public TwitchInterface twitchy;
 
-			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
+		public StartScreenWorld(TwitchInterface twitchInterface)
+		{
+			twitchy = twitchInterface;
+			if (Utility.MainConfig.UseBackgroundImage)
+				AddGraphic(new Image(Library.GetTexture("content/Background.png")));
+			
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
@@ -42,7 +45,11 @@ namespace zeebs
 			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
             AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
-            AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
+			AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
+			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
+
+			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
+
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
 			start.Y = (FP.Height / 3) + 25;
@@ -76,65 +83,28 @@ namespace zeebs
 			//}, "MetaData");
 		}
 
-		public AnimatedEntity mine;
-
-		public void DoEmote(object[] args)
-		{
-			//switch (FP.Random.Int(1))
-			//{
-			//	case 0:
-			//		mine = Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		mine.SetAlpha(0.5f);
-			//		break;
-			//	case 1:
-			//		mine = Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	case 2:
-			//		mine = Add(new AnimatedEntity("TheFuck", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	case 3:
-			//		mine = Add(new AnimatedEntity("Ko", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	default:
-			//		break;
-			//}
-			 //if()
-			 //	Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			 //else
-			 //	Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			 //var g = AddGraphic(new Image(Library.GetTexture("twitch//" + args[0])));
-			 //g.CenterOrigin();
-			 //g.X = FP.Random.Float(FP.Width);
-			 //g.Y = FP.Random.Float(FP.Height);
-			 //var image = g.GetComponent<Image>();
-			 //image.ScaleX = 24.0f / image.Width;
-			 //image.ScaleY = 24.0f / image.Height;
-
-		}
-
 		public void DoJoinGame(object[] args)
 		{
 			string userName = (string)args[0];
 			string emoteName = (string)args[1];
 			string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
+			int dX;
+			int dY;
+			do
+			{
+				dX = FP.Random.Int(0, FP.Width);
+				dY = FP.Random.Int(0, FP.Height);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+
 			if (!File.Exists(pathName))
 			{
-				int dX;
-				int dY;
-				do
-				{
-					dX = FP.Random.Int(0, FP.Width);
-					dY = FP.Random.Int(0, FP.Height);
-				} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
-
-
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
 					TwitchUserColor = (string)args[2],
 					ComEmoteHead = emoteName,
-					ComEntityName = Utility.MainConfig.DefaultBody ?? "Navi",
+					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
@@ -145,6 +115,7 @@ namespace zeebs
 			{
 				userData = JsonLoader.Load<TwitchUserComEntityData>(pathName, false);
 				userData.ComEmoteHead = emoteName;
+				userData.ComEntityPosition = new Point(dX, dY);
 			}
 
 			var newPlayer = new ComEntity(userData);
@@ -154,7 +125,8 @@ namespace zeebs
 
 		public void DoChangeEmote(object[] args)
 		{
-			Utility.ConnectedPlayers[(string)args[0]].ChangeHead((string)args[1]);
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1]));
 		}
 
 		public void DoPartGame(object[] args)
@@ -183,12 +155,8 @@ namespace zeebs
 
         public void DoLoop(object[] args)
         {
-            string[] realArgs = (string[])args[0];
-            List<Command> commands = (List<Command>)args[1];
-            bool shouldLoop = (bool)args[2];
-
-            var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
-            player.QueueCommand(new ComEntityLoop(player, commands, realArgs, shouldLoop));
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityLoop(player, (List<Command>)args[2], (string[])args[1]));
         }
 
         public void DoSpinZeeb(object[] args)
@@ -216,6 +184,21 @@ namespace zeebs
 			player.QueueCommand(new ComEntityChangeColor(player, (string)args[1]));
 		}
 
+		public void DoPlayerKillPlayer(object[] args)
+		{
+			long kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+			if (args[1] != args[0])
+				kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount++;
+			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
+			DoPartGame(args);
+		}
+
+		public void DoCancelCommands(object[] args)
+		{
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.Interrupt();
+		}
+
 		public override void Update()
 		{
 			base.Update();
@@ -237,6 +220,11 @@ namespace zeebs
 
 				//            if (Keyboard.Space.Pressed)
 				//                FP.World = new InstructionsScreenWorld();
+		}
+
+		public enum WorldMessages
+		{
+			PlayerKilledPlayer
 		}
 	}
 }

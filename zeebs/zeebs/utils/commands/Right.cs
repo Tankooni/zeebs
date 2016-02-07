@@ -11,12 +11,13 @@ using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
-    class Spin : Command
-    {
-        public Spin()
+	class Right : Command
+	{
+		public Right()
 		{
-			CommandName = "spin";
+			CommandName = "right";
 		}
+
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
@@ -25,23 +26,18 @@ namespace zeebs.utils.commands
 				FailReasonMessage = "Not part of game";
 				return false;
 			}
-			
+
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(SpinMessage.Spin, Args[(int)StdExpMessageValues.UseName]);
+			FP.World.BroadcastMessage(MoveD.MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 30, 0);
 		}
 
-        public override Command CreateNewSelf()
-        {
-            return new Spin();
-        }
-
-        public enum SpinMessage
-        {
-            Spin
-        }
-    }
+		public override Command CreateNewSelf()
+		{
+			return new Right();
+		}
+	}
 }

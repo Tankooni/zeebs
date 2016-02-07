@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -18,18 +19,19 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "color";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Not part of game";
+				FailReasonMessage = "Not part of game";
 				return false;
 			}
 
-			var match = Regex.Match(args[(int)StdExpMessageValues.Message], "#?([A-Fa-f0-9]{6}|random)");
+			var match = Regex.Match(commandParams, "#?([A-Fa-f0-9]{6}|random)");
 			if(!match.Success)
 			{
-				failMessage = "Color in wrong format. Use Hex RRGGBB format or the word random";
+				FailReasonMessage = "Color in wrong format. Use Hex RRGGBB format or the word random";
 				return false;
 			}
 			if(match.Groups[1].Value == "random")
@@ -37,13 +39,12 @@ namespace zeebs.utils.commands
 			else
 				color = match.Groups[1].Value;
 
-			failMessage = "";
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override void Execute()
 		{
-			FP.World.BroadcastMessage(ChangeColorMessage.ChangeColor, args[(int)StdExpMessageValues.UseName], color);
+			FP.World.BroadcastMessage(ChangeColorMessage.ChangeColor, Args[(int)StdExpMessageValues.UseName], color);
 		}
 
 		public override Command CreateNewSelf()

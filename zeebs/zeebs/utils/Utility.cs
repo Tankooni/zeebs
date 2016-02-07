@@ -87,8 +87,12 @@ namespace Tankooni
 		public string BotUser { get; set; }
 		public string Oauth { get; set; }
 		public string Channel { get; set; }
-		public string DefaultBody { get; internal set; }
+		public string DefaultBody { get; set; }
 		public bool PreventBotTalking { get; set; }
+		public bool IsDebug { get; set; }
+		public bool IsOfflineMode { get; set; }
+		public string BackgroundColor { get; set; }
+		public bool UseBackgroundImage { get; set; }
 
 		public static string MainConfigPath
 		{
@@ -107,9 +111,14 @@ namespace Tankooni
 				CurrentMusic = "",
 				MaxPlayers = 500,
 				Oauth = "",
-				Channel ="#",
+				Channel = "#",
 				PreventBotTalking = false,
-				DefaultBody = "Navi"
+				DefaultBody = "Navi",
+				BotUser = "",
+				IsDebug = false,
+				IsOfflineMode = false,
+				BackgroundColor = "#00FF00",
+				UseBackgroundImage = true
 
 			};
 			JsonWriter.Save(mainConfig, MainConfigPath, false);

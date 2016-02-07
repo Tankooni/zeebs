@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -19,17 +20,18 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "move";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Not part of game";
+				FailReasonMessage = "Not part of game";
 				return false;
 			}
-			var match = Regex.Match(args[(int)StdExpMessageValues.Message], @"(\d+)\s+(\d+)");
+			var match = Regex.Match(commandParams, @"(\d+)\s+(\d+)");
 			if (!match.Success)
 			{
-				failMessage = "Invalid format. Plese use !move <x_integer> <y_integer>";
+				FailReasonMessage = "Invalid format. Plese use !move <x_integer> <y_integer>";
 				return false;
 			}
 
@@ -41,23 +43,23 @@ namespace zeebs.utils.commands
 
 			if (!int.TryParse(match.Groups[1].Value, out dX) || !int.TryParse(match.Groups[2].Value, out dY))
 			{
-				failMessage = "One of the values is higher than int.max. Stahhhhhhpp";
+				FailReasonMessage = "One of the values is higher than int.max. Stahhhhhhpp";
 				return false;
 			}
 
 			if (FP.World.CollidePoint("ClickMap", dX, dY) == null)
 			{
-				failMessage = "Blocked by movemap";
+				FailReasonMessage = "Blocked by movemap";
 				return false;
 			}
 
-				failMessage = "";
+			FailReasonMessage = "";
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override void Execute()
 		{
-			FP.World.BroadcastMessage(MoveMessage.Move, args[(int)StdExpMessageValues.UseName], dX, dY);
+			FP.World.BroadcastMessage(MoveMessage.Move, Args[(int)StdExpMessageValues.UseName], dX, dY);
 		}
 
 		public override Command CreateNewSelf()
