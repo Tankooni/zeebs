@@ -56,7 +56,7 @@ namespace Tankooni.IRC
 		/// <summary>
 		/// Determines if debug messages will be printed to the console.
 		/// </summary>
-		public bool Debug = true;
+		public bool Debug;
 
 		#endregion
 
@@ -85,12 +85,14 @@ namespace Tankooni.IRC
 		/// <param name="port">The port to use when connecting.</param>
 		/// <param name="nick">The nickname to use when connecting.</param>
 		/// <param name="pass">The password to use when connecting.</param>
-		public IRC(string server, int port = 6667, string nick = "", string pass = null)
+		public IRC(string server, int port = 6667, string nick = "", string pass = null, bool isDebug = false)
 		{
 			Server = server;
 			Nick = nick;
 			Port = port;
 			Password = pass;
+
+			Debug = isDebug;
 
 			Running = true;
 		}
