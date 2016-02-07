@@ -148,7 +148,8 @@ namespace Tankooni.IRC
 					var args = messageMatch.Groups.Cast<Group>().Select(x => x.Value).ToArray();
 					bool greedIsPresent = false;
 					List<Command> commandsToQueue = new List<Command>();
-					List<Command> failedCommands = new List<Command>();
+					Command firstFailedCommand = null;
+					HashSet<string> failedCommandNames = new HashSet<string>();
 					List<Command> hoardedCommands = new List<Command>();
 
 					int currentCommandStartPosition = 0;
@@ -182,168 +183,45 @@ namespace Tankooni.IRC
 								commandsToQueue.Add(newCommand);
 							else
 								hoardedCommands.Add(newCommand);
+
+							if (!greedIsPresent && newCommand.IsGreedy())
+								greedIsPresent = true;
 						}
 
-						if (!greedIsPresent && newCommand.IsGreedy())
-							greedIsPresent = true;
-
 						if (!String.IsNullOrWhiteSpace(newCommand.FailReasonMessage))
-							QueuePublicChatMessage("@" + args[(int)StdExpMessageValues.UseName] + ": " + newCommand.FailReasonMessage);
+						{
+							if (firstFailedCommand == null)
+								firstFailedCommand = newCommand;
+							if (!failedCommandNames.Contains("!" + newCommand.CommandName))
+								failedCommandNames.Add("!" + newCommand.CommandName);
+						}
+							//QueuePublicChatMessage("@" + args[(int)StdExpMessageValues.UseName] + ": " + newCommand.FailReasonMessage);
 					}
 
-					foreach(var commandToExecute in commandsToQueue)
+					if (firstFailedCommand != null)
+					{
+						string failMessage = "@" + args[(int)StdExpMessageValues.UseName] + ": ";
+						if(failedCommandNames.Count() > 1)
+						{
+							failMessage += "First Fail Message: " + firstFailedCommand.FailReasonMessage;
+							failMessage += ", as well as the following commands; " + String.Join(", ", failedCommandNames);
+						}
+						else
+						{
+							failMessage += firstFailedCommand.FailReasonMessage;
+						}
+						QueuePublicChatMessage(failMessage);
+						return;
+					}
+
+					foreach (var commandToExecute in commandsToQueue)
 					{
 						if (commandToExecute.IsGreedy())
 							commandToExecute.SetCommandList(hoardedCommands);
 						commandToExecute.Execute();
 					}
 
-					//var maybeCommand = Regex.Match(match.Groups[(int)StdExpMessageValues.Message].Value, @"\!(\w+)\s*").Groups[1].Value;
-					//Command command;
-					//if ((command = RetrieveNewCommandFromBank(maybeCommand)) != null)
-					//{
-					//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-					//	string failMessage;
-					//	if (command.CanExecute(args, out failMessage))
-					//		command.Execute(args);
-					//	if (!String.IsNullOrWhiteSpace(failMessage))
-					//	{
-					//		if (!IsOfflineMode)
-					//			SendMessageToServer("@" + args[(int)StdExpMessageValues.UseName] + ": " + failMessage);
-					//		else
-					//			Console.WriteLine(failMessage);
-					//	}
-					//}
 				}
-
-				//For stress testing
-				//if (Utility.ConnectedPlayers.ContainsKey(match.Groups[(int)StdExpMessageValues.UseName].Value))
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//	string failMessage;
-				//	string command = "moverandom";
-				//	switch (FP.Random.Int(5))
-				//	{
-				//		case 0:
-				//			args[(int)StdExpMessageValues.Message] = "!moverandom";
-				//			command = "moverandom";
-				//			break;
-				//		case 1:
-				//			args[(int)StdExpMessageValues.Message] = "!spin";
-				//			command = "spin";
-				//			break;
-				//		case 2:
-				//			args[(int)StdExpMessageValues.Message] = "!flip";
-				//			command = "flip";
-				//			break;
-				//		case 3:
-				//			args[(int)StdExpMessageValues.Message] = "!color random";
-				//			command = "color";
-				//			break;
-				//		case 4:
-				//			command = "change";
-				//			var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-				//			if (match2.Success)
-				//			{
-				//				var startPos = int.Parse(match2.Groups[2].Value);
-				//				var endPos = int.Parse(match2.Groups[3].Value);
-				//				args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
-				//				args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-				//			}
-				//			else
-				//			{
-				//				args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
-				//				args[(int)StdExpMessageValues.Message] = "!change Kappa";
-				//			}
-				//			break;
-				//		default:
-				//			break;
-				//	}
-
-
-
-				//	var newCommand = commandBank[command].CreateNewSelf();
-
-
-				//	if (newCommand.CanExecute(args, out failMessage))
-				//		newCommand.Execute(args);
-				//	else
-				//		Console.WriteLine(failMessage);
-				//}
-				//else if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-
-				//	string failMessage;
-				//	string command = "moverandom";
-				//	switch (FP.Random.Int(5))
-				//	{
-				//		case 0:
-				//			args[(int)StdExpMessageValues.Message] = "!moverandom";
-				//			command = "moverandom";
-				//			break;
-				//		case 1:
-				//			args[(int)StdExpMessageValues.Message] = "!spin";
-				//			command = "spin";
-				//			break;
-				//		case 2:
-				//			args[(int)StdExpMessageValues.Message] = "!flip";
-				//			command = "flip";
-				//			break;
-				//		case 3:
-				//			args[(int)StdExpMessageValues.Message] = "!color random";
-				//			command = "color";
-				//			break;
-				//		case 4:
-				//			command = "change";
-				//			var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-				//			if (match2.Success)
-				//			{
-				//				var startPos = int.Parse(match2.Groups[2].Value);
-				//				var endPos = int.Parse(match2.Groups[3].Value);
-				//				args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":8-" + (8 + endPos - startPos);
-				//				args[(int)StdExpMessageValues.Message] = "!change " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-				//			}
-				//			else
-				//			{
-				//				args[(int)StdExpMessageValues.Emotes] = "44073:8-12";
-				//				args[(int)StdExpMessageValues.Message] = "!change Kappa";
-				//			}
-
-				//			break;
-				//		default:
-				//			break;
-				//	}
-
-				//args[(int)StdExpMessageValues.UseName] = Utility.ConnectedPlayers.Keys.ElementAt(FP.Random.Int(Utility.ConnectedPlayers.Keys.Count));
-				//var newCommand = commandBank[command].CreateNewSelf();
-				//if (newCommand.CanExecute(args, out failMessage))
-				//	newCommand.Execute(args);
-				//else
-				//	Console.WriteLine(failMessage);
-				//}
-				//else
-				//{
-				//	var args = match.Groups.Cast<Group>().Select(x => x.Value).ToArray();
-				//	string failMessage;
-				//	var match2 = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-				//	if (!match2.Success)
-				//	{
-				//		args[(int)StdExpMessageValues.Emotes] = "44073:6-11";
-				//		args[(int)StdExpMessageValues.Message] = "!join cutFin";
-				//	}
-				//	else
-				//	{
-				//		var startPos = int.Parse(match2.Groups[2].Value);
-				//		var endPos = int.Parse(match2.Groups[3].Value);
-				//		args[(int)StdExpMessageValues.Emotes] = match2.Groups[2] + ":6-" + (6 + endPos - startPos);
-				//		args[(int)StdExpMessageValues.Message] = "!join " + args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-
-				//	}
-				//	if (commandBank["join"].CanExecute(args, out failMessage))
-				//		commandBank["join"].Execute(args);
-				//}
-
 			}
 			else if ((messageMatch = regExers[RegexTypes.StdPartMessage].Match(message)).Success)
 			{
@@ -397,8 +275,6 @@ namespace Tankooni.IRC
 		{
 			Irc.SendData(one, two + " :" + three);
 		}
-
-		//public void 
 
 		public void CloseConnection()
 		{

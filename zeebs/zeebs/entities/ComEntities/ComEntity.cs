@@ -99,14 +99,19 @@ namespace zeebs.entities
 			
 			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 40)
 			{
-				if (TwitchUserComEntityData.CommandQueue.Count != 0)
-					TwitchUserComEntityData.CommandQueue.Peek().Interrupt();
-				TwitchUserComEntityData.CommandQueue.Clear();
-				if(coHostCommands.Running)
-					coHostCommands.StopAll();
+				Interrupt();
 				//hitVector
 				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * 80), userName));
 			}
+		}
+
+		public void Interrupt()
+		{
+			if (TwitchUserComEntityData.CommandQueue.Count != 0)
+				TwitchUserComEntityData.CommandQueue.Peek().Interrupt();
+			TwitchUserComEntityData.CommandQueue.Clear();
+			if (coHostCommands.Running)
+				coHostCommands.StopAll();
 		}
 	}
 }

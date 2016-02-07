@@ -14,7 +14,7 @@ namespace zeebs.utils.commands
     class Loop : Command
     {
 
-		public static HashSet<string> AllowedLoopCommands = new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color", "change"};
+		public static HashSet<string> AllowedLoopCommands = new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color", "change", "up", "down", "left", "right"};
 
         public Loop()
 		{
