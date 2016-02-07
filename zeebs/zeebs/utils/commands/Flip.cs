@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -16,21 +17,20 @@ namespace zeebs.utils.commands
         {
             CommandName = "flip";
         }
-        public override bool CanExecute(string[] args, out string failMessage)
-        {
-            if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
+		{
+			base.CanExecute(args, commandParams, emotes);
+			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
             {
-                failMessage = "Not part of game";
+				FailReasonMessage = "Not part of game";
                 return false;
             }
-
-            failMessage = "";
             return true;
         }
 
-        public override void Execute(string[] args)
+        public override void Execute()
         {
-            FP.World.BroadcastMessage(FlipMessage.Flip, args[(int)StdExpMessageValues.UseName]);
+            FP.World.BroadcastMessage(FlipMessage.Flip, Args[(int)StdExpMessageValues.UseName]);
         }
 
         public override Command CreateNewSelf()

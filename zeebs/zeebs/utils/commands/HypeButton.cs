@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -12,20 +13,20 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "hypebutton";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
-			failMessage = "";
+			base.CanExecute(args, commandParams, emotes);
 			return true;
+		}
+
+		public override void Execute()
+		{
+
 		}
 
 		public override Command CreateNewSelf()
 		{
 			return new HypeButton();
-		}
-
-		public override void Execute(string[] args)
-		{
-			
 		}
 	}
 }

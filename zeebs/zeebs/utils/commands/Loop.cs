@@ -7,84 +7,53 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
     class Loop : Command
     {
-		public List<Command> commands = new List<Command>();
 
-        Regex prematch_regex = new Regex(@"\!loop\s*(.*)");
-        Regex command_regex = new Regex(@"\!(\w+)\s*([^\!]*)");
+		public static HashSet<string> AllowedLoopCommands = new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color", "change"};
 
         public Loop()
 		{
 			CommandName = "loop";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+
+		public override void SetCommandList(List<Command> commands)
 		{
+			for(int i = commands.Count-1; i >= 0; i--)
+				if (!AllowedLoopCommands.Contains(commands[i].CommandName))
+					commands.RemoveAt(i);
+			base.SetCommandList(commands);
+		}
+
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
+		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Not part of game";
+				FailReasonMessage = "Not part of game";
 				return false;
 			}
-            var prematch = prematch_regex.Match(args[(int)StdExpMessageValues.Message]).Groups[1].ToString();
-            var matchs = command_regex.Matches(prematch);
-			if (matchs.Count == 0)
-			{
-				failMessage = "Invalid format. Syntax is: !loop <command> <command> ...";
-				return false;
-			}
-
-            foreach (Match match in matchs)
-            {
-                string commandStr = match.Groups[1].ToString();
-
-                //only run certain commands or things will break
-                if(!(new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color"}).Contains(commandStr))
-                {
-                    failMessage = String.Format("Command cannot be looped: {0}", commandStr);
-                    return false;
-                }
-
-				//get the commands
-				Command command;
-                if ((command = TwitchInterface.MasterTwitchInterface.RetrieveNewCommandFromBank(commandStr)) != null)
-                {
-                    string[] localArgs = (string[])args.Clone();
-                    localArgs[(int)StdExpMessageValues.Message] = match.Groups[0].ToString();
-                    string localFailMessage;
-                    if (command.CanExecute(localArgs, out localFailMessage))
-                    {
-                        commands.Add(command);
-                    } else
-                    {
-                        if (!String.IsNullOrWhiteSpace(localFailMessage))
-                        {
-                            TwitchInterface.MasterTwitchInterface.SendMessageToServer("@" + args[1] + ": " + localFailMessage);
-                        }
-                    }
-                }
-            }
-
-			failMessage = "";
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override bool IsGreedy()
 		{
-            FP.World.BroadcastMessage(LoopMessage.Loop, args, commands, true);
+			return true;
+		}
+
+		public override void Execute()
+		{
+			
+			FP.World.BroadcastMessage(LoopMessage.Loop, Args[(int)StdExpMessageValues.UseName], Args, Commands);
 		}
 
         public override Command CreateNewSelf()
         {
-            var loop = new Loop();
-            loop.commands = new List<Command>();
-            foreach (Command c in commands)
-            {
-                loop.commands.Add(c.CreateNewSelf());
-            }
-            return loop;
+            return new Loop();
         }
 
 		public enum LoopMessage

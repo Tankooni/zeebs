@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -18,31 +19,29 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "change";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Not part of the game";
+				FailReasonMessage = "Not part of the game";
 				return false;
 			}
 			
-			var match = Regex.Match(args[(int)StdExpMessageValues.Emotes], @"(\d+):(\d+)-(\d+)");
-			if (!match.Success)
+			if (emotes.Count == 0)
 			{
-				failMessage = "No emote specified";
+				FailReasonMessage = "No emote specified";
 				return false;
 			}
-			var startPos = int.Parse(match.Groups[2].Value);
-			var endPos = int.Parse(match.Groups[3].Value);
+			var emote = emotes.First();
 
-			emoteName = args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-			failMessage = "";
+			emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override void Execute()
 		{
-			FP.World.BroadcastMessage(ChangeMessage.Change, args[(int)StdExpMessageValues.UseName], emoteName);
+			FP.World.BroadcastMessage(ChangeMessage.Change, Args[(int)StdExpMessageValues.UseName], emoteName);
 		}
 
 		public override Command CreateNewSelf()

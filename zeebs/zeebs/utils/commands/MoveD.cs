@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -18,17 +19,18 @@ namespace zeebs.utils.commands
         {
             CommandName = "moved";
         }
-        public override bool CanExecute(string[] args, out string failMessage)
-        {
-            if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
+		{
+			base.CanExecute(args, commandParams, emotes);
+			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
             {
-                failMessage = "Not part of game";
+                FailReasonMessage = "Not part of game";
                 return false;
             }
-            var match = Regex.Match(args[(int)StdExpMessageValues.Message], @"\!moved\s+([udlrwasd123456789]+)");
+            var match = Regex.Match(commandParams, @"([udlrwasd123456789]+)");
             if (!match.Success)
             {
-                failMessage = "Invalid format. Plese use !moved <uldr wasd 48627913";
+				FailReasonMessage = "Invalid format. Plese use !moved <uldr wasd 48627913";
                 return false;
             }
 
@@ -39,32 +41,32 @@ namespace zeebs.utils.commands
             //}
 
             movestr = match.Groups[1].ToString();
-
-            failMessage = "";
             return true;
         }
 
-        public override void Execute(string[] args)
+        public override void Execute()
         {
-            var player = Utility.ConnectedPlayers[args[(int)StdExpMessageValues.UseName]];
+            var player = Utility.ConnectedPlayers[Args[(int)StdExpMessageValues.UseName]];
 
-            foreach( char c in movestr ) {
-                switch (c) {
-					case 'u': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
-					case 'd': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
-					case 'l': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
-					case 'r': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 30, 0); break;
-					case 'w': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
-					case 's': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
-					case 'a': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
-					case '8': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, -30); break;
-					case '2': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 0, 30); break;
-					case '4': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -30, 0); break;
-					case '6': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 30, 0); break;
-					case '7': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -21, -21); break;
-					case '9': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 21, -21); break;
-					case '1': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], -21, 21); break;
-					case '3': FP.World.BroadcastMessage(MoveDMessage.MoveD, args[(int)StdExpMessageValues.UseName], 21, 21); break;
+            foreach( char c in movestr )
+			{
+                switch (c)
+				{
+					case 'u': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case 'd': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case 'l': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case 'r': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 30, 0); break;
+					case 'w': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case 's': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case 'a': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case '8': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, -30); break;
+					case '2': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 0, 30); break;
+					case '4': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], -30, 0); break;
+					case '6': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 30, 0); break;
+					case '7': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], -21, -21); break;
+					case '9': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 21, -21); break;
+					case '1': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], -21, 21); break;
+					case '3': FP.World.BroadcastMessage(MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 21, 21); break;
 					default: break;
                 }
             }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tankooni;
 using zeebs.utils.commands;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils
 {
@@ -15,20 +16,19 @@ namespace zeebs.utils
 		{
 			CommandName = "part";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[1]) || args[2] != "PART")
 			{
-				failMessage = "";
 				return false;
 			}
-			failMessage = "";
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override void Execute()
 		{
-			FP.World.BroadcastMessage(Leave.LeaveMessage.Leave, args[1]);
+			FP.World.BroadcastMessage(Leave.LeaveMessage.Leave, Args[1]);
 		}
 
 		public override Command CreateNewSelf()

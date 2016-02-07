@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
-
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -16,6 +16,23 @@ namespace zeebs.utils.commands
 		public Right()
 		{
 			CommandName = "right";
+		}
+
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
+		{
+			base.CanExecute(args, commandParams, emotes);
+			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			{
+				FailReasonMessage = "Not part of game";
+				return false;
+			}
+
+			return true;
+		}
+
+		public override void Execute()
+		{
+			FP.World.BroadcastMessage(MoveD.MoveDMessage.MoveD, Args[(int)StdExpMessageValues.UseName], 30, 0);
 		}
 
 		public override Command CreateNewSelf()

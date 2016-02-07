@@ -36,8 +36,7 @@ namespace zeebs
 			twitchy = twitchInterface;
 			if (Utility.MainConfig.UseBackgroundImage)
 				AddGraphic(new Image(Library.GetTexture("content/Background.png")));
-
-			AddResponse(Emote.EmoteMessage.Emote, DoEmote);
+			
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
@@ -83,40 +82,6 @@ namespace zeebs
 			//}, "MetaData");
 		}
 
-		public void DoEmote(object[] args)
-		{
-			//switch (FP.Random.Int(1))
-			//{
-			//	case 0:
-			//		mine = Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		mine.SetAlpha(0.5f);
-			//		break;
-			//	case 1:
-			//		mine = Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	case 2:
-			//		mine = Add(new AnimatedEntity("TheFuck", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	case 3:
-			//		mine = Add(new AnimatedEntity("Ko", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			//		break;
-			//	default:
-			//		break;
-			//}
-			 //if()
-			 //	Add(new AnimatedEntity("ZeebSmall", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			 //else
-			 //	Add(new AnimatedEntity("Zeeb", args[0].ToString()) { X = FP.Random.Float(FP.Width), Y = FP.Random.Float(FP.Height) });
-			 //var g = AddGraphic(new Image(Library.GetTexture("twitch//" + args[0])));
-			 //g.CenterOrigin();
-			 //g.X = FP.Random.Float(FP.Width);
-			 //g.Y = FP.Random.Float(FP.Height);
-			 //var image = g.GetComponent<Image>();
-			 //image.ScaleX = 24.0f / image.Width;
-			 //image.ScaleY = 24.0f / image.Height;
-
-		}
-
 		public void DoJoinGame(object[] args)
 		{
 			string userName = (string)args[0];
@@ -159,7 +124,8 @@ namespace zeebs
 
 		public void DoChangeEmote(object[] args)
 		{
-			Utility.ConnectedPlayers[(string)args[0]].ChangeHead((string)args[1]);
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1]));
 		}
 
 		public void DoPartGame(object[] args)
@@ -188,12 +154,8 @@ namespace zeebs
 
         public void DoLoop(object[] args)
         {
-            string[] realArgs = (string[])args[0];
-            List<Command> commands = (List<Command>)args[1];
-            bool shouldLoop = (bool)args[2];
-
-            var player = Utility.ConnectedPlayers[realArgs[(int)StdExpMessageValues.UseName]];
-            player.QueueCommand(new ComEntityLoop(player, commands, realArgs, shouldLoop));
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityLoop(player, (List<Command>)args[2], (string[])args[1]));
         }
 
         public void DoSpinZeeb(object[] args)
@@ -223,10 +185,10 @@ namespace zeebs
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			var kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount);
+			var kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
 			if (args[1] != args[0])
 				kills++;
-			twitchy.SendMessageToServer(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
+			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
 		}
 
