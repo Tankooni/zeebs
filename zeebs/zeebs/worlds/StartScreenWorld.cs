@@ -45,7 +45,8 @@ namespace zeebs
 			AddResponse(Change.ChangeMessage.Change, DoChangeEmote);
             AddResponse(Spin.SpinMessage.Spin, DoSpinZeeb);
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
-            AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
+			AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
+			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
 
 			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
 
@@ -185,11 +186,17 @@ namespace zeebs
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			var kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+			long kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
 			if (args[1] != args[0])
-				kills++;
+				kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount++;
 			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
+		}
+
+		public void DoCancelCommands(object[] args)
+		{
+			var player = Utility.ConnectedPlayers[(string)args[0]];
+			player.Interrupt();
 		}
 
 		public override void Update()

@@ -88,6 +88,7 @@
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
     <Compile Include="utils\commands\Attack.cs" />
+    <Compile Include="utils\commands\Cancel.cs" />
     <Compile Include="utils\commands\ChangeColor.cs" />
     <Compile Include="utils\commands\Down.cs" />
     <Compile Include="utils\commands\Flip.cs" />
