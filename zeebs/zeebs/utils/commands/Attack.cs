@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
+using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
@@ -18,11 +19,12 @@ namespace zeebs.utils.commands
 		{
 			CommandName = "attack";
 		}
-		public override bool CanExecute(string[] args, out string failMessage)
+		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
+			base.CanExecute(args, commandParams, emotes);
 			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
-				failMessage = "Not part of the game";
+				FailReasonMessage = "Not part of the game";
 				return false;
 			}
 
@@ -36,13 +38,12 @@ namespace zeebs.utils.commands
 			//var endPos = int.Parse(match.Groups[3].Value);
 
 			//emoteName = args[(int)StdExpMessageValues.Message].Substring(startPos, endPos - startPos + 1);
-			failMessage = "";
 			return true;
 		}
 
-		public override void Execute(string[] args)
+		public override void Execute()
 		{
-			FP.World.BroadcastMessage(AttackeMessage.Attack, args[(int)StdExpMessageValues.UseName], Utility.ConnectedPlayers[args[(int)StdExpMessageValues.UseName]]);
+			FP.World.BroadcastMessage(AttackeMessage.Attack, Args[(int)StdExpMessageValues.UseName], Utility.ConnectedPlayers[Args[(int)StdExpMessageValues.UseName]]);
 		}
 
 		public override Command CreateNewSelf()
