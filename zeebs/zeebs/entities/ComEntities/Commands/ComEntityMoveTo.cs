@@ -29,7 +29,6 @@ namespace zeebs.entities
 
 		public override IEnumerator Update()
 		{
-
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.X, moveTo.X);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.Y, moveTo.Y);
 			if(FP.World.CollidePoint("ClickMap", comEntity.X, comEntity.Y) == null)
