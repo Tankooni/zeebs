@@ -1,0 +1,4 @@
+Interrupt
+Help
+	Need to have is list out all available commands and have it obtain specific information is passed another command name
+Combining messages if too many?
