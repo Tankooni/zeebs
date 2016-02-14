@@ -84,6 +84,7 @@
     <Compile Include="entities\ComEntities\Commands\ComEntityMoveTo.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntitySpin.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityFlip.cs" />
+    <Compile Include="entities\LeaderBoard.cs" />
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="utils\commands\MoveD.cs" />
     <Compile Include="utils\commands\MoveRandom.cs" />
     <Compile Include="utils\commands\Right.cs" />
+    <Compile Include="utils\commands\SaveScores.cs" />
     <Compile Include="utils\commands\Spin.cs" />
     <Compile Include="utils\commands\Up.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="utils\pathing\SolverUtility.cs" />
     <Compile Include="utils\SoundManager.cs" />
     <Compile Include="utils\Utility.cs" />
+    <Compile Include="utils\zoopBoot\Dont.cs" />
     <Compile Include="utils\zoopBoot\Emote.cs" />
     <Compile Include="utils\zoopBoot\IRC.cs" />
     <Compile Include="utils\zoopBoot\TwitchInterface.cs" />
@@ -133,7 +136,8 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="content\shaders\ChromaKey.frag" />
+    <None Include="content\shaders\HsvChromaKey.frag" />
+    <None Include="content\shaders\RgbChromaKey.frag" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
