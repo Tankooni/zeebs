@@ -23,12 +23,12 @@ namespace zeebs.utils.commands
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
-			if (Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			if (Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
 				FailReasonMessage = "Already part of the game";
 				return false;
 			}
-			if (Utility.ConnectedPlayers.Count == Utility.MainConfig.MaxPlayers)
+			if (Utility.GamePlayers.Count == Utility.MainConfig.MaxPlayers)
 			{
 				FailReasonMessage = "Too many players connected";
 				return false;

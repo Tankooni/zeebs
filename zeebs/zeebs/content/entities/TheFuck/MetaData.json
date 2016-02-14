@@ -1,5 +1,6 @@
 {
 	"Name": "TheFuck",
 	"Animations": ["Idle"],
-	"DefaultAnimation": "Idle"
+	"DefaultAnimation": "Idle",
+	"ShaderName": null
 }

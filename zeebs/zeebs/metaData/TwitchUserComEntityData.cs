@@ -16,7 +16,10 @@ namespace zeebs.metaData
 		public string TwitchUserColor;
 		public string ComEmoteHead;
 		public string ComEntityName;
+
+		[JsonIgnore]
 		public Point ComEntityPosition;
+		[JsonIgnore]
 		public long KillCount;
 
 		[JsonIgnore]

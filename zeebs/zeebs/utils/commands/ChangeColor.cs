@@ -22,19 +22,37 @@ namespace zeebs.utils.commands
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
-			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			if (!Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
 				FailReasonMessage = "Not part of game";
 				return false;
 			}
 
-			var match = Regex.Match(commandParams, "#?([A-Fa-f0-9]{6}|random)");
+			if(Utility.ColorHexes.ContainsKey(commandParams))
+			{
+				color = Utility.ColorHexes[commandParams];
+				return true;
+			}
+
+			var match = Regex.Match(commandParams, @"#?([A-Fa-f0-9]{6}|random)");
 			if(!match.Success)
 			{
 				FailReasonMessage = "Color in wrong format. Use Hex RRGGBB format or the word random";
 				return false;
 			}
-			if(match.Groups[1].Value == "random")
+
+			//if (!Utility.ColorHexes.ContainsKey(match.Groups[1].Value.ToLower()))
+			//{
+			//	FailReasonMessage = "Color not in predefined colors";
+			//	return false;
+			//}
+			//else
+			//{
+			//	color = Utility.ColorHexes[match.Groups[1].Value.ToLower()];
+			//	return true;
+			//}
+
+			if (commandParams == "random")
 				color = String.Format("{0:X6}", FP.Random.Int(16777216));
 			else
 				color = match.Groups[1].Value;

@@ -22,7 +22,7 @@ namespace zeebs.utils.commands
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
-			if (!Utility.ConnectedPlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			if (!Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
 				FailReasonMessage = "Not part of the game";
 				return false;
@@ -43,7 +43,7 @@ namespace zeebs.utils.commands
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(AttackeMessage.Attack, Args[(int)StdExpMessageValues.UseName], Utility.ConnectedPlayers[Args[(int)StdExpMessageValues.UseName]]);
+			FP.World.BroadcastMessage(AttackeMessage.Attack, Args[(int)StdExpMessageValues.UseName], Utility.GamePlayers[Args[(int)StdExpMessageValues.UseName]]);
 		}
 
 		public override Command CreateNewSelf()
