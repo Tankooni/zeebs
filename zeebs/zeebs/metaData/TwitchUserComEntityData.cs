@@ -21,6 +21,8 @@ namespace zeebs.metaData
 		public Point ComEntityPosition;
 		[JsonIgnore]
 		public long KillCount;
+		[JsonIgnore]
+		public int Damage;
 
 		[JsonIgnore]
 		public Queue<zeebs.entities.ComEntityCommand> CommandQueue;

@@ -732,6 +732,11 @@
             Whether System.Console.WriteLine() should be used in addition to the in-game console.
             </summary>
         </member>
+        <member name="F:Indigo.Debugging.DebugConsole.InvisibleUntilOpen">
+            <summary>
+            Whether the top bar of the console will display when the console is closed.
+            </summary>
+        </member>
         <member name="F:Indigo.Debugging.DebugConsole.DisplayCallingMethod">
             <summary>
             Whether the method calling Log() should be displayed before the message.

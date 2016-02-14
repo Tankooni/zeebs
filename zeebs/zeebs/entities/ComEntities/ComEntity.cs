@@ -16,6 +16,12 @@ namespace zeebs.entities
 
 	public class ComEntity : AnimatedEntity
 	{
+		public static int DamageAmount = 10;
+		public static int DamageMin = 0;
+		public static int DamageMax = 100;
+		public static int HitDistanceMin = 80;
+		public static int HitDistanceMax = 700;
+
 		public readonly TwitchUserComEntityData TwitchUserComEntityData;
 		CoroutineHost coHostCommands = new CoroutineHost();
 		//public Emitter emitter;
@@ -102,7 +108,10 @@ namespace zeebs.entities
 			{
 				Interrupt();
 				//hitVector
-				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * 80), userName));
+
+				var hitDistance = FP.Scale(TwitchUserComEntityData.Damage, DamageMin, DamageMax, HitDistanceMin, HitDistanceMax);
+				TwitchUserComEntityData.Damage += DamageAmount;
+				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * hitDistance), userName));
 			}
 		}
 
@@ -113,6 +122,11 @@ namespace zeebs.entities
 			TwitchUserComEntityData.CommandQueue.Clear();
 			if (coHostCommands.Running)
 				coHostCommands.StopAll();
+		}
+
+		public void ResetDamage()
+		{
+			TwitchUserComEntityData.Damage = 0;
 		}
 	}
 }
