@@ -32,7 +32,7 @@ namespace zeebs
 			else
 				Utility.MainConfig = MainConfig.LoadMainConfig();
 
-			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.BotUser, Utility.MainConfig.Oauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
+			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
 			
 			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
 
@@ -41,12 +41,11 @@ namespace zeebs
 				FP.Console.Enable();
 				FP.Console.MirrorToSystemOut = true;
 				FP.Console.ToggleKey = Keyboard.Tilde;
-
 			}
 			var match = Regex.Match(Utility.MainConfig.BackgroundColor, "#?([A-Fa-f0-9]{6}|random)");
 			FP.Screen.ClearColor = new Color(int.Parse(match.Success ? match.Groups[1].Value : "000000", System.Globalization.NumberStyles.HexNumber));
 
-			Mouse.CursorVisible = false;
+			Mouse.CursorVisible = true;
 
 			SoundManager.Init(0.7f);
 			//SoundManager.Init(0);

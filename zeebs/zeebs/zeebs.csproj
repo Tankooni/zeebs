@@ -139,6 +139,9 @@
     <None Include="content\shaders\HsvChromaKey.frag" />
     <None Include="content\shaders\RgbChromaKey.frag" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="content\white.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo D|C:\Windows\System32\xcopy $(ProjectDir)content $(TargetDir)content /s /e /q /y</PostBuildEvent>

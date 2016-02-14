@@ -214,9 +214,15 @@ namespace zeebs
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			long kills = Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+			var murderer = Utility.GamePlayers[(string)args[1]];
+			var victim = Utility.GamePlayers[(string)args[0]];
+			long kills = murderer.TwitchUserComEntityData.KillCount;
 			if (args[1] != args[0])
-				kills = ++Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+				kills = ++murderer.TwitchUserComEntityData.KillCount;
+			else
+				kills = --murderer.TwitchUserComEntityData.KillCount;
+
+			victim.ResetDamage();
 
 			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
