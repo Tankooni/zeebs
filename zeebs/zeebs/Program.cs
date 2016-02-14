@@ -9,6 +9,7 @@ using Indigo.Graphics;
 using Tankooni;
 using System.IO;
 using System.Text.RegularExpressions;
+using SFML;
 
 namespace zeebs
 {
@@ -16,6 +17,7 @@ namespace zeebs
 	{
 		static void Main(string[] args)
 		{
+			
 			var game = new Game();
 			game.Run();
 		}

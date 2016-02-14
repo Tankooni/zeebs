@@ -1,5 +1,6 @@
 {
 	"Name": "Navi",
 	"Animations": ["Idle"],
-	"DefaultAnimation": "Idle"
+	"DefaultAnimation": "Idle",
+	"ShaderName": "HsvChromaKey.frag"
 }

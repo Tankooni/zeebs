@@ -19,7 +19,7 @@ namespace zeebs.utils
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
-			if (!Utility.ConnectedPlayers.ContainsKey(args[1]) || args[2] != "PART")
+			if (!Utility.GamePlayers.ContainsKey(args[1]) || args[2] != "PART")
 			{
 				return false;
 			}

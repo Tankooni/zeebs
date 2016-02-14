@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tankooni;
 using Tankooni.IRC;
@@ -11,19 +10,19 @@ using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
-	public class Leave : Command
+	class SaveScores : Command
 	{
-		public Leave()
+		public SaveScores()
 		{
-			CommandName = "leave";
+			CommandName = "savescores";
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
-			if (!Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+			if (args[(int)StdExpMessageValues.UseName] != Utility.MainConfig.AdminUser.ToLower())
 			{
-				FailReasonMessage = "Not part of game";
+				FailReasonMessage = "Nope";
 				return false;
 			};
 			return true;
@@ -31,17 +30,17 @@ namespace zeebs.utils.commands
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(LeaveMessage.Leave, Args[(int)StdExpMessageValues.UseName]);
+			FP.World.BroadcastMessage(SaveScoresMessage.SaveScores);
 		}
 
 		public override Command CreateNewSelf()
 		{
-			return new Leave();
+			return new SaveScores();
 		}
 
-		public enum LeaveMessage
+		public enum SaveScoresMessage
 		{
-			Leave
+			SaveScores
 		}
 	}
 }
