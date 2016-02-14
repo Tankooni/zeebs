@@ -28,6 +28,7 @@ namespace zeebs.entities
 					Color.White : 
 					new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber)))
 		{
+			this.CenterOrigin();
 			TwitchUserComEntityData = twitchUserComEntityData;
 			X = twitchUserComEntityData.ComEntityPosition.X;
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
@@ -97,7 +98,7 @@ namespace zeebs.entities
 				return;
 			ComEntity attacker = (ComEntity)args[1];
 			
-			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 40)
+			if (FP.Distance(X, Y, attacker.X, attacker.Y) < 60)
 			{
 				Interrupt();
 				//hitVector

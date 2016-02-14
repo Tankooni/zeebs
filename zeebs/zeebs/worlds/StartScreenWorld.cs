@@ -28,6 +28,7 @@ namespace zeebs
 		private readonly PathNode[,] pathNodes;
 		private readonly Grid nodeGrid;
 		private readonly Entity nodeGridEntity;
+		private readonly LeaderBoard leaderBoard;
 
 		public TwitchInterface twitchy;
 
@@ -36,7 +37,13 @@ namespace zeebs
 			twitchy = twitchInterface;
 			if (Utility.MainConfig.UseBackgroundImage)
 				AddGraphic(new Image(Library.GetTexture("content/Background.png")));
-			
+
+			leaderBoard = new LeaderBoard
+			{
+				Y = 60
+			};
+			Add(leaderBoard);
+
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
@@ -49,6 +56,9 @@ namespace zeebs
 			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
 
 			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
+			AddResponse(WorldMessages.UpdateLeaderBoard, UpdateLeaderBoard);
+
+			AddResponse(SaveScores.SaveScoresMessage.SaveScores, WriteAllScores);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -87,7 +97,7 @@ namespace zeebs
 		{
 			string userName = (string)args[0];
 			string emoteName = (string)args[1];
-			string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
+			//string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
 			int dX;
 			int dY;
@@ -97,7 +107,20 @@ namespace zeebs
 				dY = FP.Random.Int(0, FP.Height);
 			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
 
-			if (!File.Exists(pathName))
+			//if (!File.Exists(pathName))
+			//{
+				//JsonWriter.Save(userData, pathName, false);
+				//new ComEntity()
+			//}
+			//else
+			//{
+			//	userData = JsonLoader.Load<TwitchUserComEntityData>(pathName, false);
+			//	userData.ComEmoteHead = emoteName;
+			//	userData.ComEntityPosition = new Point(dX, dY);
+			//}
+
+			ComEntity newPlayer;
+			if (!Utility.SessionPlayers.ContainsKey(userName))
 			{
 				userData = new TwitchUserComEntityData
 				{
@@ -108,60 +131,65 @@ namespace zeebs
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
-				JsonWriter.Save(userData, pathName, false);
-				//new ComEntity()
+				newPlayer = new ComEntity(userData);
+				Utility.SessionPlayers.Add(userName, newPlayer);
 			}
 			else
 			{
-				userData = JsonLoader.Load<TwitchUserComEntityData>(pathName, false);
-				userData.ComEmoteHead = emoteName;
-				userData.ComEntityPosition = new Point(dX, dY);
+				newPlayer = Utility.SessionPlayers[userName];
+				newPlayer.ChangeHead(emoteName);
+				newPlayer.TwitchUserComEntityData.ComEntityPosition = new Point(dX, dY);
+				newPlayer.X = dX;
+				newPlayer.Y = dY;
 			}
 
-			var newPlayer = new ComEntity(userData);
-			Utility.ConnectedPlayers.Add(userName, newPlayer);
+			Utility.GamePlayers.Add(userName, newPlayer);
+
 			Add(newPlayer);
+
+			BroadcastMessage(WorldMessages.UpdateLeaderBoard);
 		}
 
 		public void DoChangeEmote(object[] args)
 		{
-			var player = Utility.ConnectedPlayers[(string)args[0]];
+			var player = Utility.GamePlayers[(string)args[0]];
 			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1]));
 		}
 
 		public void DoPartGame(object[] args)
 		{
 			string userName = (string)args[0];
-			string path = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
-			var discoPlayer = Utility.ConnectedPlayers[userName];
+			//string path = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
+			var discoPlayer = Utility.GamePlayers[userName];
 			discoPlayer.TwitchUserComEntityData.ComEntityPosition.X = discoPlayer.X;
 			discoPlayer.TwitchUserComEntityData.ComEntityPosition.Y = discoPlayer.Y;
-			JsonWriter.Save(discoPlayer.TwitchUserComEntityData, path, false);
+			//JsonWriter.Save(discoPlayer.TwitchUserComEntityData, path, false);
+			discoPlayer.Interrupt();
 			Remove(discoPlayer);
-			Utility.ConnectedPlayers.Remove(userName);
+			Utility.GamePlayers.Remove(userName);
 		}
 
 		public void DoMoveZeeb(object[] args)
 		{
-			var player = Utility.ConnectedPlayers[(string)args[0]];
+			var player = Utility.GamePlayers[(string)args[0]];
             player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2]))));
 		}
 
         public void DoMoveDZeeb(object[] args)
         {
-            var player = Utility.ConnectedPlayers[(string)args[0]];
+            var player = Utility.GamePlayers[(string)args[0]];
             player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2]))));
         }
 
         public void DoLoop(object[] args)
         {
-			var player = Utility.ConnectedPlayers[(string)args[0]];
+			var player = Utility.GamePlayers[(string)args[0]];
 			player.QueueCommand(new ComEntityLoop(player, (List<Command>)args[2], (string[])args[1]));
         }
 
         public void DoSpinZeeb(object[] args)
         {
-            var player = Utility.ConnectedPlayers[(string)args[0]];
+            var player = Utility.GamePlayers[(string)args[0]];
             player.QueueCommand(new ComEntitySpin(player));
         }
 
@@ -169,7 +197,7 @@ namespace zeebs
         {
 			try
 			{
-				var player = Utility.ConnectedPlayers[(string)args[0]];
+				var player = Utility.GamePlayers[(string)args[0]];
 				player.QueueCommand(new ComEntityFlip(player));
 			}
 			catch
@@ -180,23 +208,39 @@ namespace zeebs
 
 		public void DoChangeColor(object[] args)
 		{
-			var player = Utility.ConnectedPlayers[(string)args[0]];
+			var player = Utility.GamePlayers[(string)args[0]];
 			player.QueueCommand(new ComEntityChangeColor(player, (string)args[1]));
 		}
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			long kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+			long kills = Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
 			if (args[1] != args[0])
-				kills = Utility.ConnectedPlayers[(string)args[1]].TwitchUserComEntityData.KillCount++;
+				kills = ++Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+
 			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
+			BroadcastMessage(WorldMessages.UpdateLeaderBoard);
 		}
 
 		public void DoCancelCommands(object[] args)
 		{
-			var player = Utility.ConnectedPlayers[(string)args[0]];
-			player.Interrupt();
+			Utility.GamePlayers[(string)args[0]].Interrupt();
+		}
+
+		public void UpdateLeaderBoard(object[] args)
+		{
+			leaderBoard.UpdateLeaderBoard();
+		}
+
+		public void WriteAllScores(object[] args)
+		{
+			StringBuilder scoreBuilder = new StringBuilder();
+			foreach(var player in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount))
+			{
+				scoreBuilder.AppendLine(player.TwitchUserComEntityData.TwitchUserName + ": " + player.TwitchUserComEntityData.KillCount);
+			}
+			File.WriteAllText(Utility.SAVE_DIR + "/" + "Scores_" + DateTime.Now.ToString("MMddyy_HHmmss") + ".txt", scoreBuilder.ToString());
 		}
 
 		public override void Update()
@@ -224,7 +268,8 @@ namespace zeebs
 
 		public enum WorldMessages
 		{
-			PlayerKilledPlayer
+			PlayerKilledPlayer,
+			UpdateLeaderBoard
 		}
 	}
 }

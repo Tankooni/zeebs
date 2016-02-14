@@ -74,10 +74,14 @@ namespace zeebs.entities
 					//AddComponent(sprite);
 					Image newImage;
 					images.Add(newImage = new Image(Library.GetTexture(animFilePath)) { OriginX = ad.Origin.X, OriginY = ad.Origin.Y });
-					Shader chromaKey = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/ChromaKey.frag"));
-					newImage.Shader = chromaKey;
-					//chromaKey.SetAsCurrentTexture("sampler2D");
-					chromaKey.SetParameter("color", tintColor);
+
+					if (AnimatedEntityData.ShaderName != null)
+					{
+						Shader shader = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/" + AnimatedEntityData.ShaderName));
+						newImage.Shader = shader;
+						//chromaKey.SetAsCurrentTexture("sampler2D");
+						shader.SetParameter("color", tintColor);
+					}
 
 					//Console.WriteLine(animFile);
 				}
@@ -131,7 +135,7 @@ namespace zeebs.entities
 
 		public void SetColorTint(Color tintColor)
 		{
-			foreach(var image in images)
+			foreach (var image in images)
 				image.Shader.SetParameter("color", tintColor);
 		}
 

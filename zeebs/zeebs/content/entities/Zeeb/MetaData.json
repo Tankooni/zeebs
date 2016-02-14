@@ -1,5 +1,6 @@
 {
 	"Name": "Zeeb",
 	"Animations": ["Idle"],
-	"DefaultAnimation": "Idle"
+	"DefaultAnimation": "Idle",
+	"ShaderName": "RgbChromaKey.frag"
 }

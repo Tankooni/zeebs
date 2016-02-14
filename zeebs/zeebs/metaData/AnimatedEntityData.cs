@@ -11,5 +11,6 @@ namespace zeebs.metaData
 		public string Name;
 		public List<string> Animations;
 		public string DefaultAnimation;
+		public string ShaderName;
 	}
 }

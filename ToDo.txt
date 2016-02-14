@@ -1,11 +1,10 @@
-Default Twitch emotes
-Interrupt
 Help
 	Need to have is list out all available commands and have it obtain specific information is passed another command name
 Combining messages if too many?
+Find a way to notify people trying to use sub emotes when they aren't subbed to the channel
+Spin/flip could deflect/dodge attacks?
+Add relative movement with exact numbers
 
 Bugs
 	Doudble change on the defualt ones that down work
-	Cancel does not always work
-	attack isn't always working
-	
+	Cancel does always work
