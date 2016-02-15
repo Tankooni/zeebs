@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="entities\AnimatedEntity.cs" />
     <Compile Include="entities\ComEntities\ComEntity.cs" />
+    <Compile Include="entities\ComEntities\Commands\ComEntityAttack.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityChangeColor.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityChangeHead.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityCommand.cs" />
