@@ -54,6 +54,7 @@ namespace zeebs
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
 			AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
 			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
+			AddResponse(Attack.AttackeMessage.Attack, DoAttack);
 
 			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
 			AddResponse(WorldMessages.UpdateLeaderBoard, UpdateLeaderBoard);
@@ -232,6 +233,12 @@ namespace zeebs
 		public void DoCancelCommands(object[] args)
 		{
 			Utility.GamePlayers[(string)args[0]].Interrupt();
+		}
+
+		public void DoAttack(object[] args)
+		{
+			var player = Utility.GamePlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityAttack(player));
 		}
 
 		public void UpdateLeaderBoard(object[] args)
