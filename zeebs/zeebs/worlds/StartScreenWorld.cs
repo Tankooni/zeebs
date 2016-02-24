@@ -42,7 +42,8 @@ namespace zeebs
 			{
 				Y = 60
 			};
-			Add(leaderBoard);
+			if(Utility.MainConfig.ShowLeaderBoard)
+				Add(leaderBoard);
 
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
@@ -126,7 +127,7 @@ namespace zeebs
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
-					TwitchUserColor = (string)args[2],
+					TwitchUserColor = string.IsNullOrWhiteSpace((string)args[2]) ? "FFFFFF" : (string)args[2],
 					ComEmoteHead = emoteName,
 					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),

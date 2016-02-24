@@ -98,6 +98,7 @@ namespace Tankooni
 		public bool IsOfflineMode { get; set; }
 		public string BackgroundColor { get; set; }
 		public bool UseBackgroundImage { get; set; }
+		public bool ShowLeaderBoard { get; set; }
 
 		public static string MainConfigPath
 		{
@@ -124,7 +125,8 @@ namespace Tankooni
 				IsDebug = false,
 				IsOfflineMode = false,
 				BackgroundColor = "#00FF00",
-				UseBackgroundImage = true
+				UseBackgroundImage = true,
+				ShowLeaderBoard = false
 
 			};
 			JsonWriter.Save(mainConfig, MainConfigPath, false);

@@ -23,7 +23,7 @@ namespace zeebs.entities.ComEntities.Commands
 		public override IEnumerator Update()
 		{
 			float deltaSpin = comEntity.Rotation;
-			Indigo.Utils.Approach.TowardsWithDecay(ref deltaSpin, 360, .3f);
+			Indigo.Utils.Approach.TowardsWithDecay(ref deltaSpin, 360, .15f);
 			comEntity.Rotation = deltaSpin;
 			if (deltaSpin >= 359)
 			{
