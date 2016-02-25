@@ -52,7 +52,7 @@ namespace zeebs.utils.commands
 			//	return true;
 			//}
 
-			if (commandParams == "random")
+			if (commandParams.Contains("random"))
 				color = String.Format("{0:X6}", FP.Random.Int(16777216));
 			else
 				color = match.Groups[1].Value;
