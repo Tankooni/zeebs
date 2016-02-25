@@ -19,7 +19,8 @@ namespace Tankooni.IRC
 		StdExpMessage,
 		StdPartMessage,
 		AllCommands,
-		EmoteData
+		EmoteDataPassOne,
+		EmoteDataPassTwo
 	}
 
 	public enum StdExpMessageValues : int
@@ -72,8 +73,12 @@ namespace Tankooni.IRC
 				new Regex(@"\!(\w+)\s*([^\!]*)")
 			},
 			{
-				RegexTypes.EmoteData,
-				new Regex(@"(\d+):(\d+)-(\d+)")
+				RegexTypes.EmoteDataPassOne,
+				new Regex(@"(\d+):([^/]*)")
+			},
+			{
+				RegexTypes.EmoteDataPassTwo,
+				new Regex(@"(\d+)-(\d+)")
 			}
 		};
 
@@ -141,10 +146,17 @@ namespace Tankooni.IRC
 				if (messageMatch.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
 				{
 					var allPotentialCommandMatches = regExers[RegexTypes.AllCommands].Matches(messageMatch.Groups[(int)StdExpMessageValues.Message].Value);
-					var allEmotes = regExers[RegexTypes.EmoteData].Matches(messageMatch.Groups[(int)StdExpMessageValues.Emotes].Value);
-					var emoteQueue = new Queue<Emote>();
-					foreach (Match emote in allEmotes)
-						emoteQueue.Enqueue(new Emote(emote.Groups[1].Value, int.Parse(emote.Groups[2].Value), int.Parse(emote.Groups[3].Value)));
+					var allEmotes = regExers[RegexTypes.EmoteDataPassOne].Matches(messageMatch.Groups[(int)StdExpMessageValues.Emotes].Value);
+					var emoteQueue = new List<Emote>();
+					foreach (Match emoteSet in allEmotes)
+					{
+						string emoteID = emoteSet.Groups[1].Value;
+						foreach (Match emote in regExers[RegexTypes.EmoteDataPassTwo].Matches(emoteSet.Groups[2].Value))
+						{
+							emoteQueue.Add(new Emote(emoteID, int.Parse(emote.Groups[1].Value), int.Parse(emote.Groups[2].Value)));
+						}
+					}
+					emoteQueue = emoteQueue.OrderBy(x => x.StartPos).ToList();
 					var args = messageMatch.Groups.Cast<Group>().Select(x => x.Value).ToArray();
 					bool greedIsPresent = false;
 					List<Command> commandsToQueue = new List<Command>();
@@ -160,8 +172,8 @@ namespace Tankooni.IRC
 						if (newCommand == null)
 						{
 							currentCommandStartPosition += potentialCommand.Value.Length;
-							while (emoteQueue.Count > 0 && emoteQueue.Peek().StartPos < currentCommandStartPosition)
-								emoteQueue.Dequeue();
+							while (emoteQueue.Count > 0 && emoteQueue.First().StartPos < currentCommandStartPosition)
+								emoteQueue.RemoveAt(0);
 							
 							continue;
 						}
@@ -169,9 +181,11 @@ namespace Tankooni.IRC
 						var commandParamStartPos = currentCommandStartPosition + potentialCommand.Groups[1].Value.Length + 2;
 						currentCommandStartPosition += potentialCommand.Value.Length;
 						var emoteList = new List<Emote>();
-						while (emoteQueue.Count > 0 && emoteQueue.Peek().StartPos < currentCommandStartPosition)
+
+						while (emoteQueue.Count > 0 && emoteQueue.First().StartPos < currentCommandStartPosition)
 						{
-							var emote = emoteQueue.Dequeue();
+							Emote emote = emoteQueue.First();
+							emoteQueue.RemoveAt(0);
 							emote.StartPos -= commandParamStartPos;
 							emote.EndPos -= commandParamStartPos;
 							emoteList.Add(emote);

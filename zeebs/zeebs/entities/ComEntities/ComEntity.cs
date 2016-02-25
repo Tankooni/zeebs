@@ -39,7 +39,7 @@ namespace zeebs.entities
 			X = twitchUserComEntityData.ComEntityPosition.X;
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
 			AddComponent(coHostCommands);
-			AddResponse(Attack.AttackeMessage.Attack, DoReceiveAttack);
+			AddResponse(Attack.AttackeMessage.AttackCommand, DoReceiveAttack);
 			//try
 			//{
 			//	emitter = new Emitter(Library.GetTexture("twitch//" + twitchUserComEntityData.ComEmoteHead));
@@ -93,7 +93,7 @@ namespace zeebs.entities
 				{
 					yield return command.Update();
 				}
-				commands.Dequeue();
+				commands.Dequeue().CallWhenDone();
 			}
 		}
 

@@ -53,7 +53,8 @@ namespace zeebs.utils.commands
 
 		public enum AttackeMessage
 		{
-			Attack
+			Attack,
+			AttackCommand
 		}
 	}
 }
