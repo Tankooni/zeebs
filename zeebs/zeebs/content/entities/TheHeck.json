@@ -1,0 +1,30 @@
+{
+	"Name": "TheHeck",
+	"DefaultAnimation": "Idle",
+	"ShaderName": null,
+	"Animations": {
+		"Idle": {
+			"OriginX": 88,
+			"OriginY": 64,
+			"FrameWidth": 176,
+			"FrameHeight": 128,
+			"HeadPositionX": -4,
+			"HeadPositionY": -27,
+			"Name": "Idle",
+			"FPS": 24,
+			"HeadWidth": 38,
+			"Frames": [0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11]
+		}
+	}
+}
