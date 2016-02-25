@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Indigo;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,12 @@ namespace zeebs.entities.ComEntities.Commands
 		public override bool IsDone()
 		{
 			return isDone;
+		}
+
+		public override void Init()
+		{
+			base.Init();
+			FP.World.BroadcastMessage(utils.commands.Attack.AttackeMessage.AttackCommand, comEntity.TwitchUserComEntityData.TwitchUserName, comEntity);
 		}
 
 		public override IEnumerator Update()

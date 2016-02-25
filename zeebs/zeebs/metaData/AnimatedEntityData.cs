@@ -9,8 +9,8 @@ namespace zeebs.metaData
 	public class AnimatedEntityData
 	{
 		public string Name;
-		public List<string> Animations;
 		public string DefaultAnimation;
 		public string ShaderName;
+		public Dictionary<string, AnimationData> Animations;
 	}
 }

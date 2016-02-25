@@ -141,6 +141,7 @@ namespace Tankooni
 				config.OverrideBotUser = Dont.Do1;
 				config.OverrideOauth = Dont.Do2;
 			}
+			config.Channel = config.Channel.ToLower();
 			return config;
 		}
 	}

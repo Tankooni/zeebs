@@ -10,6 +10,9 @@ using Tankooni;
 using System.IO;
 using System.Text.RegularExpressions;
 using SFML;
+using zeebs.metaData;
+using Indigo.Core;
+using Utils.Json;
 
 namespace zeebs
 {
