@@ -152,12 +152,32 @@ namespace Indigo.Content
 				data = client.DownloadData(string.Format("http://static-cdn.jtvnw.net/emoticons//v1/{0}/1.0", image_id));
 				var folder = Library.GetFolderName("content/twitchcache");
 				MemoryStream stream = new MemoryStream();
-				using (MagickImage mImage = new MagickImage(data))
-				{
-					mImage.Format = MagickFormat.Png32;
-					mImage.Write(stream);
-					stream.Position = 0;
-				}
+
+                using (MemoryStream bMapStream = new MemoryStream(data))
+                {
+                    using (Bitmap bMap = new Bitmap(bMapStream))
+                    {
+                        using (MagickImage mImage = new MagickImage(data))
+                        {
+                            switch (bMap.PixelFormat)
+                            {
+                                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+                                    mImage.Format = MagickFormat.Png8;
+                                    break;
+                                default:
+                                    mImage.Format = MagickFormat.Png32;
+                                    break;
+                            }
+
+                            //This is the only exception out of all default emotes. See issue 12.
+                            if (emoteName == "FuzzyOtterOO")
+                                mImage.Format = MagickFormat.Png8;
+
+                            mImage.Write(stream);
+                            stream.Position = 0;
+                        }
+                    }
+                }
 				
 				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
 			}
