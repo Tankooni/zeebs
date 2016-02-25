@@ -10,10 +10,14 @@ namespace zeebs.metaData
 	public class AnimationData
 	{
 		public string Name { set; get; }
-		public int Frames { set; get; }
+		public int OriginX;
+		public int OriginY;
+		public int FrameWidth;
+		public int FrameHeight;
 		public int FPS { set; get; }
-		public Point HeadPosition { set; get; }
+		public int HeadPositionX;
+		public int HeadPositionY;
 		public int HeadWidth { set; get; }
-		public Point Origin { set; get; }
+		public int[] Frames { set; get; }
 	}
 }

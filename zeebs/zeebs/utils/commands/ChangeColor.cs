@@ -22,6 +22,7 @@ namespace zeebs.utils.commands
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
 			base.CanExecute(args, commandParams, emotes);
+			commandParams = commandParams.Trim();
 			if (!Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
 			{
 				FailReasonMessage = "Not part of game";
