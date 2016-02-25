@@ -19,7 +19,8 @@ namespace Tankooni.IRC
 		StdExpMessage,
 		StdPartMessage,
 		AllCommands,
-		EmoteData
+		EmoteDataPassOne,
+		EmoteDataPassTwo
 	}
 
 	public enum StdExpMessageValues : int
@@ -72,8 +73,12 @@ namespace Tankooni.IRC
 				new Regex(@"\!(\w+)\s*([^\!]*)")
 			},
 			{
-				RegexTypes.EmoteData,
-				new Regex(@"(\d+):(\d+)-(\d+)")
+				RegexTypes.EmoteDataPassOne,
+				new Regex(@"(\d+):([^/]*)")
+			},
+			{
+				RegexTypes.EmoteDataPassTwo,
+				new Regex(@"(\d+)-(\d+)")
 			}
 		};
 
@@ -141,10 +146,16 @@ namespace Tankooni.IRC
 				if (messageMatch.Groups[(int)StdExpMessageValues.Message].Value.StartsWith("!"))
 				{
 					var allPotentialCommandMatches = regExers[RegexTypes.AllCommands].Matches(messageMatch.Groups[(int)StdExpMessageValues.Message].Value);
-					var allEmotes = regExers[RegexTypes.EmoteData].Matches(messageMatch.Groups[(int)StdExpMessageValues.Emotes].Value);
+					var allEmotes = regExers[RegexTypes.EmoteDataPassOne].Matches(messageMatch.Groups[(int)StdExpMessageValues.Emotes].Value);
 					var emoteQueue = new List<Emote>();
-					foreach (Match emote in allEmotes)
-						emoteQueue.Add(new Emote(emote.Groups[1].Value, int.Parse(emote.Groups[2].Value), int.Parse(emote.Groups[3].Value)));
+					foreach (Match emoteSet in allEmotes)
+					{
+						string emoteID = emoteSet.Groups[1].Value;
+						foreach (Match emote in regExers[RegexTypes.EmoteDataPassTwo].Matches(emoteSet.Groups[2].Value))
+						{
+							emoteQueue.Add(new Emote(emoteID, int.Parse(emote.Groups[1].Value), int.Parse(emote.Groups[2].Value)));
+						}
+					}
 					emoteQueue = emoteQueue.OrderBy(x => x.StartPos).ToList();
 					var args = messageMatch.Groups.Cast<Group>().Select(x => x.Value).ToArray();
 					bool greedIsPresent = false;
