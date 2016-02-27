@@ -30,7 +30,7 @@ namespace zeebs.utils.commands
             var match = Regex.Match(commandParams, @"([udlrwasd123456789]+)");
             if (!match.Success)
             {
-				FailReasonMessage = "Invalid format. Plese use !moved <uldr wasd 48627913";
+				FailReasonMessage = "Invalid format. Plese use !moved <uldr wasd 48627913>";
                 return false;
             }
 
