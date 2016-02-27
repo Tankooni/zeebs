@@ -7,5 +7,10 @@ Add relative movement with exact numbers
 
 Bugs
 	Fix parsing of multiple of the same kind of emote
+	Fix the mega kill bug
 Add
 	Rejoin timer
+	
+Emotes that break
+	mangoNeo
+	
