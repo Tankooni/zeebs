@@ -79,9 +79,9 @@ namespace zeebs
 			for (int x = 0; x < pathNodes.GetLength(0); x++)
 				for (int y = 0; y < pathNodes.GetLength(1); y++)
 					pathNodes[x, y] = new PathNode(null, x * TileSize + TileSize / 2, y * TileSize + TileSize / 2, false);
-			for (int x = 0; x < pathNodes.GetLength(0); x++)
-				for (int y = 0; y < pathNodes.GetLength(1); y++)
-					PathNode.ConnectedNodes[pathNodes[x, y]] = SolverUtility.SelectTilesAroundTile(x, y, pathNodes);
+			//for (int x = 0; x < pathNodes.GetLength(0); x++)
+			//	for (int y = 0; y < pathNodes.GetLength(1); y++)
+			//		PathNode.ConnectedNodes[pathNodes[x, y]] = SolverUtility.SelectTilesAroundTile(x, y, pathNodes);
 
 			Utility.LoadAndProcessClickMap("content/MoveMap.png", pathNodes, nodeGrid, TileSize);
 			Add(nodeGridEntity);

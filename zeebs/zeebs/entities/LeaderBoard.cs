@@ -37,9 +37,10 @@ namespace zeebs.entities
 			};
 			UserText.Add(header);
 			AddComponent(header);
+			minWidth = (int)Math.Ceiling(header.Width);
 
 			float totalHeight = header.Height;
-			for(int i = 1; i < leaderboardTotal; i++)
+			for(int i = 0; i < leaderboardTotal; i++)
 			{
 				var newText = new Text(y: totalHeight)
 				{
@@ -49,28 +50,37 @@ namespace zeebs.entities
 				UserText.Add(newText);
 				AddComponent<Text>(newText);
 			}
-			background.ScaleY = minWidth = Height = (int)Math.Ceiling(totalHeight);
-			background.ScaleX = Width = (int)Math.Ceiling(header.Width);
+			totalHeight += header.Height / 2;
+
+			background.ScaleY = Height = (int)Math.Ceiling(totalHeight);
+			background.ScaleX = minWidth = Width = (int)Math.Ceiling(header.Width);
 		}
 
 		public void UpdateLeaderBoard()
 		{
-			int index = 1;
-			float longestWidth = minWidth;
-			foreach (var entity in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount).Take(leaderboardTotal))
+			try
 			{
-				var currentText = UserText[index];
-				string userName = entity.TwitchUserComEntityData.TwitchUserName;
-				if (userName.Length > 10)
-					userName = new string(userName.Take(10).ToArray()) + "...";
-				currentText.Color = new Color(int.Parse(entity.TwitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber));
-				currentText.String = userName + ": " + entity.TwitchUserComEntityData.KillCount;
-				if (currentText.Width > longestWidth)
-					longestWidth = currentText.Width;
-				index++;
-			}
+				int index = 1;
+				float longestWidth = minWidth;
+				foreach (var entity in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount).Take(leaderboardTotal))
+				{
+					var currentText = UserText[index];
+					string userName = entity.TwitchUserComEntityData.TwitchUserName;
+					if (userName.Length > 10)
+						userName = new string(userName.Take(10).ToArray()) + "...";
+					currentText.Color = new Color(int.Parse(entity.TwitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber));
+					currentText.String = userName + ": " + entity.TwitchUserComEntityData.KillCount;
+					if (currentText.Width > longestWidth)
+						longestWidth = currentText.Width;
+					index++;
+				}
 
-			background.ScaleX = Width = (int)Math.Ceiling(longestWidth);
+				background.ScaleX = Width = (int)Math.Ceiling(longestWidth);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error updating leaderboad: " + ex.Message);
+			}
 		}
 		bool MouseHeld = false;
 		public override void Update()
