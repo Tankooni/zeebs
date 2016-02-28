@@ -21,12 +21,16 @@ namespace zeebs.entities
 		public Image Head;
 		string currentHeadName;
 		Tween currentHeadTween;
+        
+        //Name that will appear above the zeeb
+        public Text zeebName;
 
         private float rotation;
         public float Rotation
         {
-            get {return rotation;}
-            set {
+            get { return rotation; }
+            set
+            {
                 while (rotation >= 360)
                 {
                     rotation -= 360;
@@ -52,10 +56,13 @@ namespace zeebs.entities
             }
         }
 
-		public AnimatedEntity(string entityName, string twitchHeadName)
-			: this(entityName, twitchHeadName, Color.White) { }
+		public AnimatedEntity(string entityName, string twitchHeadName, string twitchUsername)
+			: this(entityName, twitchHeadName, twitchUsername, Color.White)
+        {
 
-		public AnimatedEntity(string entityName, string twitchHeadName, Color tintColor)
+        }
+
+		public AnimatedEntity(string entityName, string twitchHeadName, string twitchUseranme, Color tintColor)
 		{
 			string EntityFilePath = Utility.CONTENT_DIR + "/entities/" + entityName;
 			AnimatedEntityData = JsonLoader.Load<AnimatedEntityData>(EntityFilePath);
@@ -65,7 +72,8 @@ namespace zeebs.entities
 				OriginX = defaultAnim.OriginX,
 				OriginY = defaultAnim.OriginY
 			};
-			foreach (var animation in AnimatedEntityData.Animations.Values)
+
+            foreach (var animation in AnimatedEntityData.Animations.Values)
 				Sprite.Add(animation.Name, animation.Frames, animation.FPS, true);
 
 			if (AnimatedEntityData.ShaderName != null)
@@ -80,9 +88,9 @@ namespace zeebs.entities
 			AddComponent(Sprite);
 
 			CreateHead(twitchHeadName);
+            CreateName(twitchUseranme);
 		}
-
-		public void SetAlpha(float value)
+        public void SetAlpha(float value)
 		{
 			Sprite.Alpha = value;
 			if (Head != null)
@@ -179,7 +187,19 @@ namespace zeebs.entities
 			}
 		}
 
-		public override void Update()
+        private void CreateName(string twitchUseranme)
+        {
+            AddComponent(zeebName = new Text(twitchUseranme) { Scale = 0.7f });
+
+            zeebName.CenterOrigin();
+            //zeebName.Scale = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadWidth / (float)zeebName.Width;
+
+            zeebName.X = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionX;
+            zeebName.Y = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionY - 17.0f;
+        }
+
+
+        public override void Update()
 		{
 			base.Update();
 
