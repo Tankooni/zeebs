@@ -26,13 +26,13 @@ namespace zeebs.entities
 		CoroutineHost coHostCommands = new CoroutineHost();
 		//public Emitter emitter;
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
-			: base
-			(
-				  twitchUserComEntityData.ComEntityName, 
-				  twitchUserComEntityData.ComEmoteHead, 
-				  String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
-					Color.White : 
-					new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber)))
+			: base(twitchUserComEntityData.ComEntityName, 
+                   twitchUserComEntityData.ComEmoteHead,
+                   twitchUserComEntityData.TwitchUserName,
+                   String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
+                        Color.White : 
+                        new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber))
+                  )
 		{
 			this.CenterOrigin();
 			TwitchUserComEntityData = twitchUserComEntityData;
@@ -63,7 +63,6 @@ namespace zeebs.entities
 			//	myType.Motion.DistanceVariance.Add = 4;
 			//	AddComponent(emitter);
 			//}
-			
 		}
 
 		public void QueueCommand(ComEntityCommand command)
