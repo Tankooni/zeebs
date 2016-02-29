@@ -47,7 +47,7 @@ namespace zeebs.utils.commands
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], emoteName, Args[(int)StdExpMessageValues.UserColor]);
+			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], Args[(int)StdExpMessageValues.DisplayName], emoteName, Args[(int)StdExpMessageValues.UserColor]);
 		}
 
 		public override Command CreateNewSelf()
