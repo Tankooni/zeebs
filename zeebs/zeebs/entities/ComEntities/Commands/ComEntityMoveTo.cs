@@ -15,11 +15,21 @@ namespace zeebs.entities
 		bool isKill = false;
 		protected Point moveTo;
 		string moverUserName;
+		float totalDistance = 0;
+		float moveStep = 0;
 		public ComEntityMoveTo(ComEntity comEntity, Point moveTo, string moverUserName = null)
 			: base(comEntity)
 		{			
 			this.moveTo = moveTo;
 			this.moverUserName = moverUserName;
+			
+		}
+
+		public override void Init()
+		{
+			base.Init();
+			totalDistance = FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y);
+			moveStep = totalDistance / 10f;
 		}
 
 		public override bool IsDone()
@@ -29,9 +39,15 @@ namespace zeebs.entities
 
 		public override IEnumerator Update()
 		{
+			//comEntity.MoveTowards(moveTo.X, moveTo.Y, moveStep);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.X, moveTo.X);
 			Indigo.Utils.Approach.TowardsWithDecay(ref comEntity.Y, moveTo.Y);
-			if(FP.World.CollidePoint("ClickMap", comEntity.X, comEntity.Y) == null)
+			//if(FP.Distance(comEntity.X, comEntity.Y, moveTo.X, moveTo.Y) < 5)
+			//{
+			//	comEntity.X = moveTo.X;
+			//	comEntity.Y = moveTo.Y;
+			//}
+			if (FP.World.CollidePoint("ClickMap", comEntity.X, comEntity.Y) == null)
 			{
 				isKill = true;
 				FP.World.BroadcastMessage(StartScreenWorld.WorldMessages.PlayerKilledPlayer, comEntity.TwitchUserComEntityData.TwitchUserName, moverUserName ?? comEntity.TwitchUserComEntityData.TwitchUserName);

@@ -98,7 +98,9 @@ namespace zeebs
 		public void DoJoinGame(object[] args)
 		{
 			string userName = (string)args[0];
-			string emoteName = (string)args[1];
+			string displayName = (string)args[1];
+			string emoteName = (string)args[2];
+			string userColor = (string)args[3];
 			//string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
 			int dX;
@@ -127,7 +129,8 @@ namespace zeebs
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
-					TwitchUserColor = string.IsNullOrWhiteSpace((string)args[2]) ? "FFFFFF" : (string)args[2],
+					TwitchDisplayName = displayName,
+					TwitchUserColor = string.IsNullOrWhiteSpace(userColor) ? String.Format("{0:X6}", FP.Random.Int(16777216)) : userColor,
 					ComEmoteHead = emoteName,
 					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),

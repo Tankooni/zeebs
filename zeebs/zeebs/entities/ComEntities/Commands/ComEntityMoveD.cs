@@ -19,6 +19,7 @@ namespace zeebs.entities.ComEntities.Commands
 
 		public override void Init()
 		{
+			base.Init();
 			moveTo = new Point(moveTo.X + comEntity.X, moveTo.Y + comEntity.Y);
 		}
     }
