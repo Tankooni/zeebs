@@ -33,7 +33,7 @@ namespace zeebs.utils.commands
 			{
 				dX = FP.Random.Int(0, FP.Width);
 				dY = FP.Random.Int(0, FP.Height);
-			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) != null);
 
             return true;
         }

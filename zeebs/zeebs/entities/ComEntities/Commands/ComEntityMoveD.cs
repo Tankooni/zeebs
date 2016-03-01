@@ -12,15 +12,15 @@ namespace zeebs.entities.ComEntities.Commands
 {
     public class ComEntityMoveD : ComEntityMoveTo
     {
-        public ComEntityMoveD(ComEntity comEntity, Point moveDelta, string moverUserName = null)
-            : base(comEntity, moveDelta, moverUserName)
+        public ComEntityMoveD(ComEntity comEntity, Point moveDelta, bool moveWithDeathInMind, string moverUserName = null)
+            : base(comEntity, moveDelta, moveWithDeathInMind, moverUserName)
         {
         }
 
 		public override void Init()
 		{
-			base.Init();
 			moveTo = new Point(moveTo.X + comEntity.X, moveTo.Y + comEntity.Y);
+			base.Init();
 		}
     }
 }

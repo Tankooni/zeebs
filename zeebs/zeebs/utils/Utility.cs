@@ -76,7 +76,7 @@ namespace Tankooni
 							if (xMap < map.Size.X && yMap < map.Size.Y && map.GetPixel((uint)xMap, (uint)yMap).B > 40)
 								totalTrue++;
 					}
-					pathGrid.SetTile(x, y, pathNodes[x, y].Enabled = (totalTrue / totalPixelsInTile) >= .5f);
+					pathGrid.SetTile(x, y, !(pathNodes[x, y].Enabled = (totalTrue / totalPixelsInTile) >= .5f));
 				}
 			}
 		}

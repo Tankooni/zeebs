@@ -110,7 +110,7 @@ namespace zeebs.entities
 
 				var hitDistance = FP.Scale(TwitchUserComEntityData.Damage, DamageMin, DamageMax, HitDistanceMin, HitDistanceMax);
 				TwitchUserComEntityData.Damage += DamageAmount;
-				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * hitDistance), userName));
+				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * hitDistance), true, userName));
 			}
 		}
 
