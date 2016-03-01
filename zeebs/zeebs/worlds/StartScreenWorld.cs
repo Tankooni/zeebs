@@ -109,7 +109,7 @@ namespace zeebs
 			{
 				dX = FP.Random.Int(0, FP.Width);
 				dY = FP.Random.Int(0, FP.Height);
-			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) != null);
 
 			//if (!File.Exists(pathName))
 			//{
@@ -177,13 +177,13 @@ namespace zeebs
 		public void DoMoveZeeb(object[] args)
 		{
 			var player = Utility.GamePlayers[(string)args[0]];
-            player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2]))));
+            player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2])), false));
 		}
 
         public void DoMoveDZeeb(object[] args)
         {
             var player = Utility.GamePlayers[(string)args[0]];
-            player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2]))));
+            player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2])), false));
         }
 
         public void DoLoop(object[] args)
