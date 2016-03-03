@@ -111,7 +111,6 @@
     <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="utils\Class1.cs" />
     <Compile Include="utils\commands\Command.cs" />
     <Compile Include="utils\commands\HypeButton.cs" />
     <Compile Include="utils\Part.cs" />

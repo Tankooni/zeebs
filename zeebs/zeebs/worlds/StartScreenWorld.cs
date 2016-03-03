@@ -260,27 +260,34 @@ namespace zeebs
 			File.WriteAllText(Utility.SAVE_DIR + "/" + "Scores_" + DateTime.Now.ToString("MMddyy_HHmmss") + ".txt", scoreBuilder.ToString());
 		}
 
+		int totalTesters = 0;
+		string currentDemoZeeb = "Test";
+
 		public override void Update()
 		{
 			base.Update();
-			//if (Keyboard.A.Pressed)
-			//	Utility.Twitchy.SendMessageToServer("Hai frondsww");
+			if (Keyboard.Space.Down)
+			{
+				Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :!join Kappa",
+					(currentDemoZeeb + totalTesters++)
+					));
+			}
 			//if (Keyboard.S.Pressed)
 			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
 
-				//if (Keyboard.Z.Pressed)
-				//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
+			//if (Keyboard.Z.Pressed)
+			//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
 
-				//if (Keyboard.Q.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
-				//if (Keyboard.W.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
-				//if (Keyboard.E.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
-				//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
+			//if (Keyboard.Q.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
+			//if (Keyboard.W.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
+			//if (Keyboard.E.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
+			//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
 
-				//            if (Keyboard.Space.Pressed)
-				//                FP.World = new InstructionsScreenWorld();
+			//            if (Keyboard.Space.Pressed)
+			//                FP.World = new InstructionsScreenWorld();
 		}
 
 		public enum WorldMessages
