@@ -68,13 +68,11 @@ namespace zeebs.entities
 					newY = 0;
 				else if (newY > FP.Height)
 					newY = FP.Height;
-
 				
-				for (int i = 1; FP.World.CollidePoint("ClickMap", newX, newY) != null; i++)
+				while (FP.World.CollidePoint("ClickMap", newX, newY) != null)
 				{
-					var moveBack = (moveDirection * i);
-					newX -= moveBack.X;
-					newY -= moveBack.Y;
+					newX -= moveDirection.X;
+					newY -= moveDirection.Y;
 				}
 			}
 
