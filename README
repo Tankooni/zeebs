@@ -18,7 +18,7 @@ https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx
 
 2. Copy the files in zeebs/lib into zeebs/bin/Debug
 
-3. In zeebs/bin/Debug/save replace MainConfig with:
+3. In zeebs/bin/Debug/save replace MainConfig with: (you may need to run the program first to produce this file)
 
 {
   "CurrentMusic": "",
