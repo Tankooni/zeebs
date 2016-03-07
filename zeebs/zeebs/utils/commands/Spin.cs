@@ -34,14 +34,15 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(SpinMessage.Spin, Args[(int)StdExpMessageValues.UseName]);
 		}
 
-        public override Command CreateNewSelf()
-        {
-            return new Spin();
-        }
-
-        public enum SpinMessage
-        {
-            Spin
-        }
+    public override Command CreateNewSelf()
+    {
+        return new Spin();
     }
+
+    public enum SpinMessage
+    {
+        Spin
+    }
+  
+  }
 }
