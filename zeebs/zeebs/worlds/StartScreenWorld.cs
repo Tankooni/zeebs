@@ -56,6 +56,7 @@ namespace zeebs
 			AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
 			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
 			AddResponse(Attack.AttackeMessage.Attack, DoAttack);
+      AddResponse(Help.HelpMessage.Help, DoHelpZeeb);
 
 			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
 			AddResponse(WorldMessages.UpdateLeaderBoard, UpdateLeaderBoard);
@@ -196,6 +197,12 @@ namespace zeebs
         {
             var player = Utility.GamePlayers[(string)args[0]];
             player.QueueCommand(new ComEntitySpin(player));
+        }
+
+        public void DoHelpZeeb(object[] args)
+        {
+            var player = Utility.GamePlayers[(string)args[0]];
+            player.QueueCommand(new ComEntityHelp(player));
         }
 
         public void DoFlipZeeb(object[] args)

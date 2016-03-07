@@ -273,7 +273,7 @@ namespace Tankooni.IRC
 			}
 		}
 
-		protected void SendMessageToServer(string message)
+		public void SendMessageToServer(string message)
 		{
 			if (Irc.Connected && !Utility.MainConfig.PreventBotTalking)
 				Irc.SendData("PRIVMSG", channel + " :" + message);
