@@ -142,9 +142,6 @@ namespace zeebs.entities
 
 		public bool ChangeHead(string headName)
 		{
-			if (Head == null)
-				return false;
-
 			if (currentHeadName != headName)
 			{
 				var oldHead = Head;

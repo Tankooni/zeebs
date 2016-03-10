@@ -11,6 +11,7 @@ using Tankooni;
 using Indigo;
 using System.Collections.Concurrent;
 using zeebs.utils.zoopBoot;
+using System.Net;
 
 namespace Tankooni.IRC
 {
@@ -45,18 +46,27 @@ namespace Tankooni.IRC
 	public class TwitchInterface
 	{
 		public static TwitchInterface MasterTwitchInterface;
-		IRC Irc;
-		Thread IrcThread;
-		Thread PubChatOut;
-		string channel;
-		string nickName;
-		string oauth;
-		float messageOutRate = (30.0f / 100.0f);
+		private WebClient client;
+		private string channel;
+		private string nickName;
+		private string oauth;
+		private string twitchAddress;
+		private string twitchAddressPort;
+		private TwitchChatServers twitchChatServers;
+
+		private IRC Irc;
+		private Thread IrcThread;
+		private Thread PubChatOut;
+		private IRC PrivateIrc;
+		private Thread PrivateIrcThread;
+		private Thread PrivateChatOut;
+		private float messageOutRate = (30.0f / 100.0f);
 
 		public bool IsDebug;
 		public bool IsOfflineMode;
 
 		public ConcurrentQueue<string> PublicChatQueue = new ConcurrentQueue<string>();
+		public ConcurrentQueue<Tuple<string, string>> PrivateChatQueue = new ConcurrentQueue<Tuple<string, string>>();
 
 		public static Dictionary<RegexTypes, Regex> regExers = new Dictionary<RegexTypes, Regex>
 		{
@@ -91,8 +101,10 @@ namespace Tankooni.IRC
 			return command.CreateNewSelf();
 		}
 
-		public TwitchInterface(string nickName, string oauth, bool isDebug = false, bool isOfflineMode = false)
+		public TwitchInterface(string channel, string nickName, string oauth, bool isDebug = false, bool isOfflineMode = false)
 		{
+			this.channel = channel;
+			client = new WebClient();
 			MasterTwitchInterface = this;
 			IsDebug = isDebug;
 			IsOfflineMode = isOfflineMode;
@@ -100,13 +112,23 @@ namespace Tankooni.IRC
 			this.oauth = oauth;
 			if (!isOfflineMode)
 			{
+				twitchChatServers = Newtonsoft.Json.JsonConvert.DeserializeObject<TwitchChatServers>(client.DownloadString(string.Format("http://tmi.twitch.tv/servers?channel={0}", channel.Remove(0,1))));
+				var chatServerIP = twitchChatServers.servers.First().Split(':');
+
 				IrcThread = new Thread(() => { while (true) { Irc.Update(); Thread.Sleep(10); } });
 				IrcThread.IsBackground = true;
-				Irc = new IRC("irc.twitch.tv", 6667, nickName, oauth, isDebug);
+				Irc = new IRC(chatServerIP[0], int.Parse(chatServerIP[1]), nickName, oauth, isDebug);
 				Irc.CommandReceiveCallBack = OmgImSoPopular;
+
+				PrivateIrcThread = new Thread(() => { while (true) { PrivateIrc.Update(); Thread.Sleep(10); } });
+				PrivateIrcThread.IsBackground = true;
+				PrivateIrc = new IRC("192.16.64.180", 443, nickName, oauth, isDebug);
+				PrivateIrc.CommandReceiveCallBack = PleaseBeQuiet;
 
 				PubChatOut = new Thread(() => { while (true) { PublicChatMessageQueueDoer(); Thread.Sleep(100); } });
 				PubChatOut.IsBackground = true;
+				PrivateChatOut = new Thread(() => { while (true) { PrivateChatMessageQueueDoer(); Thread.Sleep(100); } });
+				PrivateChatOut.IsBackground = true;
 			}
 			else
 				if (isDebug) Console.WriteLine("Offline Mode enabled");
@@ -121,14 +143,16 @@ namespace Tankooni.IRC
 			}
 		}
 
-		public void Connect(string channel)
+		public void Connect()
 		{
-			this.channel = channel;
-
 			Irc.Connect();
 			Irc.Join(channel);
 			IrcThread.Start();
 			PubChatOut.Start();
+
+			PrivateIrc.Connect();
+			PrivateIrcThread.Start();
+			PrivateChatOut.Start();
 		}
 
 		//public void SpoofMessage(string )
@@ -214,7 +238,7 @@ namespace Tankooni.IRC
 
 					if (firstFailedCommand != null)
 					{
-						string failMessage = "@" + args[(int)StdExpMessageValues.UseName] + ": ";
+						string failMessage = "";//"@" + args[(int)StdExpMessageValues.UseName] + ": ";
 						if(failedCommandNames.Count() > 1)
 						{
 							failMessage += "First Fail Message: " + firstFailedCommand.FailReasonMessage;
@@ -224,7 +248,8 @@ namespace Tankooni.IRC
 						{
 							failMessage += firstFailedCommand.FailReasonMessage;
 						}
-						QueuePublicChatMessage(failMessage);
+						QueuePrivateChatMessage(args[(int)StdExpMessageValues.UseName], failMessage);
+						//QueuePublicChatMessage(failMessage);
 						return;
 					}
 
@@ -256,27 +281,57 @@ namespace Tankooni.IRC
 			}
 		}
 
+		public void PleaseBeQuiet(string message)
+		{
+
+		}
+
 		public void QueuePublicChatMessage(string message)
 		{
 			PublicChatQueue.Enqueue(message);
 		}
+		public void QueuePrivateChatMessage(string user, string message)
+		{
+			PrivateChatQueue.Enqueue(Tuple.Create(user, message));
+		}
 
-		public void PublicChatMessageQueueDoer()
+		protected void PublicChatMessageQueueDoer()
 		{
 			string message;
 			if (PublicChatQueue.TryDequeue(out message))
 			{
 				if (!Utility.MainConfig.IsOfflineMode)
-					SendMessageToServer(message);
+					SendPublicMessageToServer(message);
 				else
-					Console.WriteLine(message);
+					Console.WriteLine("Public: " + message);
 			}
 		}
 
-		protected void SendMessageToServer(string message)
+		protected void PrivateChatMessageQueueDoer()
+		{
+			Tuple<string, string> message;
+			if (PrivateChatQueue.TryDequeue(out message))
+			{
+				if (!Utility.MainConfig.IsOfflineMode)
+					SendPrivateMessageToServer(message.Item1, message.Item2);
+				else
+					Console.WriteLine("Whisper: " + message.Item1 + ": " + message.Item2);
+			}
+		}
+
+		protected void SendPublicMessageToServer(string message)
 		{
 			if (Irc.Connected && !Utility.MainConfig.PreventBotTalking)
 				Irc.SendData("PRIVMSG", channel + " :" + message);
+		}
+
+		protected void SendPrivateMessageToServer(string user, string message)
+		{
+			if (PrivateIrc.Connected && !Utility.MainConfig.PreventBotTalking)
+			{
+				PrivateIrc.SendData("PRIVMSG", channel + " :/w " + user + " " + message);
+				//PrivateIrc.SendData("WHISPER", user + " :" + message);
+			}
 		}
 
 		//public void SendPriveMessageToServer(string user, string message)
@@ -285,9 +340,13 @@ namespace Tankooni.IRC
 		//		Irc.SendData("PRIVMSG", user + " : " + message);
 		//}
 
-		public void SendCommand(string one, string two, string three)
+		public void SendPublicCommand(string command, string param1, string param2)
 		{
-			Irc.SendData(one, two + " :" + three);
+			Irc.SendData(command, param1 + " :" + param2);
+		}
+		public void SendPrivateCommand(string command, string param1, string param2)
+		{
+			PrivateIrc.SendData(command, param1 + " :" + param2);
 		}
 
 		public void CloseConnection()
@@ -295,6 +354,13 @@ namespace Tankooni.IRC
 			IrcThread.Abort();
 			PubChatOut.Abort();
 			Irc.Close();
+		}
+
+		private class TwitchChatServers
+		{
+			public string cluster;
+			public string[] servers;
+			public string[] websockets_servers;
 		}
 	}
 }
