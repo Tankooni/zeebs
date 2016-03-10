@@ -14,6 +14,7 @@ namespace zeebs.utils.commands
 	class Change : Command
 	{
 		string emoteName;
+		bool isAvatar = false;
 
 		public Change()
 		{
@@ -28,20 +29,28 @@ namespace zeebs.utils.commands
 				return false;
 			}
 			
-			if (emotes.Count == 0)
+			if(commandParams.ToLower().Contains("avatar"))
+			{
+				emoteName = args[(int)StdExpMessageValues.UseName];
+				isAvatar = true;
+			}
+			else if (emotes.Count != 0)
+			{
+				var emote = emotes.First();
+				emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			}
+			else
 			{
 				FailReasonMessage = "No emote specified";
 				return false;
 			}
-			var emote = emotes.First();
 
-			emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(ChangeMessage.Change, Args[(int)StdExpMessageValues.UseName], emoteName);
+			FP.World.BroadcastMessage(ChangeMessage.Change, Args[(int)StdExpMessageValues.UseName], emoteName, isAvatar);
 		}
 
 		public override Command CreateNewSelf()
@@ -51,7 +60,8 @@ namespace zeebs.utils.commands
 
 		public enum ChangeMessage
 		{
-			Change
+			Change,
+			ChangeAvatar
 		}
 	}
 }

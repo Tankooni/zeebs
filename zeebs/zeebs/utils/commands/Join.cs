@@ -15,6 +15,7 @@ namespace zeebs.utils.commands
 	public class Join : Command
 	{
 		string emoteName;
+		bool isAvatar;
 
 		public Join()
 		{
@@ -34,20 +35,27 @@ namespace zeebs.utils.commands
 				return false;
 			}
 
-			if (emotes.Count == 0)
+			if (commandParams.ToLower().Contains("avatar"))
 			{
-				FailReasonMessage = "No emote specified. Please use !join <emote>";
+				emoteName = args[(int)StdExpMessageValues.UseName];
+				isAvatar = true;
+			}
+			else if (emotes.Count != 0)
+			{
+				var emote = emotes.First();
+				emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			}
+			else
+			{
+				FailReasonMessage = "No emote specified";
 				return false;
 			}
-			var emote = emotes.First();
-
-			emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], Args[(int)StdExpMessageValues.DisplayName], emoteName, Args[(int)StdExpMessageValues.UserColor]);
+			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], Args[(int)StdExpMessageValues.DisplayName], emoteName, isAvatar, Args[(int)StdExpMessageValues.UserColor]);
 		}
 
 		public override Command CreateNewSelf()

@@ -56,13 +56,13 @@ namespace zeebs.entities
             }
         }
 
-		public AnimatedEntity(string entityName, string twitchHeadName, string twitchUsername)
-			: this(entityName, twitchHeadName, twitchUsername, Color.White)
+		public AnimatedEntity(string entityName, string twitchHeadName, bool isAvatar, string twitchUsername)
+			: this(entityName, twitchHeadName, isAvatar, twitchUsername, Color.White)
         {
 
         }
 
-		public AnimatedEntity(string entityName, string twitchHeadName, string twitchUseranme, Color tintColor)
+		public AnimatedEntity(string entityName, string twitchHeadName, bool isAvatar, string twitchUseranme, Color tintColor)
 		{
 			string EntityFilePath = Utility.CONTENT_DIR + "/entities/" + entityName;
 			AnimatedEntityData = JsonLoader.Load<AnimatedEntityData>(EntityFilePath);
@@ -87,7 +87,7 @@ namespace zeebs.entities
 			Sprite.Play(AnimatedEntityData.DefaultAnimation);
 			AddComponent(Sprite);
 
-			CreateHead(twitchHeadName);
+			CreateHead(twitchHeadName, isAvatar);
             CreateName(twitchUseranme);
 		}
         public void SetAlpha(float value)
@@ -140,12 +140,12 @@ namespace zeebs.entities
 			}
 		}
 
-		public bool ChangeHead(string headName)
+		public bool ChangeHead(string headName, bool isAvatar)
 		{
 			if (currentHeadName != headName)
 			{
 				var oldHead = Head;
-				if (!CreateHead(headName))
+				if (!CreateHead(headName, isAvatar))
 				{
 					return false;
 				}
@@ -155,11 +155,11 @@ namespace zeebs.entities
 			return true;
 		}
 
-		public bool CreateHead(string headName)
+		public bool CreateHead(string headName, bool isAvatar)
 		{
 			try
 			{
-				AddComponent(Head = new Image(Library.GetTexture("twitch//" + headName)));
+				AddComponent(Head = new Image(Library.GetTexture((isAvatar ? "twitchAvatar//" : "twitch//") + headName)));
 				Head.CenterOrigin();
 				Head.Scale = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
 				

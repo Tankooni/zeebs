@@ -100,7 +100,9 @@ namespace zeebs
 			string userName = (string)args[0];
 			string displayName = (string)args[1];
 			string emoteName = (string)args[2];
-			string userColor = (string)args[3];
+			bool isAvatar = (bool)args[3];
+			string userColor = (string)args[4];
+
 			//string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
 			int dX;
@@ -132,6 +134,7 @@ namespace zeebs
 					TwitchDisplayName = displayName,
 					TwitchUserColor = string.IsNullOrWhiteSpace(userColor) ? String.Format("{0:X6}", FP.Random.Int(16777216)) : userColor,
 					ComEmoteHead = emoteName,
+					ComEmoteHeadIsAvatar = isAvatar,
 					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
@@ -142,7 +145,7 @@ namespace zeebs
 			else
 			{
 				newPlayer = Utility.SessionPlayers[userName];
-				newPlayer.ChangeHead(emoteName);
+				newPlayer.ChangeHead(emoteName, isAvatar);
 				newPlayer.TwitchUserComEntityData.ComEntityPosition = new Point(dX, dY);
 				newPlayer.X = dX;
 				newPlayer.Y = dY;
@@ -158,7 +161,7 @@ namespace zeebs
 		public void DoChangeEmote(object[] args)
 		{
 			var player = Utility.GamePlayers[(string)args[0]];
-			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1]));
+			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1], (bool)args[2]));
 		}
 
 		public void DoPartGame(object[] args)

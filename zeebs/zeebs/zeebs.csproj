@@ -86,6 +86,7 @@
     <Compile Include="entities\ComEntities\Commands\ComEntitySpin.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityFlip.cs" />
     <Compile Include="entities\LeaderBoard.cs" />
+    <Compile Include="libraryProviders\TwitchAvatarProvider.cs" />
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
