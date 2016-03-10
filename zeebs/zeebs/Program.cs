@@ -28,6 +28,7 @@ namespace zeebs
 		public Game() :
 			base(1280, 720, 60)
 		{
+			FP.Screen.Title = "Zeebs";
 			if (!Directory.Exists("./save/twitchUserData"))
 				Directory.CreateDirectory("./save/twitchUserData");
 			if (!File.Exists(MainConfig.MainConfigPath))
