@@ -260,18 +260,102 @@ namespace zeebs
 			File.WriteAllText(Utility.SAVE_DIR + "/" + "Scores_" + DateTime.Now.ToString("MMddyy_HHmmss") + ".txt", scoreBuilder.ToString());
 		}
 
-		int totalTesters = 0;
+		int currentTester = 0;
 		string currentDemoZeeb = "Test";
+		
 
 		public override void Update()
 		{
 			base.Update();
-			if (Keyboard.Space.Down)
+			/*
+			if (Utility.MainConfig.IsDebug && FP.Focused)
 			{
-				Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :!join Kappa",
-					(currentDemoZeeb + totalTesters++)
-					));
+				#region this switches control
+				if (Keyboard.Num0.Pressed)
+					currentTester = 0;
+				if (Keyboard.Num1.Pressed)
+					currentTester = 1;
+				if (Keyboard.Num2.Pressed)
+					currentTester = 2;
+				if (Keyboard.Num3.Pressed)
+					currentTester = 3;
+				if (Keyboard.Num4.Pressed)
+					currentTester = 4;
+				if (Keyboard.Num5.Pressed)
+					currentTester = 5;
+				if (Keyboard.Num6.Pressed)
+					currentTester = 6;
+				if (Keyboard.Num7.Pressed)
+					currentTester = 7;
+				if (Keyboard.Num8.Pressed)
+					currentTester = 8;
+				if (Keyboard.Num9.Pressed)
+					currentTester = 9;
+				#endregion this switches control
+				if (Keyboard.Space.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!join Kappa"
+						));
+				}
+
+				//if (Keyboard.L.Pressed)
+				//{
+				//	int currentEmote = 0;
+				//	while (currentEmote < Utility.KILL_ME_PLEASE.Count)
+				//	{
+				//		var subEmote = Utility.KILL_ME_PLEASE[currentEmote];
+
+				//		Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes={2}:{3}-{4};mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1} {5}",
+				//			(currentDemoZeeb + currentTester),
+				//			"!change ",
+				//			subEmote.image_id,
+				//			8,
+				//			7 + subEmote.code.Length,
+				//			subEmote.code
+				//			));
+
+				//		currentEmote++;
+				//	}
+				//}
+
+				if (Keyboard.Up.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!up"
+						));
+				}
+				if (Keyboard.Down.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!down"
+						));
+				}
+				if (Keyboard.Left.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!left"
+						));
+				}
+				if (Keyboard.Right.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!right"
+						));
+				}
+
 			}
+			*/
 			//if (Keyboard.S.Pressed)
 			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
 

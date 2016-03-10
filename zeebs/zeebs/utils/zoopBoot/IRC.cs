@@ -110,7 +110,7 @@ namespace Tankooni.IRC
 				{
 					data = streamReader.ReadLine();
 					if (Debug) Console.WriteLine("IRC> " + data);
-					if (data != null)
+					if (!String.IsNullOrEmpty(data))
 					{
 						if (data.Substring(0, 4) == "PING")
 						{

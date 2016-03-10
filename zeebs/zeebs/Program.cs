@@ -35,9 +35,10 @@ namespace zeebs
 			else
 				Utility.MainConfig = MainConfig.LoadMainConfig();
 
-			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
-			
-			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
+			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
+
+			var emoteProvider = new Indigo.Content.TwitchEmoteProvider();
+			Library.LoadProvider(emoteProvider);
 
 			if (Utility.MainConfig.IsDebug)
 			{
@@ -55,11 +56,14 @@ namespace zeebs
 			//FP.World = new DynamicSceneWorld();
 			FP.World = new StartScreenWorld(Utility.Twitchy);
 
-			Utility.Twitchy.Connect(Utility.MainConfig.Channel);
+			Utility.Twitchy.Connect();
 			//Utility.Twitchy.Connect("#tankooni");
-			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
-			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
-			Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
+			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/tags");
+			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/membership");
+			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/commands");
+			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/tags");
+			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/membership");
+			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/commands");
 		}
 	}
 }
