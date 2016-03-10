@@ -13,10 +13,12 @@ namespace zeebs.entities.ComEntities.Commands
 	{
 		bool isDone = false;
 		string headToChangeTo;
-		public ComEntityChangeHead(ComEntity comEntity, string headToChangeTo)
+		bool isAvatar = false;
+		public ComEntityChangeHead(ComEntity comEntity, string headToChangeTo, bool isAvatar)
             : base(comEntity)
         {
 			this.headToChangeTo = headToChangeTo;
+			this.isAvatar = isAvatar;
 		}
 
 		public override bool IsDone()
@@ -26,7 +28,7 @@ namespace zeebs.entities.ComEntities.Commands
 
 		public override IEnumerator Update()
 		{
-			comEntity.ChangeHead(headToChangeTo);
+			comEntity.ChangeHead(headToChangeTo, isAvatar);
 			isDone = true;
 			yield return CoroutineHost.WaitForSeconds(.2f);
 		}

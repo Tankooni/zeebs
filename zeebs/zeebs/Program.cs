@@ -37,8 +37,8 @@ namespace zeebs
 
 			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
 
-			var emoteProvider = new Indigo.Content.TwitchEmoteProvider();
-			Library.LoadProvider(emoteProvider);
+			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
+			Library.LoadProvider(new Indigo.Content.TwitchAvatarProvider());
 
 			if (Utility.MainConfig.IsDebug)
 			{

@@ -53,6 +53,7 @@ namespace Tankooni.IRC
 		private string twitchAddress;
 		private string twitchAddressPort;
 		private TwitchChatServers twitchChatServers;
+		private TwitchChatServers twitchGroupChatServers;
 
 		private IRC Irc;
 		private Thread IrcThread;
@@ -113,7 +114,10 @@ namespace Tankooni.IRC
 			if (!isOfflineMode)
 			{
 				twitchChatServers = Newtonsoft.Json.JsonConvert.DeserializeObject<TwitchChatServers>(client.DownloadString(string.Format("http://tmi.twitch.tv/servers?channel={0}", channel.Remove(0,1))));
+				twitchGroupChatServers = Newtonsoft.Json.JsonConvert.DeserializeObject<TwitchChatServers>(client.DownloadString("http://tmi.twitch.tv/servers?cluster=group"));
 				var chatServerIP = twitchChatServers.servers.First().Split(':');
+				var groupChatServerIP = twitchGroupChatServers.servers.First().Split(':');
+
 
 				IrcThread = new Thread(() => { while (true) { Irc.Update(); Thread.Sleep(10); } });
 				IrcThread.IsBackground = true;
@@ -122,7 +126,7 @@ namespace Tankooni.IRC
 
 				PrivateIrcThread = new Thread(() => { while (true) { PrivateIrc.Update(); Thread.Sleep(10); } });
 				PrivateIrcThread.IsBackground = true;
-				PrivateIrc = new IRC("192.16.64.180", 443, nickName, oauth, isDebug);
+				PrivateIrc = new IRC(groupChatServerIP[0], int.Parse(groupChatServerIP[1]), nickName, oauth, isDebug);
 				PrivateIrc.CommandReceiveCallBack = PleaseBeQuiet;
 
 				PubChatOut = new Thread(() => { while (true) { PublicChatMessageQueueDoer(); Thread.Sleep(100); } });
