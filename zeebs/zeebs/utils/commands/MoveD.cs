@@ -18,6 +18,8 @@ namespace zeebs.utils.commands
         public MoveD()
         {
             CommandName = "moved";
+            helptext = "MoveD- ";
+
         }
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -80,6 +82,10 @@ namespace zeebs.utils.commands
         public enum MoveDMessage
         {
             MoveD
+        }
+        
+        public override string GetHelpText() {
+            return helptext;
         }
     }
 }

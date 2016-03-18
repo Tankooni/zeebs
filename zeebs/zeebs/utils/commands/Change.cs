@@ -18,6 +18,7 @@ namespace zeebs.utils.commands
 		public Change()
 		{
 			CommandName = "change";
+			helptext = "Change - ";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -52,6 +53,10 @@ namespace zeebs.utils.commands
 		public enum ChangeMessage
 		{
 			Change
+		}
+
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

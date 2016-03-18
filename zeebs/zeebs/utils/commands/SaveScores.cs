@@ -15,6 +15,8 @@ namespace zeebs.utils.commands
 		public SaveScores()
 		{
 			CommandName = "savescores";
+			helptext = "SaveScore - ";
+
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -41,6 +43,10 @@ namespace zeebs.utils.commands
 		public enum SaveScoresMessage
 		{
 			SaveScores
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

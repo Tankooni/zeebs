@@ -16,6 +16,8 @@ namespace zeebs.utils.commands
         public Spin()
 		{
 			CommandName = "spin";
+      helptext = "Spin - ";
+
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -43,6 +45,9 @@ namespace zeebs.utils.commands
     {
         Spin
     }
-  
+
+    public override string GetHelpText() {
+      return helptext;
+    }  
   }
 }

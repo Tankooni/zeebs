@@ -15,6 +15,7 @@ namespace zeebs.utils.commands
 		public string CommandParams;
 		public List<Command> Commands;
 		public List<Emote> Emotes;
+		public string helptext;
 
 		public virtual bool IsGreedy()
 		{
@@ -40,5 +41,10 @@ namespace zeebs.utils.commands
 		}
 
 		public abstract Command CreateNewSelf();
+		
+		// Return a help description of the command itself (like man pages!)
+		public abstract String GetHelpText();
 	}
+
+	
 }

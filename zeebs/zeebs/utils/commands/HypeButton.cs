@@ -12,6 +12,8 @@ namespace zeebs.utils.commands
 		public HypeButton()
 		{
 			CommandName = "hypebutton";
+			helptext = "HypeButton - It's lit";
+
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -27,6 +29,10 @@ namespace zeebs.utils.commands
 		public override Command CreateNewSelf()
 		{
 			return new HypeButton();
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

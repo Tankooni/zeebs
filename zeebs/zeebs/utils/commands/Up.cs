@@ -16,6 +16,8 @@ namespace zeebs.utils.commands
 		public Up()
 		{
 			CommandName = "up";
+			helptext = "Up - ";
+
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -38,6 +40,10 @@ namespace zeebs.utils.commands
 		public override Command CreateNewSelf()
 		{
 			return new Up();
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

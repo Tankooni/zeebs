@@ -19,6 +19,8 @@ namespace zeebs.utils.commands
         public Loop()
 		{
 			CommandName = "loop";
+			helptext = "Loop - ";
+
 		}
 
 		public override void SetCommandList(List<Command> commands)
@@ -59,6 +61,10 @@ namespace zeebs.utils.commands
 		public enum LoopMessage
 		{
 			Loop
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }
