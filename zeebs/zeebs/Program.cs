@@ -20,7 +20,15 @@ namespace zeebs
 	{
 		static void Main(string[] args)
 		{
-			
+			AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+			{
+				Console.WriteLine("ERROR");
+				if (!Directory.Exists("logs"))
+					Directory.CreateDirectory("logs");
+				File.WriteAllText("logs/" + DateTime.Now.ToString("MMddyy_HHmmss") + "_ErrorLog.txt", e.ExceptionObject.ToString());
+				Environment.Exit(0);
+			};
+
 			var game = new Game();
 			game.Run();
 		}
@@ -36,10 +44,12 @@ namespace zeebs
 			else
 				Utility.MainConfig = MainConfig.LoadMainConfig();
 
-			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
-
-			Library.LoadProvider(new Indigo.Content.TwitchEmoteProvider());
+			var twtichEmoteProvider = new Indigo.Content.TwitchEmoteProvider(Utility.MainConfig.Channel.Remove(0, 1));
+			Library.LoadProvider(twtichEmoteProvider);
 			Library.LoadProvider(new Indigo.Content.TwitchAvatarProvider());
+
+			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
+			Utility.Twitchy.SpecialEmotes = twtichEmoteProvider.LoadedSpecialEmotes;
 
 			if (Utility.MainConfig.IsDebug)
 			{
@@ -47,7 +57,7 @@ namespace zeebs
 				FP.Console.MirrorToSystemOut = true;
 				FP.Console.ToggleKey = Keyboard.Tilde;
 			}
-			var match = Regex.Match(Utility.MainConfig.BackgroundColor, "#?([A-Fa-f0-9]{6}|random)");
+			var match = Regex.Match(Utility.MainConfig.BackgroundColor, "#?([A-Fa-f0-9]{6})");
 			FP.Screen.ClearColor = new Color(int.Parse(match.Success ? match.Groups[1].Value : "000000", System.Globalization.NumberStyles.HexNumber));
 
 			Mouse.CursorVisible = true;

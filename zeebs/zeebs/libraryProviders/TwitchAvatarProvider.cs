@@ -19,6 +19,7 @@ namespace Indigo.Content
 
 		public TwitchAvatarProvider()
 		{
+			ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 			client = new WebClient();
 			loadedEmotes = new HashSet<string>();
 		}
@@ -45,8 +46,6 @@ namespace Indigo.Content
 
 			byte[] data = null;
 
-
-			ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 			var userJson = client.DownloadString(string.Format("https://api.twitch.tv/kraken/channels/{0}", userName));
 			var userData = Newtonsoft.Json.JsonConvert.DeserializeObject<UserData>(userJson);
 			if (userData.logo == null)
