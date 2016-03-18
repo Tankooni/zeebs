@@ -8,6 +8,7 @@ using Indigo;
 using Indigo.Content;
 using ImageMagick;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace Indigo.Content
 {
@@ -16,24 +17,34 @@ namespace Indigo.Content
 		private WebClient client;
 		private SubscriberEmoteAPI subscriberEmotes;
 		private HashSet<string> loadedEmotes;
+		public HashSet<string> LoadedSpecialEmotes { get; private set; }
+		private string currentChannel;
 
-		public TwitchEmoteProvider()
+		public TwitchEmoteProvider(string channel = null)
 		{
+			ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 			client = new WebClient();
 			loadedEmotes = new HashSet<string>();
+			LoadedSpecialEmotes = new HashSet<string>();
+			currentChannel = channel;
 		}
 
 		public override void Precache(Library.ILibraryInternal library)
 		{
+			if (!Library.FolderExists("content/twitchcache"))
+				Directory.CreateDirectory("content/twitchcache");
 			LoadRobots(library);
 			LoadGlobalSet(library);
 			LoadSubscriberSet(library);
+			LoadBttvSet(library);
+			if(currentChannel != null)
+				LoadChannelBttvSet(library, currentChannel);
 		}
 
 		public override void Load(string filename, Library.ILibraryInternal library)
 		{
 			var emote = FromFilename(filename);
-			AddEmote(emote.code, emote.image_id, library);
+			AddTwitchEmote(emote.code, emote.image_id, library);
 		}
 
 		SubscriberEmoteAPI.SubscriberEmote FromFilename(string filename)
@@ -84,18 +95,29 @@ namespace Indigo.Content
 		private void LoadGlobalSet(Library.ILibraryInternal library)
 		{
 			string json = null;
-			if (Library.FolderExists("content/twitchcache"))
+			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "global");
+
+			try
 			{
-				var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "global");
-				if (Library.FileExists(qualifiedFilename))
-					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				json = client.DownloadString(string.Format("https://twitchemotes.com/api_cache/v2/{0}.json", "global"));
+				if (!String.IsNullOrEmpty(json))
+					File.WriteAllText(qualifiedFilename, json);
+				else
+					json = null;
+			}
+			catch
+			{
+				json = null;
 			}
 
 			if (json == null)
 			{
-				json = client.DownloadString(string.Format("http://twitchemotes.com/api_cache/v2/{0}.json", "global"));
-				Directory.CreateDirectory("content/twitchcache");
-				File.WriteAllText(string.Format("content/twitchcache/{0}.json", "global"), json);
+				if (Library.FileExists(qualifiedFilename))
+				{
+					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				}
+				else
+					return;
 			}
 
 			var api = Newtonsoft.Json.JsonConvert.DeserializeObject<GlobalEmoteAPI>(json);
@@ -103,7 +125,7 @@ namespace Indigo.Content
 			{
 				try
 				{
-					AddEmote(pair.Key, pair.Value.image_id, library);
+					AddTwitchEmote(pair.Key, pair.Value.image_id, library);
 				}
 				catch (Exception e)
 				{
@@ -115,25 +137,134 @@ namespace Indigo.Content
 		private void LoadSubscriberSet(Library.ILibraryInternal library)
 		{
 			string json = null;
-			var client = new System.Net.WebClient();
-			if (Library.FolderExists("content/twitchcache"))
+			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "subscriber");
+
+			try
 			{
-				var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "subscriber");
-				if (Library.FileExists(qualifiedFilename))
-					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				json = client.DownloadString(string.Format("https://twitchemotes.com/api_cache/v2/{0}.json", "subscriber"));
+				if (!String.IsNullOrEmpty(json))
+					File.WriteAllText(qualifiedFilename, json);
+				else
+					json = null;
+			}
+			catch
+			{
+				json = null;
 			}
 
 			if (json == null)
 			{
-				json = client.DownloadString(string.Format("http://twitchemotes.com/api_cache/v2/{0}.json", "subscriber"));
-				Directory.CreateDirectory("content/twitchcache");
-				File.WriteAllText(string.Format("content/twitchcache/{0}.json", "subscriber"), json);
+				if (Library.FileExists(qualifiedFilename))
+				{
+					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				}
+				else
+					return;
 			}
 
 			subscriberEmotes = Newtonsoft.Json.JsonConvert.DeserializeObject<SubscriberEmoteAPI>(json);
 		}
 
-		private void AddEmote(string emoteName, int image_id, Library.ILibraryInternal library)
+		private void LoadBttvSet(Library.ILibraryInternal library)
+		{
+			string json = null;
+
+			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "bttv");
+
+			try
+			{
+				json = client.DownloadString(string.Format("https://api.betterttv.net/2/emotes"));
+				if (!String.IsNullOrEmpty(json))
+					File.WriteAllText(qualifiedFilename, json);
+				else
+					json = null;
+			}
+			catch
+			{
+				json = null;
+			}
+
+			if (json == null)
+			{
+				if (Library.FileExists(qualifiedFilename))
+				{
+					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				}
+				else
+					return;
+			}
+			
+
+			var api = Newtonsoft.Json.JsonConvert.DeserializeObject<BaseBttvAPI>(json);
+			foreach (var emote in api.emotes)
+			{
+				try
+				{
+					AddBttvEmote(emote.code, emote.id, library);
+				}
+				catch (Exception e)
+				{
+					FP.Log(emote.code, e.Message);
+				}
+			}
+		}
+
+		private void LoadChannelBttvSet(Library.ILibraryInternal library, string channel)
+		{
+			string json = null;
+
+			var qualifiedFilename = string.Format("content/twitchcache/{0}_{1}.json", "bttv", channel);
+
+			try
+			{
+				json = client.DownloadString(string.Format("https://api.betterttv.net/2/channels/{0}", channel));
+				if (!String.IsNullOrEmpty(json))
+					File.WriteAllText(qualifiedFilename, json);
+				else
+					json = null;
+			}
+			catch
+			{
+				json = null;
+			}
+
+			if (json == null)
+			{
+				if (Library.FileExists(qualifiedFilename))
+				{
+					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
+				}
+				else
+					return;
+			}
+
+
+			var api = Newtonsoft.Json.JsonConvert.DeserializeObject<BaseBttvAPI>(json);
+			foreach (var emote in api.emotes)
+			{
+				try
+				{
+					AddBttvEmote(emote.code, emote.id, library);
+				}
+				catch (Exception e)
+				{
+					FP.Log(emote.code, e.Message);
+				}
+			}
+		}
+
+		private void AddBttvEmote(string emoteName, string image_id, Library.ILibraryInternal library)
+		{
+			AddEmote(emoteName, library, string.Format("https://cdn.betterttv.net/emote/{0}/1x", image_id));
+			LoadedSpecialEmotes.Add(emoteName);
+		}
+
+		public void AddTwitchEmote(string emoteName, string image_id, Library.ILibraryInternal library)
+		{
+			AddEmote(emoteName, library, string.Format("https://static-cdn.jtvnw.net/emoticons/v1/{0}/1.0", image_id));
+		}
+
+		private void AddEmote(string emoteName, Library.ILibraryInternal library, string url)
 		{
 			if (loadedEmotes.Contains(emoteName))
 				return;
@@ -149,15 +280,35 @@ namespace Indigo.Content
 			
 			if(data == null)
 			{
-				data = client.DownloadData(string.Format("http://static-cdn.jtvnw.net/emoticons//v1/{0}/1.0", image_id));
+				data = client.DownloadData(url);
 				var folder = Library.GetFolderName("content/twitchcache");
 				MemoryStream stream = new MemoryStream();
-				using (MagickImage mImage = new MagickImage(data))
-				{
-					mImage.Format = MagickFormat.Png32;
-					mImage.Write(stream);
-					stream.Position = 0;
-				}
+
+                using (MemoryStream bMapStream = new MemoryStream(data))
+                {
+                    using (Bitmap bMap = new Bitmap(bMapStream))
+                    {
+                        using (MagickImage mImage = new MagickImage(data))
+                        {
+                            switch (bMap.PixelFormat)
+                            {
+                                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+                                    mImage.Format = MagickFormat.Png8;
+                                    break;
+                                default:
+                                    mImage.Format = MagickFormat.Png32;
+                                    break;
+                            }
+
+                            //This is the only exception out of all default emotes. See issue 12.
+                            if (emoteName == "FuzzyOtterOO")
+                                mImage.Format = MagickFormat.Png8;
+
+                            mImage.Write(stream);
+                            stream.Position = 0;
+                        }
+                    }
+                }
 				
 				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
 			}
@@ -225,7 +376,22 @@ namespace Indigo.Content
 			public class GlobalEmote
 			{
 				public string description { get; set; }
-				public int image_id { get; set; }
+				public string image_id { get; set; }
+			}
+		}
+
+		public class BaseBttvAPI
+		{
+			public string status { get; set; }
+			public string urlTemplate { get; set; }
+			public List<BaseBttvEmote> emotes { get; set; }
+
+			public class BaseBttvEmote
+			{
+				public string id { get; set; }
+				public string code { get; set; }
+				public string channel { get; set; }
+				public string imageType { get; set; }
 			}
 		}
 
@@ -263,7 +429,7 @@ namespace Indigo.Content
 			public class SubscriberEmote
 			{
 				public string code { get; set; }
-				public int image_id { get; set; }
+				public string image_id { get; set; }
 			}
 		}
 		#endregion

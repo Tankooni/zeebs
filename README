@@ -1,0 +1,41 @@
+## README
+
+## Setup 
+1. Download Visual Studio Community Version
+https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx
+
+2. To continue using a free license, you must sign up for a Microsoft VS account
+
+3. Sign up for Bitbucket - have an admin add you to the Zeebs project
+
+4. Download TortoiseHg or an equivalent mercurial SVN program 
+
+5. Clone the project into your local
+
+
+## Starting the app
+1. Open zeebs.sln in Visual Studio
+
+2. Copy the files in zeebs/lib into zeebs/bin/Debug
+
+3. In zeebs/bin/Debug/save replace MainConfig with: (you may need to run the program first to produce this file)
+
+{
+  "CurrentMusic": "",
+  "MaxPlayers": "500",
+  "AdminUser": "Tankooni",
+  "OverrideBotUser": "",
+  "OverrideOauth": "",
+  "Channel": "#tankooni",
+  "PreventBotTalking": "false",
+  "DefaultBody": "ZeebSmall",
+  "IsDebug": "true",
+  "IsOfflineMode": "false",
+  "BackgroundColor": "#00FF00",
+  "UseBackgroundImage": "true",
+  "ShowLeaderBoard": "true"
+}
+
+Tweaking settings as you wish. The current settings point to www.twitch.tv/tankooni
+
+4. Run the program on Visual Studio!

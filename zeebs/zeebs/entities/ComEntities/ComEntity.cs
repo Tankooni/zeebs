@@ -16,24 +16,31 @@ namespace zeebs.entities
 
 	public class ComEntity : AnimatedEntity
 	{
+		public static int DamageAmount = 10;
+		public static int DamageMin = 0;
+		public static int DamageMax = 100;
+		public static int HitDistanceMin = 80;
+		public static int HitDistanceMax = 700;
+
 		public readonly TwitchUserComEntityData TwitchUserComEntityData;
 		CoroutineHost coHostCommands = new CoroutineHost();
 		//public Emitter emitter;
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
-			: base
-			(
-				  twitchUserComEntityData.ComEntityName, 
-				  twitchUserComEntityData.ComEmoteHead, 
-				  String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
-					Color.White : 
-					new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber)))
+			: base(twitchUserComEntityData.ComEntityName, 
+                   twitchUserComEntityData.ComEmoteHead,
+				   twitchUserComEntityData.ComEmoteHeadIsAvatar,
+                   twitchUserComEntityData.TwitchDisplayName,
+                   String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
+                        Color.White : 
+                        new Color(int.Parse(twitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber))
+                  )
 		{
 			this.CenterOrigin();
 			TwitchUserComEntityData = twitchUserComEntityData;
 			X = twitchUserComEntityData.ComEntityPosition.X;
 			Y = twitchUserComEntityData.ComEntityPosition.Y;
 			AddComponent(coHostCommands);
-			AddResponse(Attack.AttackeMessage.Attack, DoReceiveAttack);
+			AddResponse(Attack.AttackeMessage.AttackCommand, DoReceiveAttack);
 			//try
 			//{
 			//	emitter = new Emitter(Library.GetTexture("twitch//" + twitchUserComEntityData.ComEmoteHead));
@@ -57,7 +64,6 @@ namespace zeebs.entities
 			//	myType.Motion.DistanceVariance.Add = 4;
 			//	AddComponent(emitter);
 			//}
-			
 		}
 
 		public void QueueCommand(ComEntityCommand command)
@@ -87,7 +93,7 @@ namespace zeebs.entities
 				{
 					yield return command.Update();
 				}
-				commands.Dequeue();
+				commands.Dequeue().CallWhenDone();
 			}
 		}
 
@@ -102,7 +108,10 @@ namespace zeebs.entities
 			{
 				Interrupt();
 				//hitVector
-				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * 80), userName));
+
+				var hitDistance = FP.Scale(TwitchUserComEntityData.Damage, DamageMin, DamageMax, HitDistanceMin, HitDistanceMax);
+				TwitchUserComEntityData.Damage += DamageAmount;
+				QueueCommand(new ComEntityMoveTo(this, (new Point(X, Y) + new Point(X - attacker.X, Y - attacker.Y).Normalized() * hitDistance), true, userName));
 			}
 		}
 
@@ -113,6 +122,11 @@ namespace zeebs.entities
 			TwitchUserComEntityData.CommandQueue.Clear();
 			if (coHostCommands.Running)
 				coHostCommands.StopAll();
+		}
+
+		public void ResetDamage()
+		{
+			TwitchUserComEntityData.Damage = 0;
 		}
 	}
 }

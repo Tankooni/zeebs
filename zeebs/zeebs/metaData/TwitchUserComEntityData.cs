@@ -13,14 +13,18 @@ namespace zeebs.metaData
 	public class TwitchUserComEntityData
 	{
 		public string TwitchUserName;
+		public string TwitchDisplayName;
 		public string TwitchUserColor;
 		public string ComEmoteHead;
+		public bool ComEmoteHeadIsAvatar;
 		public string ComEntityName;
 
 		[JsonIgnore]
 		public Point ComEntityPosition;
 		[JsonIgnore]
 		public long KillCount;
+		[JsonIgnore]
+		public int Damage = 0;
 
 		[JsonIgnore]
 		public Queue<zeebs.entities.ComEntityCommand> CommandQueue;

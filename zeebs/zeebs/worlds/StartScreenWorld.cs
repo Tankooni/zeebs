@@ -42,7 +42,8 @@ namespace zeebs
 			{
 				Y = 60
 			};
-			Add(leaderBoard);
+			if(Utility.MainConfig.ShowLeaderBoard)
+				Add(leaderBoard);
 
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
@@ -54,6 +55,7 @@ namespace zeebs
 			AddResponse(ChangeColor.ChangeColorMessage.ChangeColor, DoChangeColor);
 			AddResponse(Flip.FlipMessage.Flip, DoFlipZeeb);
 			AddResponse(Cancel.CancelMessage.Cancel, DoCancelCommands);
+			AddResponse(Attack.AttackeMessage.Attack, DoAttack);
 
 			AddResponse(WorldMessages.PlayerKilledPlayer, DoPlayerKillPlayer);
 			AddResponse(WorldMessages.UpdateLeaderBoard, UpdateLeaderBoard);
@@ -77,9 +79,9 @@ namespace zeebs
 			for (int x = 0; x < pathNodes.GetLength(0); x++)
 				for (int y = 0; y < pathNodes.GetLength(1); y++)
 					pathNodes[x, y] = new PathNode(null, x * TileSize + TileSize / 2, y * TileSize + TileSize / 2, false);
-			for (int x = 0; x < pathNodes.GetLength(0); x++)
-				for (int y = 0; y < pathNodes.GetLength(1); y++)
-					PathNode.ConnectedNodes[pathNodes[x, y]] = SolverUtility.SelectTilesAroundTile(x, y, pathNodes);
+			//for (int x = 0; x < pathNodes.GetLength(0); x++)
+			//	for (int y = 0; y < pathNodes.GetLength(1); y++)
+			//		PathNode.ConnectedNodes[pathNodes[x, y]] = SolverUtility.SelectTilesAroundTile(x, y, pathNodes);
 
 			Utility.LoadAndProcessClickMap("content/MoveMap.png", pathNodes, nodeGrid, TileSize);
 			Add(nodeGridEntity);
@@ -96,7 +98,11 @@ namespace zeebs
 		public void DoJoinGame(object[] args)
 		{
 			string userName = (string)args[0];
-			string emoteName = (string)args[1];
+			string displayName = (string)args[1];
+			string emoteName = (string)args[2];
+			bool isAvatar = (bool)args[3];
+			string userColor = (string)args[4];
+
 			//string pathName = "./" + Utility.SAVE_DIR + "/" + Utility.TWITCH_SAVE_DIR + "/" + userName + JsonLoader.RESOURCE_EXT;
 			TwitchUserComEntityData userData;
 			int dX;
@@ -105,7 +111,7 @@ namespace zeebs
 			{
 				dX = FP.Random.Int(0, FP.Width);
 				dY = FP.Random.Int(0, FP.Height);
-			} while (FP.World.CollidePoint("ClickMap", dX, dY) == null);
+			} while (FP.World.CollidePoint("ClickMap", dX, dY) != null);
 
 			//if (!File.Exists(pathName))
 			//{
@@ -125,8 +131,10 @@ namespace zeebs
 				userData = new TwitchUserComEntityData
 				{
 					TwitchUserName = userName,
-					TwitchUserColor = (string)args[2],
+					TwitchDisplayName = displayName,
+					TwitchUserColor = string.IsNullOrWhiteSpace(userColor) ? String.Format("{0:X6}", FP.Random.Int(16777216)) : userColor,
 					ComEmoteHead = emoteName,
+					ComEmoteHeadIsAvatar = isAvatar,
 					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
@@ -137,7 +145,7 @@ namespace zeebs
 			else
 			{
 				newPlayer = Utility.SessionPlayers[userName];
-				newPlayer.ChangeHead(emoteName);
+				newPlayer.ChangeHead(emoteName, isAvatar);
 				newPlayer.TwitchUserComEntityData.ComEntityPosition = new Point(dX, dY);
 				newPlayer.X = dX;
 				newPlayer.Y = dY;
@@ -153,7 +161,7 @@ namespace zeebs
 		public void DoChangeEmote(object[] args)
 		{
 			var player = Utility.GamePlayers[(string)args[0]];
-			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1]));
+			player.QueueCommand(new ComEntityChangeHead(player, (string)args[1], (bool)args[2]));
 		}
 
 		public void DoPartGame(object[] args)
@@ -172,13 +180,13 @@ namespace zeebs
 		public void DoMoveZeeb(object[] args)
 		{
 			var player = Utility.GamePlayers[(string)args[0]];
-            player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2]))));
+            player.QueueCommand(new ComEntityMoveTo(player, new Point((int)(args[1]), (int)(args[2])), false));
 		}
 
         public void DoMoveDZeeb(object[] args)
         {
             var player = Utility.GamePlayers[(string)args[0]];
-            player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2]))));
+            player.QueueCommand(new ComEntityMoveD(player, new Point((int)(args[1]), (int)(args[2])), false));
         }
 
         public void DoLoop(object[] args)
@@ -214,9 +222,15 @@ namespace zeebs
 
 		public void DoPlayerKillPlayer(object[] args)
 		{
-			long kills = Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+			var murderer = Utility.GamePlayers[(string)args[1]];
+			var victim = Utility.GamePlayers[(string)args[0]];
+			long kills = murderer.TwitchUserComEntityData.KillCount;
 			if (args[1] != args[0])
-				kills = ++Utility.GamePlayers[(string)args[1]].TwitchUserComEntityData.KillCount;
+				kills = ++murderer.TwitchUserComEntityData.KillCount;
+			else
+				kills = --murderer.TwitchUserComEntityData.KillCount;
+
+			victim.ResetDamage();
 
 			twitchy.QueuePublicChatMessage(String.Format("{0} has destroyed {1}, {0} has {2} kills", args[1], args[0], kills));
 			DoPartGame(args);
@@ -226,6 +240,12 @@ namespace zeebs
 		public void DoCancelCommands(object[] args)
 		{
 			Utility.GamePlayers[(string)args[0]].Interrupt();
+		}
+
+		public void DoAttack(object[] args)
+		{
+			var player = Utility.GamePlayers[(string)args[0]];
+			player.QueueCommand(new ComEntityAttack(player));
 		}
 
 		public void UpdateLeaderBoard(object[] args)
@@ -243,27 +263,118 @@ namespace zeebs
 			File.WriteAllText(Utility.SAVE_DIR + "/" + "Scores_" + DateTime.Now.ToString("MMddyy_HHmmss") + ".txt", scoreBuilder.ToString());
 		}
 
+		int currentTester = 0;
+		string currentDemoZeeb = "Test";
+		
+
 		public override void Update()
 		{
 			base.Update();
-			//if (Keyboard.A.Pressed)
-			//	Utility.Twitchy.SendMessageToServer("Hai frondsww");
+			/*
+			if (Utility.MainConfig.IsDebug && FP.Focused)
+			{
+				#region this switches control
+				if (Keyboard.Num0.Pressed)
+					currentTester = 0;
+				if (Keyboard.Num1.Pressed)
+					currentTester = 1;
+				if (Keyboard.Num2.Pressed)
+					currentTester = 2;
+				if (Keyboard.Num3.Pressed)
+					currentTester = 3;
+				if (Keyboard.Num4.Pressed)
+					currentTester = 4;
+				if (Keyboard.Num5.Pressed)
+					currentTester = 5;
+				if (Keyboard.Num6.Pressed)
+					currentTester = 6;
+				if (Keyboard.Num7.Pressed)
+					currentTester = 7;
+				if (Keyboard.Num8.Pressed)
+					currentTester = 8;
+				if (Keyboard.Num9.Pressed)
+					currentTester = 9;
+				#endregion this switches control
+				if (Keyboard.Space.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!join Kappa"
+						));
+				}
+
+				//if (Keyboard.L.Pressed)
+				//{
+				//	int currentEmote = 0;
+				//	while (currentEmote < Utility.KILL_ME_PLEASE.Count)
+				//	{
+				//		var subEmote = Utility.KILL_ME_PLEASE[currentEmote];
+
+				//		Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes={2}:{3}-{4};mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1} {5}",
+				//			(currentDemoZeeb + currentTester),
+				//			"!change ",
+				//			subEmote.image_id,
+				//			8,
+				//			7 + subEmote.code.Length,
+				//			subEmote.code
+				//			));
+
+				//		currentEmote++;
+				//	}
+				//}
+
+				if (Keyboard.Up.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!up"
+						));
+				}
+				if (Keyboard.Down.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!down"
+						));
+				}
+				if (Keyboard.Left.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!left"
+						));
+				}
+				if (Keyboard.Right.Pressed)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!right"
+						));
+				}
+
+			}
+			*/
 			//if (Keyboard.S.Pressed)
 			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
 
-				//if (Keyboard.Z.Pressed)
-				//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
+			//if (Keyboard.Z.Pressed)
+			//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
 
-				//if (Keyboard.Q.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
-				//if (Keyboard.W.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
-				//if (Keyboard.E.Pressed)
-				//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
-				//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
+			//if (Keyboard.Q.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
+			//if (Keyboard.W.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
+			//if (Keyboard.E.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
+			//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
 
-				//            if (Keyboard.Space.Pressed)
-				//                FP.World = new InstructionsScreenWorld();
+			//            if (Keyboard.Space.Pressed)
+			//                FP.World = new InstructionsScreenWorld();
 		}
 
 		public enum WorldMessages
