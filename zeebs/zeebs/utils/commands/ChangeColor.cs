@@ -18,6 +18,8 @@ namespace zeebs.utils.commands
 		public ChangeColor()
 		{
 			CommandName = "color";
+			helptext = "ChangeColor - ";
+
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -75,5 +77,10 @@ namespace zeebs.utils.commands
 		{
 			ChangeColor
 		}
+		
+		public override string GetHelpText() {
+			return helptext;
+		}
+		
 	}
 }

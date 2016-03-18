@@ -16,6 +16,8 @@ namespace zeebs.utils.commands
 		public Left()
 		{
 			CommandName = "left";
+			helptext = "Left - ";
+
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -38,6 +40,10 @@ namespace zeebs.utils.commands
 		public override Command CreateNewSelf()
 		{
 			return new Left();
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

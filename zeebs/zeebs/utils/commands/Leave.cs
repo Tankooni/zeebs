@@ -16,6 +16,8 @@ namespace zeebs.utils.commands
 		public Leave()
 		{
 			CommandName = "leave";
+			helptext = "Leave - ";
+
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -42,6 +44,10 @@ namespace zeebs.utils.commands
 		public enum LeaveMessage
 		{
 			Leave
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

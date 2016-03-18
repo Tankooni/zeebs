@@ -16,6 +16,8 @@ namespace zeebs.utils.commands
 		public Down()
 		{
 			CommandName = "down";
+			helptext = "Down - ";
+
 		}
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -37,6 +39,10 @@ namespace zeebs.utils.commands
 		public override Command CreateNewSelf()
 		{
 			return new Down();
+		}
+
+	public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }

@@ -19,6 +19,8 @@ namespace zeebs.utils.commands
 		public Join()
 		{
 			CommandName = "join";
+			helptext = "Join - ";
+
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -58,6 +60,10 @@ namespace zeebs.utils.commands
 		public enum JoinGameMessage
 		{
 			JoinGame
+		}
+		
+		public override string GetHelpText() {
+			return helptext;
 		}
 	}
 }
