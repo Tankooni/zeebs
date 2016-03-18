@@ -45,7 +45,6 @@ namespace Tankooni.IRC
 
 	public class TwitchInterface
 	{
-		public static TwitchInterface MasterTwitchInterface;
 		private WebClient client;
 		private string channel;
 		private string nickName;
@@ -65,6 +64,7 @@ namespace Tankooni.IRC
 
 		public bool IsDebug;
 		public bool IsOfflineMode;
+		public HashSet<string> SpecialEmotes = new HashSet<string>();
 
 		public ConcurrentQueue<string> PublicChatQueue = new ConcurrentQueue<string>();
 		public ConcurrentQueue<Tuple<string, string>> PrivateChatQueue = new ConcurrentQueue<Tuple<string, string>>();
@@ -106,7 +106,6 @@ namespace Tankooni.IRC
 		{
 			this.channel = channel;
 			client = new WebClient();
-			MasterTwitchInterface = this;
 			IsDebug = isDebug;
 			IsOfflineMode = isOfflineMode;
 			this.nickName = nickName;

@@ -35,7 +35,14 @@ namespace zeebs.utils.commands
 				return false;
 			}
 
-			if (commandParams.ToLower().Contains("avatar"))
+			var match = Regex.Match(commandParams, @"([\w\d]+)(\s+)?");
+			if (!match.Success)
+			{
+				FailReasonMessage = "No emote specified";
+				return false;
+			}
+			
+			if (match.Groups[1].Value.ToLower() == "avatar")
 			{
 				emoteName = args[(int)StdExpMessageValues.UseName];
 				isAvatar = true;
@@ -44,6 +51,10 @@ namespace zeebs.utils.commands
 			{
 				var emote = emotes.First();
 				emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			}
+			else if (Utility.Twitchy.SpecialEmotes.Contains(match.Groups[1].Value))
+			{
+				emoteName = match.Groups[1].Value;
 			}
 			else
 			{
