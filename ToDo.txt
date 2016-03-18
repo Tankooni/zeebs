@@ -6,5 +6,7 @@ Spin/flip could deflect/dodge attacks?
 Add relative movement with exact numbers
 
 Bugs
-	Doudble change on the defualt ones that down work
-	Cancel does always work
+	Gifs from bttv break things
+	some emotes need to be parsed into text that can be save to disk
+Add
+	Rejoin timer

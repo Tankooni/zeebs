@@ -16,18 +16,21 @@ namespace zeebs.entities
 	public class AnimatedEntity : Entity
 	{
 		public AnimatedEntityData AnimatedEntityData;
-		public Dictionary<string, AnimationData> Animations = new Dictionary<string, AnimationData>();
-		public Flipbook Sprite { get; set; }
+		//public Flipbook Sprite { get; set; }
+		public Spritemap Sprite { get; set; }
 		public Image Head;
 		string currentHeadName;
-		List<Image> images;
 		Tween currentHeadTween;
+        
+        //Name that will appear above the zeeb
+        public Text zeebName;
 
         private float rotation;
         public float Rotation
         {
-            get {return rotation;}
-            set {
+            get { return rotation; }
+            set
+            {
                 while (rotation >= 360)
                 {
                     rotation -= 360;
@@ -53,75 +56,57 @@ namespace zeebs.entities
             }
         }
 
-		public AnimatedEntity(string entityName, string twitchHeadName)
-			: this(entityName, twitchHeadName, Color.White) { }
+		public AnimatedEntity(string entityName, string twitchHeadName, bool isAvatar, string twitchUsername)
+			: this(entityName, twitchHeadName, isAvatar, twitchUsername, Color.White)
+        {
 
-		public AnimatedEntity(string entityName, string twitchHeadName, Color tintColor)
+        }
+
+		public AnimatedEntity(string entityName, string twitchHeadName, bool isAvatar, string twitchUseranme, Color tintColor)
 		{
-			images = new List<Image>();
 			string EntityFilePath = Utility.CONTENT_DIR + "/entities/" + entityName;
-			AnimatedEntityData = JsonLoader.Load<AnimatedEntityData>(EntityFilePath + "/MetaData");
-			foreach(var animation in AnimatedEntityData.Animations)
+			AnimatedEntityData = JsonLoader.Load<AnimatedEntityData>(EntityFilePath);
+			var defaultAnim = AnimatedEntityData.Animations[AnimatedEntityData.DefaultAnimation];
+			Sprite = new Spritemap(Library.GetTexture(EntityFilePath + ".png"), defaultAnim.FrameWidth, defaultAnim.FrameHeight)
 			{
-				string animationPath = EntityFilePath + "/" + AnimatedEntityData.DefaultAnimation;
-				AnimationData ad = JsonLoader.Load<AnimationData>(animationPath + "/MetaData");
-				Animations.Add(ad.Name, ad);
-				foreach(var animFilePath in Utility.RetrieveFilePathForFilesInDirectory(@"./" + animationPath, "*.png"))
-				{
-					//int currentTotalFrames = 0;
-					//foreach (var animation in MetaData.Animations)
-					//	sprite.Add(animation.Name, FP.MakeFrames(currentTotalFrames, (currentTotalFrames += animation.Frames) - 1), animation.FPS, true);
-					//AddComponent(sprite);
-					Image newImage;
-					images.Add(newImage = new Image(Library.GetTexture(animFilePath)) { OriginX = ad.Origin.X, OriginY = ad.Origin.Y });
+				OriginX = defaultAnim.OriginX,
+				OriginY = defaultAnim.OriginY
+			};
 
-					if (AnimatedEntityData.ShaderName != null)
-					{
-						Shader shader = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/" + AnimatedEntityData.ShaderName));
-						newImage.Shader = shader;
-						//chromaKey.SetAsCurrentTexture("sampler2D");
-						shader.SetParameter("color", tintColor);
-					}
+            foreach (var animation in AnimatedEntityData.Animations.Values)
+				Sprite.Add(animation.Name, animation.Frames, animation.FPS, true);
 
-					//Console.WriteLine(animFile);
-				}
+			if (AnimatedEntityData.ShaderName != null)
+			{
+				Shader shader = new Shader(Shader.ShaderType.Fragment, Library.GetText("content/shaders/" + AnimatedEntityData.ShaderName));
+				Sprite.Shader = shader;
+				//chromaKey.SetAsCurrentTexture("sampler2D");
+				shader.SetParameter("color", tintColor);
 			}
 
-			Sprite = new Flipbook(images.Cast<Graphic>().ToArray());
-
-			int currentTotalFrames = 0;
-			foreach (var animation in AnimatedEntityData.Animations)
-				Sprite.Add(animation, FP.MakeFrames(currentTotalFrames, (currentTotalFrames += Animations[animation].Frames) - 1), Animations[animation].FPS, true);
 			Sprite.Play(AnimatedEntityData.DefaultAnimation);
 			AddComponent(Sprite);
 
-			CreateHead(twitchHeadName);
+			CreateHead(twitchHeadName, isAvatar);
+            CreateName(twitchUseranme);
 		}
-
-		public void SetAlpha(float value)
+        public void SetAlpha(float value)
 		{
-			foreach(var image in images)
-			{
-				image.Alpha = value;
+			Sprite.Alpha = value;
+			if (Head != null)
 				Head.Alpha = value;
-			}
 		}
 
         public void SetRotation(float value)
         {
-            foreach (var image in images)
-            {
-                image.Angle = rotation;
-				if(Head != null)
-				 Head.Angle = rotation;
-            }
+            Sprite.Angle = rotation;
+			if(Head != null)
+				Head.Angle = rotation;
         }
 
         public void SetFlip(bool value)
         {
-            foreach (var image in images)
-            {
-                image.FlippedX = value;
+                Sprite.FlippedX = value;
 				if (Head != null)
 				{
 					Head.FlippedX = value;
@@ -130,34 +115,37 @@ namespace zeebs.entities
 						Head.X = -Head.X;
 					}
 				}
-            }
         }
 
 		public void SetColorTint(Color tintColor)
 		{
-			foreach (var image in images)
-				image.Shader.SetParameter("color", tintColor);
+			if(Sprite.Shader != null)
+				Sprite.Shader.SetParameter("color", tintColor);
 		}
 
 		public void PlayAnmation(string animation)
 		{
 			if (animation == Sprite.CurrentAnim)
 				return;
+
+			Sprite.OriginX = AnimatedEntityData.Animations[animation].OriginX;
+			Sprite.OriginY = AnimatedEntityData.Animations[animation].OriginY;
+
 			Sprite.Play(animation);
 
 			if (Head != null)
 			{
-				Head.X = Animations[animation].HeadPosition.X;
-				Head.Y = Animations[animation].HeadPosition.Y;
+				Head.X = AnimatedEntityData.Animations[animation].HeadPositionX;
+				Head.Y = AnimatedEntityData.Animations[animation].HeadPositionY;
 			}
 		}
 
-		public bool ChangeHead(string headName)
+		public bool ChangeHead(string headName, bool isAvatar)
 		{
 			if (currentHeadName != headName)
 			{
 				var oldHead = Head;
-				if (!CreateHead(headName))
+				if (!CreateHead(headName, isAvatar))
 				{
 					return false;
 				}
@@ -167,21 +155,18 @@ namespace zeebs.entities
 			return true;
 		}
 
-		public bool CreateHead(string headName)
+		public bool CreateHead(string headName, bool isAvatar)
 		{
 			try
 			{
-				AddComponent(Head = new Image(Library.GetTexture("twitch//" + headName)));
+				AddComponent(Head = new Image(Library.GetTexture((isAvatar ? "twitchAvatar//" : "twitch//") + headName)));
 				Head.CenterOrigin();
-				Head.Scale = Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
+				Head.Scale = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
 				
-				Head.X = Animations[Sprite.CurrentAnim].HeadPosition.X;
-				Head.Y = Animations[Sprite.CurrentAnim].HeadPosition.Y;
+				Head.X = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionX;
+				Head.Y = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionY;
 
-				//if (FP.Random.Bool())
-				//	OnDownComplete();
-				//else
-				currentHeadTween = Tweener.Tween(Head, new { Y = Animations[Sprite.CurrentAnim].HeadPosition.Y - 4 }, .7f);
+				currentHeadTween = Tweener.Tween(Head, new { Y = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionY - 4 }, .7f);
 				currentHeadTween.Ease(Ease.ToAndFro);
 				currentHeadTween.Repeat();
 
@@ -199,7 +184,19 @@ namespace zeebs.entities
 			}
 		}
 
-		public override void Update()
+        private void CreateName(string twitchUseranme)
+        {
+            AddComponent(zeebName = new Text(twitchUseranme) { Scale = 0.7f });
+
+            zeebName.CenterOrigin();
+            //zeebName.Scale = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadWidth / (float)zeebName.Width;
+
+            zeebName.X = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionX;
+            zeebName.Y = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadPositionY - 17.0f;
+        }
+
+
+        public override void Update()
 		{
 			base.Update();
 
