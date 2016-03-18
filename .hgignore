@@ -1,6 +1,8 @@
 syntax: glob
-zeebs/.vs/zeebs/v14/.suo
-zeebs/zeebs/bin
-zeebs/zeebs/obj
 zeebs/packages/**
+**/bin/**
+**/obj/**
+**.suo
 *.orig
+**.exe
+**.pdb
