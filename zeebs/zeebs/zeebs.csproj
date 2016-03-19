@@ -14,7 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -87,6 +87,7 @@
     <Compile Include="entities\ComEntities\Commands\ComEntityHelp.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityFlip.cs" />
     <Compile Include="entities\LeaderBoard.cs" />
+    <Compile Include="libraryProviders\TwitchAvatarProvider.cs" />
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />

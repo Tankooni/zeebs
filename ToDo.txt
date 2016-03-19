@@ -6,10 +6,7 @@ Spin/flip could deflect/dodge attacks?
 Add relative movement with exact numbers
 
 Bugs
-	Fix the mega kill bug
+	Gifs from bttv break things
+	some emotes need to be parsed into text that can be save to disk
 Add
 	Rejoin timer
-	
-Emotes that break
-	mangoNeo
-	

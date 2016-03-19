@@ -16,6 +16,7 @@ namespace zeebs.metaData
 		public string TwitchDisplayName;
 		public string TwitchUserColor;
 		public string ComEmoteHead;
+		public bool ComEmoteHeadIsAvatar;
 		public string ComEntityName;
 
 		[JsonIgnore]
