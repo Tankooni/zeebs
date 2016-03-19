@@ -15,6 +15,7 @@ namespace zeebs.utils.commands
 	public class Join : Command
 	{
 		string emoteName;
+		bool isAvatar;
 
 		public Join()
 		{
@@ -36,20 +37,38 @@ namespace zeebs.utils.commands
 				return false;
 			}
 
-			if (emotes.Count == 0)
+			var match = Regex.Match(commandParams, @"([\w\d]+)(\s+)?");
+			if (!match.Success)
 			{
-				FailReasonMessage = "No emote specified. Please use !join <emote>";
+				FailReasonMessage = "No emote specified";
 				return false;
 			}
-			var emote = emotes.First();
-
-			emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			
+			if (match.Groups[1].Value.ToLower() == "avatar")
+			{
+				emoteName = args[(int)StdExpMessageValues.UseName];
+				isAvatar = true;
+			}
+			else if (emotes.Count != 0)
+			{
+				var emote = emotes.First();
+				emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			}
+			else if (Utility.Twitchy.SpecialEmotes.Contains(match.Groups[1].Value))
+			{
+				emoteName = match.Groups[1].Value;
+			}
+			else
+			{
+				FailReasonMessage = "No emote specified";
+				return false;
+			}
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], Args[(int)StdExpMessageValues.DisplayName], emoteName, Args[(int)StdExpMessageValues.UserColor]);
+			FP.World.BroadcastMessage(JoinGameMessage.JoinGame, Args[(int)StdExpMessageValues.UseName], Args[(int)StdExpMessageValues.DisplayName], emoteName, isAvatar, Args[(int)StdExpMessageValues.UserColor]);
 		}
 
 		public override Command CreateNewSelf()

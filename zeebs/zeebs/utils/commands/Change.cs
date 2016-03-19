@@ -14,6 +14,7 @@ namespace zeebs.utils.commands
 	class Change : Command
 	{
 		string emoteName;
+		bool isAvatar = false;
 
 		public Change()
 		{
@@ -28,21 +29,39 @@ namespace zeebs.utils.commands
 				FailReasonMessage = "Not part of the game";
 				return false;
 			}
-			
-			if (emotes.Count == 0)
+
+			var match = Regex.Match(commandParams, @"([\w\d]+)(\s+)?");
+			if (!match.Success)
 			{
 				FailReasonMessage = "No emote specified";
 				return false;
 			}
-			var emote = emotes.First();
 
-			emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			if (match.Groups[1].Value.ToLower() == "avatar")
+			{
+				emoteName = args[(int)StdExpMessageValues.UseName];
+				isAvatar = true;
+			}
+			else if (emotes.Count != 0)
+			{
+				var emote = emotes.First();
+				emoteName = commandParams.Substring(emote.StartPos, emote.EndPos - emote.StartPos + 1);
+			}
+			else if (Utility.Twitchy.SpecialEmotes.Contains(match.Groups[1].Value))
+			{
+				emoteName = match.Groups[1].Value;
+			}
+			else
+			{
+				FailReasonMessage = "No emote specified";
+				return false;
+			}
 			return true;
 		}
 
 		public override void Execute()
 		{
-			FP.World.BroadcastMessage(ChangeMessage.Change, Args[(int)StdExpMessageValues.UseName], emoteName);
+			FP.World.BroadcastMessage(ChangeMessage.Change, Args[(int)StdExpMessageValues.UseName], emoteName, isAvatar);
 		}
 
 		public override Command CreateNewSelf()
@@ -52,8 +71,8 @@ namespace zeebs.utils.commands
 
 		public enum ChangeMessage
 		{
-			Change
-		}
+			Change,
+			ChangeAvatar
 
 		public override string GetHelpText() {
 			return helptext;

@@ -28,6 +28,7 @@ namespace zeebs.entities
 		public ComEntity(TwitchUserComEntityData twitchUserComEntityData)
 			: base(twitchUserComEntityData.ComEntityName, 
                    twitchUserComEntityData.ComEmoteHead,
+				   twitchUserComEntityData.ComEmoteHeadIsAvatar,
                    twitchUserComEntityData.TwitchDisplayName,
                    String.IsNullOrWhiteSpace(twitchUserComEntityData.TwitchUserColor) ? 
                         Color.White : 
