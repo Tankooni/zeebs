@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
         public Help()
     {
       CommandName = "help";
-      helptext = "Help - list all the commands here but i'm not going to type them out here because i can probs use the commandbank to list them all in a loop or something, amiright";
+      helptext = "Type '!help <cmd>' to learn more about: attack, cancel, change, changecolor, up, down, left, right, flip, spin, move, moved, moverandom, hypebutton, join, leave, loop, savescore ";
 
     }
     public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -25,7 +25,7 @@ namespace zeebs.utils.commands
       string user = args[(int)StdExpMessageValues.UseName];
       if (!Utility.GamePlayers.ContainsKey(user))
       {
-        FailReasonMessage = "Not part of game";
+        FailReasonMessage = "'!join <emote>' to join";
         return false;
       }
       else {
