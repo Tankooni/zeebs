@@ -73,7 +73,7 @@ namespace zeebs.utils.commands
 		{
 			Change,
 			ChangeAvatar
-
+		}
 		public override string GetHelpText() {
 			return helptext;
 		}

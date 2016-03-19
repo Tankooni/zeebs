@@ -22,7 +22,8 @@ namespace zeebs.utils.commands
     public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
     {
       base.CanExecute(args, commandParams, emotes);
-      if (!Utility.GamePlayers.ContainsKey(args[(int)StdExpMessageValues.UseName]))
+      string user = args[(int)StdExpMessageValues.UseName];
+      if (!Utility.GamePlayers.ContainsKey(user))
       {
         FailReasonMessage = "Not part of game";
         return false;
@@ -32,6 +33,8 @@ namespace zeebs.utils.commands
         TO DO: Display help menu whether or not you're connected to the game
         TO DO: Overly complex to just send help message to server - are there unncessary classes for Help specfically?
          */
+
+        Console.WriteLine(string.Join("\n", args));
 
         if (!Utility.MainConfig.IsOfflineMode) {
           Command command;
@@ -50,12 +53,12 @@ namespace zeebs.utils.commands
           // if that command exists and the help text exists
           if (command!=null && command.GetHelpText()!=null) {
             Console.WriteLine("cmd help description:" + command.GetHelpText());
-            Utility.Twitchy.QueuePublicChatMessage(command.GetHelpText());
+            Utility.Twitchy.QueuePrivateChatMessage(user, command.GetHelpText());
           }
           //invalid command or non -existent command after `!help`
           else {
             Console.WriteLine("this.CommandName:" +  this.CommandName);
-            Utility.Twitchy.QueuePublicChatMessage(this.GetHelpText());
+            Utility.Twitchy.QueuePrivateChatMessage(user, this.GetHelpText());
           }
         }
       }
