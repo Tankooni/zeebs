@@ -295,12 +295,6 @@ namespace Indigo.Content
 
 				using (MagickImage mImage = new MagickImage(data, settings))
 				{
-					//Console.WriteLine(mImage.Format);
-					//ImageMagick.MagickImageInfo
-
-					//MagickImageInfo info = new MagickImageInfo(data);
-					//mImage.BitDepth(32);
-					//Console.WriteLine("| " + info.Format + "| " + emoteName);
 					switch (mImage.Format)
 					{
 						case MagickFormat.Gif:
@@ -313,29 +307,8 @@ namespace Indigo.Content
 						case MagickFormat.Png32:
 						case MagickFormat.Png48:
 						case MagickFormat.Png64:
-							//using (MemoryStream bMapStream = new MemoryStream(data))
-							//{
-							//	using (Bitmap bMap = new Bitmap(bMapStream))
-							//	{
-							//		switch (bMap.PixelFormat)
-							//		{
-							//			case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-							//				mImage.Format = MagickFormat.Png8;
-							//				break;
-							//			default:
-							//				mImage.Format = MagickFormat.Png32;
-							//				break;
-							//		}
-							//	}
-							//}
 							break;
 					}
-
-							
-
-					//This is the only exception out of all default emotes. See issue 12.
-					//if (emoteName == "FuzzyOtterOO")
-					//	mImage.Format = MagickFormat.Png8;
 
 					mImage.Write(imageStream);
 					imageStream.Position = 0;
