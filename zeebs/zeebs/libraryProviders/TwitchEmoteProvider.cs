@@ -277,43 +277,74 @@ namespace Indigo.Content
 				if (Library.FileExists(qualifiedFilename))
 					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
 			}
-			
-			if(data == null)
+			MemoryStream imageStream = new MemoryStream();
+
+			if (data == null)
 			{
+				if (new HashSet<string> { "PepePls", "ItsBoshyTime" }.Contains(emoteName))
+				{
+
+				}
+
 				data = client.DownloadData(url);
 				var folder = Library.GetFolderName("content/twitchcache");
-				MemoryStream stream = new MemoryStream();
 
-                using (MemoryStream bMapStream = new MemoryStream(data))
-                {
-                    using (Bitmap bMap = new Bitmap(bMapStream))
-                    {
-                        using (MagickImage mImage = new MagickImage(data))
-                        {
-                            switch (bMap.PixelFormat)
-                            {
-                                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                                    mImage.Format = MagickFormat.Png8;
-                                    break;
-                                default:
-                                    mImage.Format = MagickFormat.Png32;
-                                    break;
-                            }
+				MagickReadSettings settings = new MagickReadSettings();
+				settings.ColorSpace = ColorSpace.sRGB;
+				settings.SetDefine(MagickFormat.Png, "format", "png8");
 
-                            //This is the only exception out of all default emotes. See issue 12.
-                            if (emoteName == "FuzzyOtterOO")
-                                mImage.Format = MagickFormat.Png8;
+				using (MagickImage mImage = new MagickImage(data, settings))
+				{
+					//Console.WriteLine(mImage.Format);
+					//ImageMagick.MagickImageInfo
 
-                            mImage.Write(stream);
-                            stream.Position = 0;
-                        }
-                    }
+					//MagickImageInfo info = new MagickImageInfo(data);
+					//mImage.BitDepth(32);
+					//Console.WriteLine("| " + info.Format + "| " + emoteName);
+					switch (mImage.Format)
+					{
+						case MagickFormat.Gif:
+								
+							break;
+						case MagickFormat.Png:
+						case MagickFormat.Png8:
+						case MagickFormat.Png00:
+						case MagickFormat.Png24:
+						case MagickFormat.Png32:
+						case MagickFormat.Png48:
+						case MagickFormat.Png64:
+							//using (MemoryStream bMapStream = new MemoryStream(data))
+							//{
+							//	using (Bitmap bMap = new Bitmap(bMapStream))
+							//	{
+							//		switch (bMap.PixelFormat)
+							//		{
+							//			case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+							//				mImage.Format = MagickFormat.Png8;
+							//				break;
+							//			default:
+							//				mImage.Format = MagickFormat.Png32;
+							//				break;
+							//		}
+							//	}
+							//}
+							break;
+					}
+
+							
+
+					//This is the only exception out of all default emotes. See issue 12.
+					//if (emoteName == "FuzzyOtterOO")
+					//	mImage.Format = MagickFormat.Png8;
+
+					mImage.Write(imageStream);
+					imageStream.Position = 0;
                 }
 				
-				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
+				//File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
 			}
 
-			library.AddTexture(string.Format("twitch//{0}", emoteName), new MemoryStream(data, false));
+			library.AddTexture(string.Format("twitch//{0}", emoteName), imageStream);
 			loadedEmotes.Add(emoteName);
 		}
 		
