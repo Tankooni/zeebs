@@ -13,6 +13,7 @@ using SFML;
 using zeebs.metaData;
 using Indigo.Core;
 using Utils.Json;
+using Tankooni.IRC;
 
 namespace zeebs
 {
@@ -26,7 +27,9 @@ namespace zeebs
 				if (!Directory.Exists("logs"))
 					Directory.CreateDirectory("logs");
 				File.WriteAllText("logs/" + DateTime.Now.ToString("MMddyy_HHmmss") + "_ErrorLog.txt", e.ExceptionObject.ToString());
+#if DEBUG
 				Environment.Exit(0);
+#endif
 			};
 
 			var game = new Game();
@@ -48,7 +51,7 @@ namespace zeebs
 			Library.LoadProvider(twtichEmoteProvider);
 			Library.LoadProvider(new Indigo.Content.TwitchAvatarProvider());
 
-			Utility.Twitchy = new Tankooni.IRC.TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
+			Utility.Twitchy = new TwitchInterface(Utility.MainConfig.Channel, Utility.MainConfig.OverrideBotUser, Utility.MainConfig.OverrideOauth, Utility.MainConfig.IsDebug, Utility.MainConfig.IsOfflineMode);
 			Utility.Twitchy.SpecialEmotes = twtichEmoteProvider.LoadedSpecialEmotes;
 
 			if (Utility.MainConfig.IsDebug)
