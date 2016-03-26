@@ -107,6 +107,7 @@
     <Compile Include="utils\commands\SaveScores.cs" />
     <Compile Include="utils\commands\Spin.cs" />
     <Compile Include="utils\commands\Up.cs" />
+    <Compile Include="utils\FramePacker.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
     <Compile Include="utils\json\JsonWriter.cs" />
     <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\commands\Command.cs" />
     <Compile Include="utils\commands\HypeButton.cs" />
-    <Compile Include="utils\Part.cs" />
+    <Compile Include="utils\commands\Part.cs" />
     <Compile Include="utils\pathing\PathNode.cs" />
     <Compile Include="utils\pathing\SolverUtility.cs" />
     <Compile Include="utils\SoundManager.cs" />

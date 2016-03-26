@@ -270,9 +270,30 @@ namespace zeebs
 		public override void Update()
 		{
 			base.Update();
-			/*
+			
 			if (Utility.MainConfig.IsDebug && FP.Focused)
 			{
+				/*
+				if (Keyboard.Space.Down)
+				{
+
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						(currentDemoZeeb + currentTester),
+						"!join Kappa"
+						));
+					currentTester++;
+				}
+				if(Keyboard.Q.Pressed)
+				{
+					foreach(var zeeb in Utility.GamePlayers.Values)
+					{
+						Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						zeeb.TwitchUserComEntityData.TwitchUserName,
+						"!loop !color random"
+						));
+					}
+				}
+				
 				#region this switches control
 				if (Keyboard.Num0.Pressed)
 					currentTester = 0;
@@ -295,14 +316,7 @@ namespace zeebs
 				if (Keyboard.Num9.Pressed)
 					currentTester = 9;
 				#endregion this switches control
-				if (Keyboard.Space.Pressed)
-				{
-
-					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
-						(currentDemoZeeb + currentTester),
-						"!join Kappa"
-						));
-				}
+				
 
 				//if (Keyboard.L.Pressed)
 				//{
@@ -356,9 +370,10 @@ namespace zeebs
 						"!right"
 						));
 				}
+				*/
 
 			}
-			*/
+
 			//if (Keyboard.S.Pressed)
 			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
 
@@ -380,7 +395,8 @@ namespace zeebs
 		public enum WorldMessages
 		{
 			PlayerKilledPlayer,
-			UpdateLeaderBoard
+			UpdateLeaderBoard,
+			ItStarts
 		}
 	}
 }
