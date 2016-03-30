@@ -14,22 +14,52 @@ using zeebs.metaData;
 using Indigo.Core;
 using Utils.Json;
 using Tankooni.IRC;
+using WebSocketSharp;
 
 namespace zeebs
 {
 	class Game : Engine
 	{
+		
 		static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			{
-				Console.WriteLine("ERROR");
+				ErrorMessage errorMessage = new ErrorMessage
+				{
+					RefID = Guid.NewGuid(),
+					ErrorTimeStamp = DateTime.Now,
+					SentToServer = true,
+					ExceptionText = ""
+				};
+				try
+				{
+					errorMessage.Configuration = Utility.MainConfig.CopyAndScrubSensitiveData();
+					errorMessage.ExceptionText = e.ExceptionObject.ToString();
+				}
+				catch
+				{
+					errorMessage.Configuration = MainConfig.CreateDefaultConfig();
+				}
+				try
+				{
+					if (!errorMessage.Configuration.IsDebug)
+					{
+						WebSocket imAllEarsJoe = new WebSocket("ws://ec2-52-91-247-241.compute-1.amazonaws.com:20420");
+						imAllEarsJoe.Connect();
+						imAllEarsJoe.Send(Newtonsoft.Json.JsonConvert.SerializeObject(errorMessage));
+						imAllEarsJoe.Close();
+					}
+
+				}
+				catch
+				{
+					errorMessage.SentToServer = false;
+				}
 				if (!Directory.Exists("logs"))
 					Directory.CreateDirectory("logs");
-				File.WriteAllText("logs/" + DateTime.Now.ToString("MMddyy_HHmmss") + "_ErrorLog.txt", e.ExceptionObject.ToString());
-#if DEBUG
-				Environment.Exit(0);
-#endif
+				JsonWriter.Save(errorMessage, string.Format("logs/{0}_{1}_ErrorLog", errorMessage.ErrorTimeStamp.ToString("MMddyy_HHmmss"), errorMessage.RefID), true);
+				//Environment.Exit(0);
 			};
 
 			var game = new Game();
@@ -79,5 +109,17 @@ namespace zeebs
 			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/membership");
 			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/commands");
 		}
+	}
+
+	class ErrorMessage
+	{
+		public Guid RefID { get; set; }
+		public DateTime ErrorTimeStamp { get; set; }
+		public string ExceptionText { get; set; }
+		/// <summary>
+		/// Be sure to clear out senstive data with this
+		/// </summary>
+		public TankooniConfig Configuration { get; set; }
+		public bool SentToServer { get; set; }
 	}
 }

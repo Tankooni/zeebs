@@ -309,7 +309,7 @@ namespace Indigo.Content
 				if (mImageInfo.Format != MagickFormat.Gif)
 				{
 					using (MagickImage mImage = new MagickImage(data, settings))
-					{
+					{ 
 						mImage.Write(imageStream);
 						imageStream.Position = 0;
 					}
@@ -318,13 +318,31 @@ namespace Indigo.Content
 				{
 					using (MagickImageCollection mImages = new MagickImageCollection(data, settings))
 					{
-						var width = mImages.Max(x => x.BaseWidth);
-						var height = mImages.Max(y => y.BaseHeight);
+						var width = mImages.Max(x =>
+						{
+
+							return x.Page.Width;
+						}
+						);
+						var height = mImages.Max(y => y.Page.Height);
 						//mImages.First().AnimationDelay
-						var frameX = mImages.Select(x => x.Page.X).ToList();
-						var frameY = mImages.Select(x => x.Page.Y).ToList();
-						//FramePacker.PackListOfImagesToMemStream(mImages.Select(x => x.ToBitmap(ImageFormat.Png)).ToArray(), imageStream, width, height);
-						mImages.First().Write(imageStream);
+						//var frameX = mImages.Select(x => x.Page.X).ToList();
+						//var frameY = mImages.Select(x => x.Page.Y).ToList();
+						//FramePacker.PackListOfImagesToMemStream(
+						//	mImages.Select(imageFrame => new FramePacker.Frame
+						//	{
+						//		image = imageFrame.ToBitmap(ImageFormat.Png),
+						//		x = imageFrame.Page.X,
+						//		y = imageFrame.Page.Y,
+						//		width = imageFrame.BaseWidth,
+						//		height = imageFrame.BaseHeight
+						//	}).ToArray(),
+						//	imageStream,
+						//	width,
+						//	height
+						//);
+						
+						mImages[0].Write(imageStream);
 						imageStream.Position = 0;
 					}
 				}
