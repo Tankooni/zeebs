@@ -14,15 +14,15 @@ namespace Tankooni
 	/// </summary>
 	public static class FramePacker
 	{
-		public static void PackListOfImagesToMemStream(Bitmap[] imagesToPack, MemoryStream stream, int frameWidth, int frameHeight)
+		public static void PackListOfImagesToMemStream(Frame[] imagesToPack, MemoryStream stream, int frameWidth, int frameHeight)
 		{
 			PackListOfImages(imagesToPack, frameWidth, frameHeight).Save(stream, ImageFormat.Png);
 		}
-		public static Bitmap PackListOfImages(Bitmap[] imagesToPack, int frameWidth, int frameHeight)
+		public static Bitmap PackListOfImages(Frame[] imagesToPack2, int frameWidth, int frameHeight)
 		{
 			//int frameWidth = imagesToPack[0].Width;
 			//int frameHeight = imagesToPack[0].Height;
-
+			Frame[] imagesToPack = { imagesToPack2[0] };
 			var size = Size.GetDimensions(frameWidth, frameHeight, imagesToPack.Length);
 			var sprite = new Bitmap(frameWidth * size.Cols, frameHeight * size.Rows);
 
@@ -33,8 +33,8 @@ namespace Tankooni
 				int x = 0, y = 0;
 				foreach (var bmp in imagesToPack)
 				{
-					var brush = new TextureBrush(bmp);
-					g.FillRectangle(brush, x * frameWidth, y * frameHeight, frameWidth, frameHeight);
+					var brush = new TextureBrush(bmp.image);
+					g.FillRectangle(brush, x * frameWidth + bmp.x, y * frameHeight + bmp.y, bmp.width, bmp.height);
 
 					if (++x >= size.Cols)
 					{
@@ -69,6 +69,15 @@ namespace Tankooni
 			}
 
 			public int Cols, Rows;
+		}
+
+		public class Frame
+		{
+			public int x;
+			public int y;
+			public int width;
+			public int height;
+			public Bitmap image;
 		}
 	}
 }
