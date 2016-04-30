@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Runtime.Serialization;
 using System.Drawing.Imaging;
 using Tankooni;
+using Utils.Json;
 
 namespace Indigo.Content
 {
@@ -21,7 +22,7 @@ namespace Indigo.Content
 		private HashSet<string> loadedEmotes;
 		public HashSet<string> LoadedSpecialEmotes { get; private set; }
 		private string currentChannel;
-		const string TWITCH_CACHE_PATH= "content/twitchcache/";
+		public const string TWITCH_CACHE_PATH = "content/twitchcache/";
 
 		public TwitchEmoteProvider(string channel = null)
 		{
@@ -209,17 +210,17 @@ namespace Indigo.Content
 			{
 				try
 				{
-					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, emote.code)))
+					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, Utility.EncodeStringForFileName(emote.code))))
 						AddEmote(emote.code, emote.code, library);
 					else
 						AddBttvEmote(emote.code, emote.id, library);
 					LoadedSpecialEmotes.Add(emote.code);
-				}
-				catch (Exception e)
-				{
-					FP.Log(emote.code, e.Message);
-				}
 			}
+				catch (Exception e)
+			{
+				FP.Log(emote.code, e.Message);
+			}
+		}
 		}
 
 		private void LoadChannelBttvSet(Library.ILibraryInternal library, string channel)
@@ -257,7 +258,7 @@ namespace Indigo.Content
 			{
 				try
 				{
-					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, emote.code)))
+					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, Utility.EncodeStringForFileName(emote.code))))
 						AddEmote(emote.code, emote.code, library);
 					else
 						AddBttvEmote(emote.code, emote.id, library);
@@ -285,11 +286,13 @@ namespace Indigo.Content
 			if (loadedEmotes.Contains(emoteName))
 				return;
 
+			string encodedEmoteName = Utility.EncodeStringForFileName(emoteName);
+
 			byte[] data = null;
 
 			if (Library.FolderExists(TWITCH_CACHE_PATH))
-			{
-				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, emoteName);
+			{ 
+				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName);
 				if (Library.FileExists(qualifiedFilename))
 					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
 			}
@@ -318,36 +321,49 @@ namespace Indigo.Content
 				{
 					using (MagickImageCollection mImages = new MagickImageCollection(data, settings))
 					{
-						var width = mImages.Max(x =>
-						{
-
-							return x.Page.Width;
-						}
-						);
+						//Background is PepePls
+						//SourPls is None
+						var width = mImages.Max(x => x.Page.Width);
 						var height = mImages.Max(y => y.Page.Height);
-						//mImages.First().AnimationDelay
-						//var frameX = mImages.Select(x => x.Page.X).ToList();
-						//var frameY = mImages.Select(x => x.Page.Y).ToList();
-						//FramePacker.PackListOfImagesToMemStream(
-						//	mImages.Select(imageFrame => new FramePacker.Frame
-						//	{
-						//		image = imageFrame.ToBitmap(ImageFormat.Png),
-						//		x = imageFrame.Page.X,
-						//		y = imageFrame.Page.Y,
-						//		width = imageFrame.BaseWidth,
-						//		height = imageFrame.BaseHeight
-						//	}).ToArray(),
-						//	imageStream,
-						//	width,
-						//	height
-						//);
-						
-						mImages[0].Write(imageStream);
+						FramePacker.FrameDisposal frameDisposal;
+
+						switch (mImages[0].GifDisposeMethod)
+						{
+							case GifDisposeMethod.None:
+								frameDisposal = FramePacker.FrameDisposal.Composite;
+								break;
+							case GifDisposeMethod.Undefined:
+							case GifDisposeMethod.Background:
+							case GifDisposeMethod.Previous:
+							default:
+								frameDisposal = FramePacker.FrameDisposal.Replace;
+								break;
+						}
+
+						var packedImage = FramePacker.PackListOfImagesToMemStream(
+							mImages.Select(imageFrame => new FramePacker.Frame
+							{
+								Image = imageFrame.ToBitmap(ImageFormat.Png),
+								X = imageFrame.Page.X,
+								Y = imageFrame.Page.Y,
+								Width = imageFrame.BaseWidth,
+								Height = imageFrame.BaseHeight
+							}).ToArray(),
+							imageStream,
+							width,
+							height,
+							frameDisposal
+						);
+
+						packedImage.FPS = 1 / ((float)mImages.Select(x => x.AnimationDelay).Average() / 100.0f);
+
+						JsonWriter.Save(packedImage, string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName), true);
+						//mImages[0].Write(imageStream);
 						imageStream.Position = 0;
 					}
 				}
 				
-				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = imageStream.ToArray());
+				File.WriteAllBytes(string.Format("{0}/{1}", folder, encodedEmoteName), data = imageStream.ToArray());
 			}
 
 			library.AddTexture(string.Format("twitch//{0}", emoteName), imageStream);
@@ -359,11 +375,13 @@ namespace Indigo.Content
 			if (loadedEmotes.Contains(emoteName))
 				return;
 
+			string encodedEmoteName = Utility.EncodeStringForFileName(path);
+
 			byte[] data = null;
 
 			if (Library.FolderExists(TWITCH_CACHE_PATH))
 			{
-				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, path);
+				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName);
 				if (Library.FileExists(qualifiedFilename))
 					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
 			}

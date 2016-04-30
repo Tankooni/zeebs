@@ -95,19 +95,10 @@ namespace zeebs
 
 			Mouse.CursorVisible = true;
 
-			SoundManager.Init(0.7f);
-			//SoundManager.Init(0);
-			//FP.World = new DynamicSceneWorld();
+			//SoundManager.Init(0.7f);
 			FP.World = new StartScreenWorld(Utility.Twitchy);
 
 			Utility.Twitchy.Connect();
-			//Utility.Twitchy.Connect("#tankooni");
-			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/tags");
-			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/membership");
-			Utility.Twitchy.SendPublicCommand("CAP", "REQ", "twitch.tv/commands");
-			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/tags");
-			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/membership");
-			Utility.Twitchy.SendPrivateCommand("CAP", "REQ", "twitch.tv/commands");
 		}
 	}
 

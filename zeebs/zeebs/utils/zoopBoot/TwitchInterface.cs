@@ -105,11 +105,12 @@ namespace Tankooni.IRC
 		public TwitchInterface(string channel, string nickName, string oauth, bool isDebug = false, bool isOfflineMode = false)
 		{
 			this.channel = channel;
+			this.nickName = nickName;
+			this.oauth = oauth;
 			client = new WebClient();
 			IsDebug = isDebug;
 			IsOfflineMode = isOfflineMode;
-			this.nickName = nickName;
-			this.oauth = oauth;
+			
 			if (!isOfflineMode)
 			{
 				twitchChatServers = Newtonsoft.Json.JsonConvert.DeserializeObject<TwitchChatServers>(client.DownloadString(string.Format("http://tmi.twitch.tv/servers?channel={0}", channel.Remove(0,1))));
@@ -127,14 +128,15 @@ namespace Tankooni.IRC
 				PrivateIrcThread.IsBackground = true;
 				PrivateIrc = new IRC(groupChatServerIP[0], int.Parse(groupChatServerIP[1]), nickName, oauth, isDebug);
 				PrivateIrc.CommandReceiveCallBack = PleaseBeQuiet;
-
-				PubChatOut = new Thread(() => { while (true) { PublicChatMessageQueueDoer(); Thread.Sleep(100); } });
-				PubChatOut.IsBackground = true;
-				PrivateChatOut = new Thread(() => { while (true) { PrivateChatMessageQueueDoer(); Thread.Sleep(100); } });
-				PrivateChatOut.IsBackground = true;
 			}
 			else
 				if (isDebug) Console.WriteLine("Offline Mode enabled");
+
+			PubChatOut = new Thread(() => { while (true) { PublicChatMessageQueueDoer(); Thread.Sleep(1500); } });
+			PubChatOut.IsBackground = true;
+
+			PrivateChatOut = new Thread(() => { while (true) { PrivateChatMessageQueueDoer(); Thread.Sleep(1500); } });
+			PrivateChatOut.IsBackground = true;
 
 			foreach (var commandType in Tankooni.Utility.GetTypeFromAllAssemblies<Command>())
 			{
@@ -148,21 +150,25 @@ namespace Tankooni.IRC
 
 		public void Connect()
 		{
-			Irc.Connect();
-			Irc.Join(channel);
-			IrcThread.Start();
+			if (!IsOfflineMode)
+			{
+				Irc.Connect();
+				Irc.Join(channel);
+				IrcThread.Start();
+				SendPublicCommand("CAP", "REQ", "twitch.tv/tags");
+				SendPublicCommand("CAP", "REQ", "twitch.tv/membership");
+				SendPublicCommand("CAP", "REQ", "twitch.tv/commands");
+
+				PrivateIrc.Connect();
+				PrivateIrcThread.Start();
+
+				SendPrivateCommand("CAP", "REQ", "twitch.tv/tags");
+				SendPrivateCommand("CAP", "REQ", "twitch.tv/membership");
+				SendPrivateCommand("CAP", "REQ", "twitch.tv/commands");
+			}
+
 			PubChatOut.Start();
-
-			PrivateIrc.Connect();
-			PrivateIrcThread.Start();
 			PrivateChatOut.Start();
-		}
-
-		//public void SpoofMessage(string )
-
-		public void RunCommand(Command command)
-		{
-
 		}
 
 		public void OmgImSoPopular(string message)
@@ -217,7 +223,7 @@ namespace Tankooni.IRC
 							emote.EndPos -= commandParamStartPos;
 							emoteList.Add(emote);
 						}
-
+						//Left off w/ Amy here
 						if (newCommand.CanExecute(args, potentialCommand.Groups[2].Value, emoteList))
 						{
 							if (!greedIsPresent)
@@ -318,7 +324,7 @@ namespace Tankooni.IRC
 				if (!Utility.MainConfig.IsOfflineMode)
 					SendPrivateMessageToServer(message.Item1, message.Item2);
 				else
-					Console.WriteLine("Whisper: " + message.Item1 + ": " + message.Item2);
+					Console.WriteLine("Private: " + message.Item1 + ": " + message.Item2);
 			}
 		}
 

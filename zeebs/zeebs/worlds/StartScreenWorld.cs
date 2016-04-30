@@ -47,6 +47,7 @@ namespace zeebs
 
 			AddResponse(Join.JoinGameMessage.JoinGame, DoJoinGame);
 			AddResponse(Leave.LeaveMessage.Leave, DoPartGame);
+			AddResponse(QuitGame.QuitMessage.Quit, DoQuitGame);
 			AddResponse(Move.MoveMessage.Move, DoMoveZeeb);
             AddResponse(MoveD.MoveDMessage.MoveD, DoMoveDZeeb);
             AddResponse(Loop.LoopMessage.Loop, DoLoop);
@@ -61,6 +62,7 @@ namespace zeebs
 			AddResponse(WorldMessages.UpdateLeaderBoard, UpdateLeaderBoard);
 
 			AddResponse(SaveScores.SaveScoresMessage.SaveScores, WriteAllScores);
+			AddResponse(Kick.KickMessage.Kick, KickPlayer);
 
 			start = new Text("Start [Enter]");
 			start.X = (FP.Width / 2) - (start.Width / 2);
@@ -135,7 +137,7 @@ namespace zeebs
 					TwitchUserColor = string.IsNullOrWhiteSpace(userColor) ? String.Format("{0:X6}", FP.Random.Int(16777216)) : userColor,
 					ComEmoteHead = emoteName,
 					ComEmoteHeadIsAvatar = isAvatar,
-					ComEntityName = Utility.MainConfig.DefaultBody ?? "ZeebSmall",
+					ComEntityName = ChooseBody(),
 					ComEntityPosition = new Point(dX, dY),
 					CommandQueue = new Queue<ComEntityCommand>()
 				};
@@ -158,6 +160,14 @@ namespace zeebs
 			BroadcastMessage(WorldMessages.UpdateLeaderBoard);
 		}
 
+		private string ChooseBody()
+		{
+			if(Utility.MainConfig.Bodies == null || Utility.MainConfig.Bodies.Count == 0)
+				return "ZeebSmall";
+			var newBody = FP.Choose.Weighted(Utility.MainConfig.Bodies);
+			return string.IsNullOrWhiteSpace(newBody) ? "ZeebSmall" : newBody;
+		}
+
 		public void DoChangeEmote(object[] args)
 		{
 			var player = Utility.GamePlayers[(string)args[0]];
@@ -175,6 +185,19 @@ namespace zeebs
 			discoPlayer.Interrupt();
 			Remove(discoPlayer);
 			Utility.GamePlayers.Remove(userName);
+		}
+
+		public void DoQuitGame(object[] args)
+		{
+			string userName = (string)args[0];
+			try
+			{
+				DoPartGame(args);
+			}
+			catch { }
+
+			Utility.SessionPlayers.Remove(userName);
+			leaderBoard.UpdateLeaderBoard();
 		}
 
 		public void DoMoveZeeb(object[] args)
@@ -256,67 +279,108 @@ namespace zeebs
 		public void WriteAllScores(object[] args)
 		{
 			StringBuilder scoreBuilder = new StringBuilder();
-			foreach(var player in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount))
+			foreach (var player in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount))
 			{
 				scoreBuilder.AppendLine(player.TwitchUserComEntityData.TwitchUserName + ": " + player.TwitchUserComEntityData.KillCount);
 			}
 			File.WriteAllText(Utility.SAVE_DIR + "/" + "Scores_" + DateTime.Now.ToString("MMddyy_HHmmss") + ".txt", scoreBuilder.ToString());
 		}
 
+		public void KickPlayer(object[] args)
+		{
+			DoQuitGame(args);
+		}
+
 		int currentTester = 0;
-		string currentDemoZeeb = "Test";
+		string currentDemoZeeb = "test";
 		
 
 		public override void Update()
 		{
 			base.Update();
-			
-			if (Utility.MainConfig.IsDebug && FP.Focused)
+
+			//UpdateTheTestingJank();
+
+			//if (Keyboard.S.Pressed)
+			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
+
+			//if (Keyboard.Z.Pressed)
+			//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
+
+			//if (Keyboard.Q.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
+			//if (Keyboard.W.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
+			//if (Keyboard.E.Pressed)
+			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
+			//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
+
+			//            if (Keyboard.Space.Pressed)
+			//                FP.World = new InstructionsScreenWorld();
+		}
+
+		private void UpdateTheTestingJank()
+		{
 			{
-				/*
+				///*
 				if (Keyboard.Space.Down)
 				{
-
-					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+					string emote;
+					if (FP.Random.Bool())
+						emote = "SourPls";
+					else
+						emote = "PepePls";
+					Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1} {2}",
 						(currentDemoZeeb + currentTester),
-						"!join Kappa"
+						"!join",
+						emote
 						));
 					currentTester++;
 				}
-				if(Keyboard.Q.Pressed)
+				if (Keyboard.Q.Pressed)
 				{
-					foreach(var zeeb in Utility.GamePlayers.Values)
+					foreach (var zeeb in Utility.GamePlayers.Values)
 					{
 						Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
 						zeeb.TwitchUserComEntityData.TwitchUserName,
-						"!loop !color random"
+						"!color random !loop !moverandom"
 						));
 					}
 				}
-				
-				#region this switches control
-				if (Keyboard.Num0.Pressed)
-					currentTester = 0;
 				if (Keyboard.Num1.Pressed)
-					currentTester = 1;
-				if (Keyboard.Num2.Pressed)
-					currentTester = 2;
+				{
+					for (int i = Utility.GamePlayers.Values.Count() - 1; i >= 0; i--)
+					{
+						var zeeb = Utility.GamePlayers.Values.Last();
+						Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						zeeb.TwitchUserComEntityData.TwitchUserName,
+						"!quit"
+						));
+					}
+				}
 				if (Keyboard.Num3.Pressed)
-					currentTester = 3;
-				if (Keyboard.Num4.Pressed)
-					currentTester = 4;
-				if (Keyboard.Num5.Pressed)
-					currentTester = 5;
-				if (Keyboard.Num6.Pressed)
-					currentTester = 6;
-				if (Keyboard.Num7.Pressed)
-					currentTester = 7;
-				if (Keyboard.Num8.Pressed)
-					currentTester = 8;
-				if (Keyboard.Num9.Pressed)
-					currentTester = 9;
-				#endregion this switches control
-				
+				{
+					for (int i = Utility.GamePlayers.Values.Count() - 1; i >= 0; i--)
+					{
+						var zeeb = Utility.GamePlayers.Values.Last();
+						Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1} {2}",
+						Utility.MainConfig.AdminUser.ToLower(),
+						"!kick",
+						zeeb.TwitchUserComEntityData.TwitchUserName
+						));
+					}
+				}
+				if (Keyboard.E.Pressed)
+				{
+					foreach (var zeeb in Utility.GamePlayers.Values)
+					{
+						Utility.Twitchy.OmgImSoPopular(string.Format(@"@color=#FF4500;display-name={0};emotes=25:6-10;mod=1;room-id=114267546;subscriber=0;turbo=0;user-id=40916227;user-type=mod :{0}!{0}@{0}.tmi.twitch.tv PRIVMSG #zoopboot :{1}",
+						zeeb.TwitchUserComEntityData.TwitchUserName,
+						"!cancel !loop !attack"
+						));
+					}
+				}
+
 
 				//if (Keyboard.L.Pressed)
 				//{
@@ -370,26 +434,9 @@ namespace zeebs
 						"!right"
 						));
 				}
-				*/
+				//*/
 
 			}
-
-			//if (Keyboard.S.Pressed)
-			//	Utility.Twitchy.SendPriveMessageToServer("chjolo", "Hai frond");
-
-			//if (Keyboard.Z.Pressed)
-			//	Utility.Twitchy.OmgImSoPopular("@color=#FF4500;display-name=Tankooni;emotes=44073:0-5/44355:7-12;mod=0;room-id=40916227;subscriber=0;turbo=0;user-id=40916227;user-type= :tankooni!tankooni@tankooni.tmi.twitch.tv PRIVMSG #tankooni :cutFin cutBoy");
-
-			//if (Keyboard.Q.Pressed)
-			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/membership");
-			//if (Keyboard.W.Pressed)
-			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/commands");
-			//if (Keyboard.E.Pressed)
-			//	Utility.Twitchy.SendCommand("CAP", "REQ", "twitch.tv/tags");
-			//	FP.World = new DynamicSceneWorld(Utility.MainConfig.StartingScene, Utility.MainConfig.SpawnEntrance);
-
-			//            if (Keyboard.Space.Pressed)
-			//                FP.World = new InstructionsScreenWorld();
 		}
 
 		public enum WorldMessages

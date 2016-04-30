@@ -36,6 +36,35 @@ namespace Tankooni
 			return files.Select(x => x.Remove(0, 2).Replace(@"\", "/")).ToArray();
 		}
 
+		private static Dictionary<string, string> encodeReplaceValues = new Dictionary<string, string>
+		{
+			{ "♥BS♥", "\\" },
+			{ "♥FS♥", "/" },
+			{ "♥CL♥", ":" },
+			{ "♥AS♥", "*" },
+			{ "♥QM♥", "?" },
+			{ "♥QS♥", "\"" },
+			{ "♥LT♥", "<" },
+			{ "♥GT♥", ">" },
+			{ "♥PP♥", "|" }
+		};
+
+		public static string EncodeStringForFileName(string filename)
+		{
+			string encodedFileName = filename;
+			foreach (var replaceValue in encodeReplaceValues)
+				encodedFileName = encodedFileName.Replace(replaceValue.Value, replaceValue.Key);
+			return encodedFileName;
+		}
+
+		public static string DecodeStringForFileName(string filename)
+		{
+			string encodedFileName = filename;
+			foreach (var replaceValue in encodeReplaceValues)
+				encodedFileName = encodedFileName.Replace(replaceValue.Key, replaceValue.Value);
+			return encodedFileName;
+		}
+
 		public static List<Type> GetTypeFromAllAssemblies<T>()
 		{
 			var typeList = new List<Type>();
@@ -103,7 +132,7 @@ namespace Tankooni
 		public string OverrideBotUser { get; set; }
 		public string OverrideOauth { get; set; }
 		public string Channel { get; set; }
-		public string DefaultBody { get; set; }
+		public Dictionary<string, Double> Bodies { get; set; }
 		public bool PreventBotTalking { get; set; }
 		public bool IsOfflineMode { get; set; }
 		public string BackgroundColor { get; set; }
@@ -136,7 +165,12 @@ namespace Tankooni
 				OverrideOauth = "",
 				Channel = "#tankooni",
 				PreventBotTalking = false,
-				DefaultBody = "ZeebSmall",
+				Bodies = new Dictionary<string, Double>
+				{
+					{"ZeebSmall" , 60.0},
+					{"Navi" , 35.0},
+					{"SanicSmul" , 5.0}
+				},
 				IsDebug = true,
 				IsOfflineMode = false,
 				BackgroundColor = "#00FF00",
