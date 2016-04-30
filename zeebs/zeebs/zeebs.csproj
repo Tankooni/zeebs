@@ -90,11 +90,13 @@
     <Compile Include="metaData\AnimatedEntityData.cs" />
     <Compile Include="metaData\AnimationData.cs" />
     <Compile Include="metaData\TwitchUserComEntityData.cs" />
+    <Compile Include="utils\commands\AdminCommand.cs" />
     <Compile Include="utils\commands\Attack.cs" />
     <Compile Include="utils\commands\Cancel.cs" />
     <Compile Include="utils\commands\ChangeColor.cs" />
     <Compile Include="utils\commands\Down.cs" />
     <Compile Include="utils\commands\Flip.cs" />
+    <Compile Include="utils\commands\Kick.cs" />
     <Compile Include="utils\commands\Left.cs" />
     <Compile Include="utils\commands\Loop.cs" />
     <Compile Include="utils\commands\Change.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="utils\commands\Leave.cs" />
     <Compile Include="utils\commands\MoveD.cs" />
     <Compile Include="utils\commands\MoveRandom.cs" />
+    <Compile Include="utils\commands\QuitGame.cs" />
     <Compile Include="utils\commands\Right.cs" />
     <Compile Include="utils\commands\SaveScores.cs" />
     <Compile Include="utils\commands\Spin.cs" />

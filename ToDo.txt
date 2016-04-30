@@ -5,8 +5,13 @@ Find a way to notify people trying to use sub emotes when they aren't subbed to 
 Spin/flip could deflect/dodge attacks?
 Add relative movement with exact numbers
 
+For Sammy
+	Composite gifs
+	Some emotes names need to be parsed into valid ntsf text that can be save to disk
+	Pull a random image from a folder for the background on startup
+	
+
 Bugs
-	Gifs from bttv break things
-	some emotes need to be parsed into text that can be save to disk
+	
 Add
 	Rejoin timer

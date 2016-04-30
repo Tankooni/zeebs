@@ -14,36 +14,62 @@ namespace Tankooni
 	/// </summary>
 	public static class FramePacker
 	{
-		public static void PackListOfImagesToMemStream(Frame[] imagesToPack, MemoryStream stream, int frameWidth, int frameHeight)
+		public static PackedSpriteMapMeta PackListOfImagesToMemStream(Frame[] imagesToPack, MemoryStream stream, int frameWidth, int frameHeight, FrameDisposal frameDisposal)
 		{
-			PackListOfImages(imagesToPack, frameWidth, frameHeight).Save(stream, ImageFormat.Png);
+			var packedSpriteMap = PackListOfImages(imagesToPack, frameWidth, frameHeight, frameDisposal);
+			packedSpriteMap.Image.Save(stream, ImageFormat.Png);
+			return packedSpriteMap;
 		}
-		public static Bitmap PackListOfImages(Frame[] imagesToPack2, int frameWidth, int frameHeight)
+		public static PackedSpriteMapMeta PackListOfImages(Frame[] imagesToPack, int frameWidth, int frameHeight, FrameDisposal frameDisposal)
 		{
-			//int frameWidth = imagesToPack[0].Width;
-			//int frameHeight = imagesToPack[0].Height;
-			Frame[] imagesToPack = { imagesToPack2[0] };
 			var size = Size.GetDimensions(frameWidth, frameHeight, imagesToPack.Length);
 			var sprite = new Bitmap(frameWidth * size.Cols, frameHeight * size.Rows);
+			var spriteFrame = new Bitmap(frameWidth, frameHeight);
 
 			using (var g = Graphics.FromImage(sprite))
 			{
-				g.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, sprite.Width, sprite.Height);
-
-				int x = 0, y = 0;
-				foreach (var bmp in imagesToPack)
+				using (var sg = Graphics.FromImage(spriteFrame))
 				{
-					var brush = new TextureBrush(bmp.image);
-					g.FillRectangle(brush, x * frameWidth + bmp.x, y * frameHeight + bmp.y, bmp.width, bmp.height);
+					g.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, sprite.Width, sprite.Height);
+					sg.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, sprite.Width, sprite.Height);
 
-					if (++x >= size.Cols)
+					int x = 0, y = 0;
+					for (int i = 0; i < imagesToPack.Count(); i++)
 					{
-						x = 0;
-						y++;
+						var bmp = imagesToPack[i];
+						var brush = new TextureBrush(bmp.Image, System.Drawing.Drawing2D.WrapMode.Clamp);
+
+						brush.TranslateTransform(bmp.X, bmp.Y);
+
+						if (frameDisposal == FrameDisposal.Composite)
+						{
+							sg.FillRectangle(brush, 0, 0, bmp.Width + bmp.X, bmp.Height + bmp.Y);
+							brush.Dispose();
+							brush = new TextureBrush(spriteFrame, System.Drawing.Drawing2D.WrapMode.Clamp);
+						}
+
+
+						brush.TranslateTransform(x * frameWidth, y * frameHeight);
+						g.FillRectangle(brush, x * frameWidth, y * frameHeight, bmp.Width + bmp.X, bmp.Height + bmp.Y);
+
+						brush.Dispose();
+						if (++x >= size.Cols)
+						{
+							x = 0;
+							y++;
+						}
 					}
 				}
 			}
-			return sprite;
+			return new PackedSpriteMapMeta
+			{
+				Image = sprite,
+				FrameHeight = frameHeight,
+				FrameWidth = frameWidth,
+				TotalFrames = imagesToPack.Length,
+				Columns = size.Cols,
+				Rows = size.Rows
+			};
 		}
 
 		private struct Size
@@ -73,11 +99,29 @@ namespace Tankooni
 
 		public class Frame
 		{
-			public int x;
-			public int y;
-			public int width;
-			public int height;
-			public Bitmap image;
+			public int X;
+			public int Y;
+			public int Width;
+			public int Height;
+			public Bitmap Image;
+		}
+
+		public class PackedSpriteMapMeta
+		{
+			[Newtonsoft.Json.JsonIgnore]
+			public Bitmap Image;
+			public int FrameWidth;
+			public int FrameHeight;
+			public int TotalFrames;
+			public int Columns;
+			public int Rows;
+			public float FPS;
+		}
+
+		public enum FrameDisposal
+		{
+			Replace,
+			Composite
 		}
 	}
 }

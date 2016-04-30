@@ -10,7 +10,7 @@ using zeebs.utils.zoopBoot;
 
 namespace zeebs.utils.commands
 {
-	class SaveScores : Command
+	class SaveScores : AdminCommand
 	{
 		public SaveScores()
 		{
@@ -19,13 +19,7 @@ namespace zeebs.utils.commands
 
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
-			base.CanExecute(args, commandParams, emotes);
-			if (args[(int)StdExpMessageValues.UseName] != Utility.MainConfig.AdminUser.ToLower())
-			{
-				FailReasonMessage = "Nope";
-				return false;
-			};
-			return true;
+			return base.CanExecute(args, commandParams, emotes);
 		}
 
 		public override void Execute()
