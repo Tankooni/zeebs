@@ -30,7 +30,7 @@ namespace zeebs.utils.commands
 				return false;
 			}
 
-			var match = Regex.Match(commandParams, @"([\w\d]+)(\s+)?");
+			var match = Regex.Match(commandParams, @"([^\s]+)");
 			if (!match.Success)
 			{
 				FailReasonMessage = "No emote specified";
