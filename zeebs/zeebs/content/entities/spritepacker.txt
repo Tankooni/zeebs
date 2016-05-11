@@ -1,7 +1,0 @@
-
-#looooool
-combine Zeeb*.png from Zeeb
-combine Zeeb*.png from ZeebSmall
-combine *.png from Ko
-combine *.png from TheFuck into TheHeck
-combine *.png from Navi

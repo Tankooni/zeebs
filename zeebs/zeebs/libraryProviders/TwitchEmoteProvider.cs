@@ -9,6 +9,9 @@ using Indigo.Content;
 using ImageMagick;
 using System.Drawing;
 using System.Runtime.Serialization;
+using System.Drawing.Imaging;
+using Tankooni;
+using Utils.Json;
 
 namespace Indigo.Content
 {
@@ -19,6 +22,7 @@ namespace Indigo.Content
 		private HashSet<string> loadedEmotes;
 		public HashSet<string> LoadedSpecialEmotes { get; private set; }
 		private string currentChannel;
+		public const string TWITCH_CACHE_PATH = "content/twitchcache/";
 
 		public TwitchEmoteProvider(string channel = null)
 		{
@@ -31,8 +35,8 @@ namespace Indigo.Content
 
 		public override void Precache(Library.ILibraryInternal library)
 		{
-			if (!Library.FolderExists("content/twitchcache"))
-				Directory.CreateDirectory("content/twitchcache");
+			if (!Library.FolderExists(TWITCH_CACHE_PATH))
+				Directory.CreateDirectory(TWITCH_CACHE_PATH);
 			LoadRobots(library);
 			LoadGlobalSet(library);
 			LoadSubscriberSet(library);
@@ -44,7 +48,10 @@ namespace Indigo.Content
 		public override void Load(string filename, Library.ILibraryInternal library)
 		{
 			var emote = FromFilename(filename);
-			AddTwitchEmote(emote.code, emote.image_id, library);
+			if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, emote.code)))
+				AddEmote(emote.code, emote.code, library);
+			else
+				AddTwitchEmote(emote.code, emote.image_id, library);
 		}
 
 		SubscriberEmoteAPI.SubscriberEmote FromFilename(string filename)
@@ -68,9 +75,9 @@ namespace Indigo.Content
 		private void LoadRobots(Library.ILibraryInternal library)
 		{
 			string json = null;
-			if (Library.FolderExists("content/twitchcache"))
+			if (Library.FolderExists(TWITCH_CACHE_PATH))
 			{
-				var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "robots");
+				var qualifiedFilename = string.Format("{0}{1}.json", TWITCH_CACHE_PATH, "robots");
 				if (Library.FileExists(qualifiedFilename))
 					json = File.ReadAllText(Library.GetFilename(qualifiedFilename));
 			}
@@ -95,7 +102,7 @@ namespace Indigo.Content
 		private void LoadGlobalSet(Library.ILibraryInternal library)
 		{
 			string json = null;
-			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "global");
+			var qualifiedFilename = string.Format("{0}{1}.json", TWITCH_CACHE_PATH, "global");
 
 			try
 			{
@@ -125,7 +132,10 @@ namespace Indigo.Content
 			{
 				try
 				{
-					AddTwitchEmote(pair.Key, pair.Value.image_id, library);
+					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, pair.Key)))
+						AddEmote(pair.Key, pair.Key, library);
+					else
+						AddTwitchEmote(pair.Key, pair.Value.image_id, library);
 				}
 				catch (Exception e)
 				{
@@ -137,7 +147,7 @@ namespace Indigo.Content
 		private void LoadSubscriberSet(Library.ILibraryInternal library)
 		{
 			string json = null;
-			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "subscriber");
+			var qualifiedFilename = string.Format("{0}{1}.json", TWITCH_CACHE_PATH, "subscriber");
 
 			try
 			{
@@ -169,7 +179,7 @@ namespace Indigo.Content
 		{
 			string json = null;
 
-			var qualifiedFilename = string.Format("content/twitchcache/{0}.json", "bttv");
+			var qualifiedFilename = string.Format("{0}{1}.json", TWITCH_CACHE_PATH, "bttv");
 
 			try
 			{
@@ -200,20 +210,24 @@ namespace Indigo.Content
 			{
 				try
 				{
-					AddBttvEmote(emote.code, emote.id, library);
-				}
-				catch (Exception e)
-				{
-					FP.Log(emote.code, e.Message);
-				}
+					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, Utility.EncodeStringForFileName(emote.code))))
+						AddEmote(emote.code, emote.code, library);
+					else
+						AddBttvEmote(emote.code, emote.id, library);
+					LoadedSpecialEmotes.Add(emote.code);
 			}
+				catch (Exception e)
+			{
+				FP.Log(emote.code, e.Message);
+			}
+		}
 		}
 
 		private void LoadChannelBttvSet(Library.ILibraryInternal library, string channel)
 		{
 			string json = null;
 
-			var qualifiedFilename = string.Format("content/twitchcache/{0}_{1}.json", "bttv", channel);
+			var qualifiedFilename = string.Format("{0}{1}_{2}.json", TWITCH_CACHE_PATH, "bttv", channel);
 
 			try
 			{
@@ -244,7 +258,11 @@ namespace Indigo.Content
 			{
 				try
 				{
-					AddBttvEmote(emote.code, emote.id, library);
+					if (File.Exists(string.Format("{0}{1}", TWITCH_CACHE_PATH, Utility.EncodeStringForFileName(emote.code))))
+						AddEmote(emote.code, emote.code, library);
+					else
+						AddBttvEmote(emote.code, emote.id, library);
+					LoadedSpecialEmotes.Add(emote.code);
 				}
 				catch (Exception e)
 				{
@@ -256,7 +274,6 @@ namespace Indigo.Content
 		private void AddBttvEmote(string emoteName, string image_id, Library.ILibraryInternal library)
 		{
 			AddEmote(emoteName, library, string.Format("https://cdn.betterttv.net/emote/{0}/1x", image_id));
-			LoadedSpecialEmotes.Add(emoteName);
 		}
 
 		public void AddTwitchEmote(string emoteName, string image_id, Library.ILibraryInternal library)
@@ -269,51 +286,87 @@ namespace Indigo.Content
 			if (loadedEmotes.Contains(emoteName))
 				return;
 
+			string encodedEmoteName = Utility.EncodeStringForFileName(emoteName);
+
 			byte[] data = null;
 
-			if (Library.FolderExists("content/twitchcache"))
-			{
-				var qualifiedFilename = string.Format("content/twitchcache/{0}", emoteName);
+			if (Library.FolderExists(TWITCH_CACHE_PATH))
+			{ 
+				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName);
 				if (Library.FileExists(qualifiedFilename))
 					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
 			}
-			
-			if(data == null)
+			MemoryStream imageStream = new MemoryStream();
+
+			if (data == null)
 			{
 				data = client.DownloadData(url);
-				var folder = Library.GetFolderName("content/twitchcache");
-				MemoryStream stream = new MemoryStream();
+				var folder = Library.GetFolderName(TWITCH_CACHE_PATH);
 
-                using (MemoryStream bMapStream = new MemoryStream(data))
-                {
-                    using (Bitmap bMap = new Bitmap(bMapStream))
-                    {
-                        using (MagickImage mImage = new MagickImage(data))
-                        {
-                            switch (bMap.PixelFormat)
-                            {
-                                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                                    mImage.Format = MagickFormat.Png8;
-                                    break;
-                                default:
-                                    mImage.Format = MagickFormat.Png32;
-                                    break;
-                            }
+				MagickReadSettings settings = new MagickReadSettings();
+				settings.ColorSpace = ColorSpace.sRGB;
+				settings.SetDefine(MagickFormat.Png, "format", "png8");
 
-                            //This is the only exception out of all default emotes. See issue 12.
-                            if (emoteName == "FuzzyOtterOO")
-                                mImage.Format = MagickFormat.Png8;
+				MagickImageInfo mImageInfo = new MagickImageInfo(data);
 
-                            mImage.Write(stream);
-                            stream.Position = 0;
-                        }
-                    }
-                }
+				if (mImageInfo.Format != MagickFormat.Gif)
+				{
+					using (MagickImage mImage = new MagickImage(data, settings))
+					{ 
+						mImage.Write(imageStream);
+						imageStream.Position = 0;
+					}
+				}
+				else
+				{
+					using (MagickImageCollection mImages = new MagickImageCollection(data, settings))
+					{
+						//Background is PepePls
+						//SourPls is None
+						var width = mImages.Max(x => x.Page.Width);
+						var height = mImages.Max(y => y.Page.Height);
+						FramePacker.FrameDisposal frameDisposal;
+
+						switch (mImages[0].GifDisposeMethod)
+						{
+							case GifDisposeMethod.None:
+								frameDisposal = FramePacker.FrameDisposal.Composite;
+								break;
+							case GifDisposeMethod.Undefined:
+							case GifDisposeMethod.Background:
+							case GifDisposeMethod.Previous:
+							default:
+								frameDisposal = FramePacker.FrameDisposal.Replace;
+								break;
+						}
+
+						var packedImage = FramePacker.PackListOfImagesToMemStream(
+							mImages.Select(imageFrame => new FramePacker.Frame
+							{
+								Image = imageFrame.ToBitmap(ImageFormat.Png),
+								X = imageFrame.Page.X,
+								Y = imageFrame.Page.Y,
+								Width = imageFrame.BaseWidth,
+								Height = imageFrame.BaseHeight
+							}).ToArray(),
+							imageStream,
+							width,
+							height,
+							frameDisposal
+						);
+
+						packedImage.FPS = 1 / ((float)mImages.Select(x => x.AnimationDelay).Average() / 100.0f);
+
+						JsonWriter.Save(packedImage, string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName), true);
+						//mImages[0].Write(imageStream);
+						imageStream.Position = 0;
+					}
+				}
 				
-				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
+				File.WriteAllBytes(string.Format("{0}/{1}", folder, encodedEmoteName), data = imageStream.ToArray());
 			}
 
-			library.AddTexture(string.Format("twitch//{0}", emoteName), new MemoryStream(data, false));
+			library.AddTexture(string.Format("twitch//{0}", emoteName), imageStream);
 			loadedEmotes.Add(emoteName);
 		}
 		
@@ -322,29 +375,16 @@ namespace Indigo.Content
 			if (loadedEmotes.Contains(emoteName))
 				return;
 
+			string encodedEmoteName = Utility.EncodeStringForFileName(path);
+
 			byte[] data = null;
 
-			if (Library.FolderExists("content/twitchcache"))
+			if (Library.FolderExists(TWITCH_CACHE_PATH))
 			{
-				var qualifiedFilename = string.Format("content/twitchcache/{0}", path);
+				var qualifiedFilename = string.Format("{0}{1}", TWITCH_CACHE_PATH, encodedEmoteName);
 				if (Library.FileExists(qualifiedFilename))
 					data = File.ReadAllBytes(Library.GetFilename(qualifiedFilename));
 			}
-			
-//			if(data == null)
-//			{
-//				data = client.DownloadData(string.Format("http://static-cdn.jtvnw.net/emoticons//v1/{0}/1.0", image_id));
-//				var folder = Library.GetFolderName("content/twitchcache");
-//				MemoryStream stream = new MemoryStream();
-//				using (MagickImage mImage = new MagickImage(data))
-//				{
-//					mImage.Format = MagickFormat.Png32;
-//					mImage.Write(stream);
-//					stream.Position = 0;
-//				}
-//				
-//				File.WriteAllBytes(string.Format("{0}/{1}", folder, emoteName), data = stream.ToArray());
-//			}
 
 			library.AddTexture(string.Format("twitch//{0}", emoteName), new MemoryStream(data, false));
 			loadedEmotes.Add(emoteName);

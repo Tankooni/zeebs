@@ -10,6 +10,7 @@ using Tankooni;
 using Indigo.Graphics;
 using Glide;
 using Indigo.Rendering;
+using System.IO;
 
 namespace zeebs.entities
 {
@@ -159,7 +160,24 @@ namespace zeebs.entities
 		{
 			try
 			{
-				AddComponent(Head = new Image(Library.GetTexture((isAvatar ? "twitchAvatar//" : "twitch//") + headName)));
+				var newHeadImage = Library.GetTexture((isAvatar ? "twitchAvatar//" : "twitch//") + headName);
+				var animDataPath = string.Format("{0}{1}.json", Indigo.Content.TwitchEmoteProvider.TWITCH_CACHE_PATH, headName);
+				Spritemap tempSp = null;
+				if (!File.Exists(animDataPath))
+				{
+					Head = new Image(newHeadImage);
+				}
+				else
+				{
+					var animationData = JsonLoader.Load<FramePacker.PackedSpriteMapMeta>(animDataPath, false);
+					var headSpriteMap = new Spritemap(newHeadImage, animationData.FrameWidth, animationData.FrameHeight);
+					headSpriteMap.Add("Default", FP.MakeFrames(0, animationData.TotalFrames-1), 24, true);
+					headSpriteMap.Play("Default");//animationData.FPS
+					Head = headSpriteMap;
+					tempSp = headSpriteMap;
+				}
+				AddComponent(Head);
+
 				Head.CenterOrigin();
 				Head.Scale = AnimatedEntityData.Animations[Sprite.CurrentAnim].HeadWidth / (float)Head.Width;
 				
