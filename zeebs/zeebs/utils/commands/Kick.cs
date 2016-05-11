@@ -19,6 +19,7 @@ namespace zeebs.utils.commands
 		public Kick()
 		{
 			CommandName = "kick";
+			Helptext = "Kick - ";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -55,5 +56,9 @@ namespace zeebs.utils.commands
 		{
 			Kick
 		}
+		
+        public override string GetHelpText() {
+            return Helptext;
+        }
 	}
 }
