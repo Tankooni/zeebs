@@ -6,3 +6,4 @@ zeebs/packages/**
 *.orig
 **.exe
 **.pdb
+**Shortcut.lnk
