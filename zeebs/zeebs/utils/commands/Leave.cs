@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
 		public Leave()
 		{
 			CommandName = "leave";
-			helptext = "Leave - ";
+			Helptext = "Leave - ";
 
 		}
 
@@ -47,7 +47,7 @@ namespace zeebs.utils.commands
 		}
 		
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

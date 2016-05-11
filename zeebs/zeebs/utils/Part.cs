@@ -35,9 +35,5 @@ namespace zeebs.utils
 		{
 			return new Part();
 		}
-		
-		public override string GetHelpText() {
-			return helptext;
-		}
 	}
 }

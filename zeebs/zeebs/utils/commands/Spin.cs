@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
         public Spin()
 		{
 			CommandName = "spin";
-      helptext = "Spin - ";
+		    Helptext = "Spin - ";
 
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -27,7 +27,7 @@ namespace zeebs.utils.commands
 				FailReasonMessage = "Not part of game";
 				return false;
 			}
-			
+
 			return true;
 		}
 
@@ -36,18 +36,18 @@ namespace zeebs.utils.commands
 			FP.World.BroadcastMessage(SpinMessage.Spin, Args[(int)StdExpMessageValues.UseName]);
 		}
 
-    public override Command CreateNewSelf()
-    {
-        return new Spin();
-    }
+	    public override Command CreateNewSelf()
+	    {
+	        return new Spin();
+	    }
 
-    public enum SpinMessage
-    {
-        Spin
-    }
+	    public enum SpinMessage
+	    {
+	        Spin
+	    }
 
-    public override string GetHelpText() {
-      return helptext;
-    }  
-  }
+	    public override string GetHelpText() {
+	      return Helptext;
+	    }
+	}
 }

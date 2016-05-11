@@ -19,7 +19,7 @@ namespace zeebs.utils.commands
 		public Move()
 		{
 			CommandName = "move";
-   		helptext = "Move - ";
+   		Helptext = "Move - ";
 
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -75,7 +75,7 @@ namespace zeebs.utils.commands
 		}
 		
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

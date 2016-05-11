@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
 		public Down()
 		{
 			CommandName = "down";
-			helptext = "Down - ";
+			Helptext = "Down - ";
 
 		}
 
@@ -42,7 +42,7 @@ namespace zeebs.utils.commands
 		}
 
 	public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

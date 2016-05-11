@@ -19,7 +19,7 @@ namespace zeebs.utils.commands
 		public MoveRandom()
         {
             CommandName = "moverandom";
-            helptext = "MoveRandom - ";
+            Helptext = "MoveRandom - ";
 
         }
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -51,7 +51,7 @@ namespace zeebs.utils.commands
         }
         
         public override string GetHelpText() {
-            return helptext;
+            return Helptext;
         }
     }
 }
