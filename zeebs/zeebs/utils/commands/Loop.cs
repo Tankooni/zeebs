@@ -14,12 +14,12 @@ namespace zeebs.utils.commands
     class Loop : Command
     {
 
-		public static HashSet<string> AllowedLoopCommands = new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color", "change", "up", "down", "left", "right", "help"};
+		public static HashSet<string> AllowedLoopCommands = new HashSet<string>{"move", "moved", "attack", "moverandom", "spin", "flip", "color", "change", "up", "down", "left", "right"};
 
         public Loop()
 		{
 			CommandName = "loop";
-			helptext = "Loop - ";
+			Helptext = "Loop - ";
 
 		}
 
@@ -64,7 +64,7 @@ namespace zeebs.utils.commands
 		}
 		
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

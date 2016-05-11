@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
         public Flip()
         {
             CommandName = "flip";
-            helptext = "Flip - ";
+            Helptext = "Flip - ";
 
         }
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
@@ -46,7 +46,7 @@ namespace zeebs.utils.commands
         }
 
         public override string GetHelpText() {
-            return helptext;
+            return Helptext;
         }
     }
 }

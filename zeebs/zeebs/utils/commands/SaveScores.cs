@@ -15,7 +15,7 @@ namespace zeebs.utils.commands
 		public SaveScores()
 		{
 			CommandName = "savescores";
-			helptext = "SaveScore - ";
+			Helptext = "SaveScore - ";
 
 		}
 
@@ -46,7 +46,7 @@ namespace zeebs.utils.commands
 		}
 		
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

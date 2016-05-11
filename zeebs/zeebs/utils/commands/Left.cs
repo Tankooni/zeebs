@@ -16,7 +16,7 @@ namespace zeebs.utils.commands
 		public Left()
 		{
 			CommandName = "left";
-			helptext = "Left - ";
+			Helptext = "Left - ";
 
 		}
 
@@ -43,7 +43,7 @@ namespace zeebs.utils.commands
 		}
 		
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

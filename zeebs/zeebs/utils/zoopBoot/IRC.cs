@@ -232,7 +232,7 @@ namespace Tankooni.IRC
 			if (Debug)
 				if(command != "PASS")
 					Console.WriteLine("Sent: " + command + " " + param);
-       
+
 		}
 
 		/// <summary>

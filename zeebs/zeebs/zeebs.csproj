@@ -84,7 +84,6 @@
     <Compile Include="entities\ComEntities\Commands\ComEntityMoveD.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityMoveTo.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntitySpin.cs" />
-    <Compile Include="entities\ComEntities\Commands\ComEntityHelp.cs" />
     <Compile Include="entities\ComEntities\Commands\ComEntityFlip.cs" />
     <Compile Include="entities\LeaderBoard.cs" />
     <Compile Include="libraryProviders\TwitchAvatarProvider.cs" />
@@ -108,7 +107,6 @@
     <Compile Include="utils\commands\SaveScores.cs" />
     <Compile Include="utils\commands\Spin.cs" />
     <Compile Include="utils\commands\Up.cs" />
-    <Compile Include="utils\commands\Help.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
     <Compile Include="utils\json\JsonWriter.cs" />
     <Compile Include="libraryProviders\TwitchEmoteProvider.cs" />

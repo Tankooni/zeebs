@@ -15,7 +15,7 @@ namespace zeebs.utils.commands
 		public string CommandParams;
 		public List<Command> Commands;
 		public List<Emote> Emotes;
-		public string helptext;
+		public string Helptext;
 
 		public virtual bool IsGreedy()
 		{

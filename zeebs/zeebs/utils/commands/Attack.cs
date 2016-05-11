@@ -18,7 +18,7 @@ namespace zeebs.utils.commands
 		public Attack()
 		{
 			CommandName = "attack";
-			helptext = "Attack - destroys any zeebs within your radius";
+			Helptext = "Attack - destroys any zeebs within your radius";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -59,7 +59,7 @@ namespace zeebs.utils.commands
 		}
 
 		public override string GetHelpText() {
-			return helptext;
+			return Helptext;
 		}
 	}
 }

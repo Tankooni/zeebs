@@ -15,7 +15,7 @@ namespace zeebs.utils.commands
 		public Cancel()
 		{
 			CommandName = "cancel";
-   		helptext = "Cancel - ";
+   			Helptext = "Cancel - ";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -44,7 +44,7 @@ namespace zeebs.utils.commands
 		}
 
 		public override string GetHelpText() {
-			return helptext;
-		}
+			return Helptext;
+	}
 	}
 }
