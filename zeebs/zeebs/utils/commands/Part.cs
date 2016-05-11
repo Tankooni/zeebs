@@ -15,6 +15,7 @@ namespace zeebs.utils
 		public Part()
 		{
 			CommandName = "part";
+			Helptext = "Part - ";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -35,5 +36,9 @@ namespace zeebs.utils
 		{
 			return new Part();
 		}
+		
+        public override string GetHelpText() {
+            return Helptext;
+        }
 	}
 }

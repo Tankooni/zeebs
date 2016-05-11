@@ -19,6 +19,7 @@ namespace zeebs.utils.commands
 		public QuitGame()
 		{
 			CommandName = "quit";
+			Helptext = "Quit - ";
 		}
 		public override bool CanExecute(string[] args, string commandParams, List<Emote> emotes)
 		{
@@ -48,5 +49,9 @@ namespace zeebs.utils.commands
 		{
 			Quit
 		}
+		
+        public override string GetHelpText() {
+            return Helptext;
+        }
 	}
 }
