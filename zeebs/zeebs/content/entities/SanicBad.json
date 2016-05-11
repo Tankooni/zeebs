@@ -1,0 +1,23 @@
+{
+	"Name": "SanicSmul",
+	"DefaultAnimation": "Idle",
+	"ShaderName": "RgbChromaKey.frag",
+	"Animations": {
+		"Idle": {
+			"OriginX": 64,
+			"OriginY": 110,
+			"FrameWidth": 128,
+			"FrameHeight": 128,
+			"HeadPositionX": 10,
+			"HeadPositionY": -92,
+			"Name": "Idle",
+			"FPS": 120,
+			"HeadWidth": 26,
+			"Frames": [0,
+				1,
+				2,
+				3,
+				4]
+		}
+	}
+}

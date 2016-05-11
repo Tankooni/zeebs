@@ -60,19 +60,26 @@ namespace zeebs.entities
 		{
 			try
 			{
-				int index = 1;
 				float longestWidth = minWidth;
-				foreach (var entity in Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount).Take(leaderboardTotal))
+				var entitiesEnumerator = Utility.SessionPlayers.Values.OrderByDescending(x => x.TwitchUserComEntityData.KillCount).Take(leaderboardTotal).GetEnumerator();
+				for (int i = 0; i < leaderboardTotal; i++)
 				{
-					var currentText = UserText[index];
-					string userName = entity.TwitchUserComEntityData.TwitchUserName;
-					if (userName.Length > 10)
-						userName = new string(userName.Take(10).ToArray()) + "...";
-					currentText.Color = new Color(int.Parse(entity.TwitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber));
-					currentText.String = userName + ": " + entity.TwitchUserComEntityData.KillCount;
-					if (currentText.Width > longestWidth)
-						longestWidth = currentText.Width;
-					index++;
+					var currentText = UserText[i + 1];
+					if (entitiesEnumerator.MoveNext())
+					{
+						var entity = entitiesEnumerator.Current;
+						string userName = entity.TwitchUserComEntityData.TwitchUserName;
+						if (userName.Length > 10)
+							userName = new string(userName.Take(10).ToArray()) + "...";
+						currentText.Color = new Color(int.Parse(entity.TwitchUserComEntityData.TwitchUserColor, System.Globalization.NumberStyles.HexNumber));
+						currentText.String = userName + ": " + entity.TwitchUserComEntityData.KillCount;
+						if (currentText.Width > longestWidth)
+							longestWidth = currentText.Width;
+					}
+					else
+					{
+						currentText.String = "";
+					}
 				}
 
 				background.ScaleX = Width = (int)Math.Ceiling(longestWidth);
