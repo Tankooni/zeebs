@@ -41,7 +41,7 @@ namespace zeebs.utils.commands
 			return new Down();
 		}
 
-	public override string GetHelpText() {
+		public override string GetHelpText() {
 			return Helptext;
 		}
 	}
