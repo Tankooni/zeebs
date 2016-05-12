@@ -27,19 +27,20 @@ namespace Tankooni.IRC
 	public enum StdExpMessageValues : int
 	{
 		FullMessage		= 0,
-		UserColor		= 1,
-		DisplayName		= 2,
-		Emotes			= 3,
-		IsMod			= 4,
-		RoomId			= 5,
-		Subscriber		= 6,
-		Turbo			= 7,
-		UserId			= 8,
-		UserType		= 9,
-		UseName			= 10,
-		Command			= 11,
-		RoomName		= 12,
-		Message			= 13
+		Badges			= 1,
+		UserColor		= 2,
+		DisplayName		= 3,
+		Emotes			= 4,
+		IsMod			= 5,
+		RoomId			= 6,
+		Subscriber		= 7,
+		Turbo			= 8,
+		UserId			= 9,
+		UserType		= 10,
+		UseName			= 11,
+		Command			= 12,
+		RoomName		= 13,
+		Message			= 14 
 
 	}
 
@@ -49,8 +50,6 @@ namespace Tankooni.IRC
 		private string channel;
 		private string nickName;
 		private string oauth;
-		private string twitchAddress;
-		private string twitchAddressPort;
 		private TwitchChatServers twitchChatServers;
 		private TwitchChatServers twitchGroupChatServers;
 
@@ -73,7 +72,7 @@ namespace Tankooni.IRC
 		{
 			{
 				RegexTypes.StdExpMessage,
-				new Regex(@"@color=#?([A-F0-9]{6}){0,1};display-name=([\w\W]*);emotes=([\w\W]*);mod=([01]);room-id=(\d+);subscriber=([01]);turbo=([01]);user-id=(\d+);user-type=([\w\W]+):([\w\W]+)\!(?:[\w\s\S]+)(?:[\w\W\s])\.tmi\.twitch\.tv\s(PRIVMSG)\s#([\w\s]+)\s+:([\w\W\s\S]+)")
+				new Regex(@"@badges=([\w\W]*);color=#?([A-F0-9]{6}){0,1};display-name=([\w\W]*);emotes=([\w\W]*);mod=([01]);room-id=(\d+);subscriber=([01]);turbo=([01]);user-id=(\d+);user-type=([\w\W]+):([\w\W]+)\!(?:[\w\s\S]+)(?:[\w\W\s])\.tmi\.twitch\.tv\s(PRIVMSG)\s#([\w\s]+)\s+:([\w\W\s\S]+)")
 			},
 			{
 				RegexTypes.StdPartMessage,
