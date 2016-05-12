@@ -110,6 +110,7 @@
     <Compile Include="utils\commands\SaveScores.cs" />
     <Compile Include="utils\commands\Spin.cs" />
     <Compile Include="utils\commands\Up.cs" />
+    <Compile Include="utils\commands\Help.cs" />
     <Compile Include="utils\FramePacker.cs" />
     <Compile Include="utils\json\JsonLoader.cs" />
     <Compile Include="utils\json\JsonWriter.cs" />
